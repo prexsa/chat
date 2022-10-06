@@ -1,9 +1,4 @@
 .app {
-  width: 250px;
-  height: 250px;
-  margin: 50px auto;
-}
-input[type=text] {
-  padding: .5em 1em;
-  box-sizing: border-box;
+  display: flex;
+  text-align: center;
 }

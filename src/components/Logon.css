@@ -1,0 +1,15 @@
+.logon-container {
+  margin: auto;
+  padding: 25px 35px;
+  height: fit-content;
+  width: 400px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: 3px;
+  box-shadow: rgb(0 0 0 / 10%) 0px 0px 10px;
+  box-sizing: border-box;
+}
