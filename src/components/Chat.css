@@ -13,7 +13,8 @@
   height: 75%;
   border-radius: 0.2em;
   position: relative;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);*/
+  border: 1px solid rgba(239, 239, 240, 1.0);
 }
 .sidebar h2 {
   font-weight: 400;
@@ -24,13 +25,19 @@
   text-align: left;
   list-style-type: none;
 }
+.users-container {
+  margin-top: 15px;
+}
 .users-container > li {
-  margin: 5px;
-  padding: 10px;
+  /*margin: 5px;*/
+  padding: 10px 25px 10px;
+  border: 1px solid rgba(239, 239, 240, 1.0);
+  background-color: rgba(239, 239, 240, 1.0);
 }
 .users-container > li:hover {
   cursor: pointer;
-  background-color: lightblue;
+  border: 1px solid rgba(239, 239, 240, 0.3);
+  background-color: rgba(239, 239, 240, 0.3);
 }
 .message-container > li {
   padding: 0.5rem 1rem;
@@ -43,7 +50,8 @@
   height: 75%;
   border-radius: 0.2em;
   position: relative;
-  box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 1px 1px 12px rgba(0, 0, 0, 0.1);*/
+  border: 1px solid rgba(239, 239, 240, 1.0);
 }
 .footer {
   position: absolute;

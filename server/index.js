@@ -1,9 +1,10 @@
 require('dotenv').config();
 const express = require('express');
+const axios = require('axios');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-const { addUser, getUser, deleteUser, getAllUsers } = require('./users')
+const { addUser, getUser, deleteUser, getAllUsers, userNameExist, getConnectedUsers, clearUsers } = require('./users')
 
 const app = express();
 const httpServer = createServer(app);
@@ -20,33 +21,99 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 
-const PORT = process.env.PORT || 9000;
+// socket middleware
+/*io.use((socket, next) => {
+  // console.log('socket: ', socket)
+  const username = socket.handshake.auth.username;
+  console.log('socket handshake: ', username)
+  if(!username) {
+    return next(new Error("invalid username"))
+  }
+  socket.username = username;
+  next();
+});*/
 
 io.on('connection', (socket) => {
-  socket.on('login', name => {
+  // console.log('main socket: ', socket)
+  const mainSocket = socket;
+  const mainSocketID = socket.id;
+  /*const users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    users.push({
+      userID: id,
+      username: socket.username,
+    });
+  }*/
+  // console.log('socketID ', socket.id)
+  // console.log('socketClientID ', socket.client.id)
+  // socket.emit("users", users);
+  // notifying existing users
+  /*socket.broadcast.emit('user connected', {
+    userID: socket.id,
+    username: socket.username,
+  })*/
+
+  socket.on('login', (name) => {
     console.log('name :', name)
     const { user, error } = addUser(socket.id, name)
-    io.emit('login', user)
+    // io.emit('user connected', user)
+    // socket.broadcast.emit('user connected', user)
+    // console.log('mainSocketID: ', mainSocketID)
+    // console.log('socketID: ', socket.id)
+    socket.broadcast.emit('user connected', user)
   });
 
-  socket.on('chat', msg => {
+  socket.on('chat', (msg) => {
+    // console.log('chat: ', msg)
     io.emit('chat', msg)
   });
 
-  socket.on('users', () => {
-    const users = getAllUsers();
-    // console.log('users: ', users)
-    io.emit('users', users)
+  socket.on("private msg", ({ to, msg }) => {
+    console.log('to: ', to, 'msg: ', msg )
+    socket.to(to).emit("private msg", {
+      msg,
+      from: socket.id,
+    });
   });
 
-  socket.on('remove', (id) => {
-    deleteUser(id);
+  socket.on('connected users', (username) => {
+    // console.log('username: ', username)
+    const users = getConnectedUsers(username);
+    // console.log('users: ', users)
+    // io.emit('connected users', users)
+    socket.emit('connected users', users)
+  });
+
+  socket.on('remove', (username) => {
+    deleteUser(username);
     io.emit('remove', )
   })
 
   socket.on('disconnect', () => {
-    console.log('user disconnected')
+    console.log('user disconnected: ', socket.id)
   });
+  console.log('all users: ', getAllUsers())
 })
+
+app.post('/api/check-username', (req, res) => {
+  console.log('req.body: ', req.body)
+  const { username } = req.body;
+  const exist = userNameExist(username);
+  res.status(200).send({ exist })
+})
+
+app.get('/api/clear', (req, res) => {
+  const { username } = req.body;
+  const users = clearUsers();
+  res.status(200).send({ users })
+})
+
+app.get('/api/get-users', (req, res) => {
+  const { username } = req.body;
+  const users = getAllUsers();
+  res.status(200).send({ users })
+})
+
+const PORT = process.env.PORT || 9000;
 
 httpServer.listen(PORT, () => console.log(`Server listening on PORT ${PORT}`));
