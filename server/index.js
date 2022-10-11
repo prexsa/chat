@@ -4,7 +4,16 @@ const axios = require('axios');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-const { addUser, getUser, deleteUser, getAllUsers, userNameExist, getConnectedUsers, clearUsers } = require('./users')
+const {
+  addUser,
+  getUser,
+  deleteUser,
+  getAllUsers,
+  userNameExist,
+  getConnectedUsers,
+  clearUsers,
+  setUserDisconnect
+} = require('./users')
 
 const app = express();
 const httpServer = createServer(app);
@@ -85,8 +94,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('remove', (username) => {
-    deleteUser(username);
-    io.emit('remove', )
+    // deleteUser(username);
+    const { users } = setUserDisconnect(username)
+    io.emit('connected users', users)
   })
 
   socket.on('disconnect', () => {

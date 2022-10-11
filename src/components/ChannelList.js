@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import socket from '../socket';
+import './ChannelList.css';
 
 function ChannelList({ handleSetSocketID }) {
   const navigate = useNavigate();
@@ -25,8 +26,11 @@ function ChannelList({ handleSetSocketID }) {
     })
 
     socket.on('connected users', async function(connectedUsers) {
-      console.log('users: ', users)
-      setUsers([...connectedUsers])
+      console.log('users: ', connectedUsers)
+      const username = location.state.username;
+      const removeSelf = connectedUsers.filter(user => user.name !== username)
+
+      setUsers([...removeSelf])
     })
   }, [users])
 
@@ -38,8 +42,18 @@ function ChannelList({ handleSetSocketID }) {
       <div className="users-container">
         {
           users.map((user, index) => {
+            console.log('user: ', user)
             return (
-              <li key={user.id} onClick={() => handleOnClick(user.id)}>{user.name}</li>
+              <li key={user.id} onClick={() => handleOnClick(user.id)}>
+                <div className="user-name">
+                  {user.name}
+                </div>
+                <div className="user-status">
+                  <div className={`icon ${user.connected ? 'connected': ''}`}></div>
+                  online
+                </div>
+                <div className="new-messages"></div>
+              </li>
             )
           })
         }

@@ -2,6 +2,8 @@ let users = [];
 
 const addUser = (id, name) => {
   const user = { id, name }
+  // set user connected
+  user.connected = true;
   users.push(user)
   // console.log('user: ', user)
   return { user }
@@ -39,4 +41,26 @@ const clearUsers = () => {
   return users;
 }
 
-module.exports = { addUser, getUser, deleteUser, getAllUsers, userNameExist, getConnectedUsers, clearUsers }
+const setUserDisconnect = (username) => {
+  const found = userNameExist(username);
+  if(found) {
+    users.forEach((user) => {
+      // console.log('user: ', user)
+      if(user.name === username)
+        user.connected = false;
+    })
+    return { users };
+  }
+  return { users: [] }
+}
+
+module.exports = {
+  addUser,
+  getUser,
+  deleteUser,
+  getAllUsers,
+  userNameExist,
+  getConnectedUsers,
+  clearUsers,
+  setUserDisconnect
+}
