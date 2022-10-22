@@ -98,6 +98,10 @@ io.on('connection', (socket) => {
     messageStore.saveMsg(message);
   });
 
+  socket.on('typing', ({ toggleState }) => {
+    socket.broadcast.emit('typingResp', toggleState);
+  })
+
   socket.on('connected users', (username) => {
     // console.log('username: ', username)
     const users = getConnectedUsers(username);
