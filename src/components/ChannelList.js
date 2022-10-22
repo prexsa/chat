@@ -1,58 +1,53 @@
-import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from "react-router-dom";
+import { UserContext } from '../userContext';
 import socket from '../socket';
 import './ChannelList.css';
 
-function ChannelList({ handleSetSocketID }) {
+function ChannelList({ handleChannel, users, channel }) {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [users, setUsers] = useState([]);
-
-  const handleOnClick = (userSocketID) => {
-    handleSetSocketID(userSocketID)
+  const { user } = useContext(UserContext);
+  // const [users, setUsers] = useState([]);
+  // const [newMessages, setNewMessages] = useState(false);
+  const username = user.name;
+  // console.log('users: ', users)
+  const handleOnClick = (user) => {
+    handleChannel(user)
   }
 
   const handleLogOut = () => {
-    const username = location.state.username;
     socket.emit('remove', username)
     navigate('/')
     window.location.reload();
   }
 
-  useEffect(() => {
-    socket.on('user connected', async function(user) {
-      console.log('user: 2', user)
-      setUsers([...users, user])
-    })
-
-    socket.on('connected users', async function(connectedUsers) {
-      console.log('users: ', connectedUsers)
-      const username = location.state.username;
-      const removeSelf = connectedUsers.filter(user => user.name !== username)
-
-      setUsers([...removeSelf])
-    })
-  }, [users])
-
   return (
     <aside className="sidebar">
-      <div>{location.state.username}</div>
+      <div>{username}</div>
       <h2>Chat Circle</h2>
       {/*<button className="get-users-btn" onClick={handleGetUsers}>Get Users</button>*/}
       <div className="users-container">
         {
-          users.map((user, index) => {
-            console.log('user: ', user)
+          users && users.map((user, index) => {
+            // console.log('user: ', user)
+            if(channel !== null && channel.id === user.id) {
+              user.hasNewMessage = false;
+            }
             return (
-              <li key={user.id} onClick={() => handleOnClick(user.id)}>
-                <div className="user-name">
-                  {user.name}
+              <li key={user.id} onClick={() => handleOnClick(user)}>
+                <div className='left'>
+                  <div className="user-name">
+                    {user.name}
+                  </div>
+                  <div className="user-status">
+                    <div className={`icon ${user.connected ? 'connected': ''}`}></div>
+                    online
+                  </div>
+
                 </div>
-                <div className="user-status">
-                  <div className={`icon ${user.connected ? 'connected': ''}`}></div>
-                  online
+                <div className='right'>
+                  <div className={`${user.hasNewMessage ? "new-messages" : ""}`}>!</div>
                 </div>
-                <div className="new-messages"></div>
               </li>
             )
           })

@@ -14,6 +14,10 @@ const {
   clearUsers,
   setUserDisconnect
 } = require('./users')
+const { InMemoryMessageStore } = require('./messageStore');
+
+const messageStore = new InMemoryMessageStore();
+console.log('messageStore: ', messageStore.messages)
 
 const app = express();
 const httpServer = createServer(app);
@@ -46,21 +50,24 @@ io.on('connection', (socket) => {
   // console.log('main socket: ', socket)
   const mainSocket = socket;
   const mainSocketID = socket.id;
-  /*const users = [];
+  const users = [];
   for (let [id, socket] of io.of("/").sockets) {
     users.push({
       userID: id,
       username: socket.username,
     });
-  }*/
+  }
   // console.log('socketID ', socket.id)
   // console.log('socketClientID ', socket.client.id)
-  // socket.emit("users", users);
+  // console.log('users: ', users)
+  // socket.emit('users', users);
   // notifying existing users
   /*socket.broadcast.emit('user connected', {
     userID: socket.id,
     username: socket.username,
   })*/
+
+  console.log('mainSocketID: ', mainSocketID)
 
   socket.on('login', (name) => {
     console.log('name :', name)
@@ -69,6 +76,7 @@ io.on('connection', (socket) => {
     // socket.broadcast.emit('user connected', user)
     // console.log('mainSocketID: ', mainSocketID)
     // console.log('socketID: ', socket.id)
+    socket.emit('sender', user)
     socket.broadcast.emit('user connected', user)
   });
 
@@ -79,10 +87,15 @@ io.on('connection', (socket) => {
 
   socket.on("private msg", ({ to, msg }) => {
     console.log('to: ', to, 'msg: ', msg )
-    socket.to(to).emit("private msg", {
+    const message = {
       msg,
       from: socket.id,
-    });
+      to,
+    }
+    console.log('message: ', message)
+    // socket.to(to).emit("private msg", message);
+    io.to(to).to(socket.id).emit("private msg", message);
+    messageStore.saveMsg(message);
   });
 
   socket.on('connected users', (username) => {
@@ -122,6 +135,19 @@ app.get('/api/get-users', (req, res) => {
   const { username } = req.body;
   const users = getAllUsers();
   res.status(200).send({ users })
+})
+
+app.post('/api/channel-messages', async (req, res) => {
+  const { userID } = req.body;
+  console.log('messageStore: ', messageStore)
+  const messages = await messageStore.findMsgForUser(userID)
+  res.status(200).send({ messages })
+})
+
+app.get('/api/messages', async (req, res) => {
+  const { userID } = req.body;
+  const messages = messageStore.allMessages
+  res.status(200).send({ messages })
 })
 
 const PORT = process.env.PORT || 9000;

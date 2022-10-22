@@ -6,8 +6,17 @@ const SocketContext = React.createContext();
 const SocketProvider = ({ children }) => {
   const socket = io("http://localhost:9000");
 
+  const registerSocket = (username) => {
+    socket.emit('login', username)
+  }
+
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider
+      value={{
+      socket,
+      registerSocket
+      }}
+        >
       {children}
     </SocketContext.Provider>
   )
