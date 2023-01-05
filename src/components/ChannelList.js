@@ -1,60 +1,58 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
-import { UserContext } from '../userContext';
-import socket from '../socket';
-import './ChannelList.css';
+import axios from 'axios';
+import { useSocketContext } from '../socketContext';
 
-function ChannelList({ handleChannel, users, channel }) {
+function ChannelList() {
   const navigate = useNavigate();
-  const { user } = useContext(UserContext);
-  // const [users, setUsers] = useState([]);
-  // const [newMessages, setNewMessages] = useState(false);
-  const username = user.name;
+  const { user, users, channel, selectChannel, logoff } = useSocketContext();
+  const username = user.username;
   // console.log('users: ', users)
-  const handleOnClick = (user) => {
-    handleChannel(user)
-  }
+  // console.log('channel: ', channel)
 
   const handleLogOut = () => {
-    socket.emit('remove', username)
+    const sessionID = localStorage.getItem("sessionID");
+    // localStorage.removeItem("sessionID")
+    console.log('logoff')
+    logoff();
+    // socket.emit('logoff', sessionID)
     navigate('/')
-    window.location.reload();
+    // window.location.reload();
   }
 
   return (
-    <aside className="sidebar">
-      <div>{username}</div>
+    <div>
+      <header>
+        <div>{username}</div>
+      </header>
+      <button className="logout-btn" onClick={handleLogOut}>logout</button>
       <h2>Chat Circle</h2>
       {/*<button className="get-users-btn" onClick={handleGetUsers}>Get Users</button>*/}
-      <div className="users-container">
+        <ul>
         {
           users && users.map((user, index) => {
             // console.log('user: ', user)
-            if(channel !== null && channel.id === user.id) {
+            // console.log('channel: ', channel)
+            {/*if(channel !== null && channel.userID === user.userID) {
               user.hasNewMessage = false;
-            }
+            }*/}
             return (
-              <li key={user.id} onClick={() => handleOnClick(user)}>
-                <div className='left'>
-                  <div className="user-name">
-                    {user.name}
-                  </div>
-                  <div className="user-status">
-                    <div className={`icon ${user.connected ? 'connected': ''}`}></div>
-                    online
-                  </div>
-
+              <li key={user.userID} onClick={() => selectChannel(user)}>
+                <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg" alt="" />
+                <div>
+                  <h2>{user.username}</h2>
+                  <h3>
+                    <span className={`status ${user.connected ? 'green' : 'orange'}`}></span>
+                    offline
+                  </h3>
                 </div>
-                <div className='right'>
-                  <div className={`${user.hasNewMessage ? "new-messages" : ""}`}>!</div>
-                </div>
+                <div className={`newMessages ${user.hasNewMessage ? 'show' : 'hide'}`}>!</div>
               </li>
             )
           })
         }
-      </div>
-      <button className="logout-btn" onClick={handleLogOut}>logout</button>
-    </aside>
+        </ul>
+    </div>
   )
 }
 

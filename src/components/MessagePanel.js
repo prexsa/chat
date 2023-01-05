@@ -1,97 +1,112 @@
-import { useState, useContext, useRef, useEffect } from 'react';
-import { UserContext } from '../userContext';
-import socket from '../socket';
-// import axios from 'axios';
-import './MessagePanel.css';
+import { useState, useMemo, useEffect } from 'react';
+import { useSocketContext } from '../socketContext';
+import { FaChrome, FaEmpire } from 'react-icons/fa';
 
-function MessagePanel({ channel, messages }) {
-  const inputRef = useRef();
-  // console.log('channel: ', channel)
-  // console.log('messages: ', messages)
-  const { user } = useContext(UserContext);
-  /*const username = user.name;*/
+function MessagePanel({ lastMessageRef }) {
+  const { user, channel, messages, feedback, onMessageSend, handleTypingIndicator } = useSocketContext();
   const [inputVal, setInputVal] = useState('');
-  const [feedback, setFeedback] = useState(false);
-
-  useEffect(() => {
-    socket.on('typingResp', (toggleState) => setFeedback(toggleState))
-  }, [socket])
-
-// console.log('user: ', user)
+  // console.log('channel: ', channel)
+  // console.log('user: ', user)
   const handleSubmit = (e) => {
     e.preventDefault();
     if(channel === null) return;
-    if(inputVal.trim() === '') return;
-    // setMessages([...messages, inputVal])
-    // console.log('channel: ', channel)
-    // handleEmit({ to: channel.id, msg: inputVal })
-    socket.emit('private msg', { to: channel.id, msg: inputVal.trim() });
+    if(inputVal === '') return;
+    onMessageSend(inputVal.trim())
     setInputVal("");
   }
   const handleOnChange = (e) => {
     setInputVal(e.target.value);
   }
+
   const handleOnKeyDown = () => {
-    socket.emit('typing', {toggleState: true})
-    setTimeout(() => {
-      socket.emit('typing', {toggleState: false})
-    }, 2000)
+    // if(channel === null) return;
+    // socket.emit('typing', {toggleState: true, to: channel.id})
+      /*setTimeout(() => {
+        // socket.emit('typing', {toggleState: false, to: channel.id})
+      }, 500)*/
+      // handleTypingIndicator()
+    // onKeyDownHandler(channel)
   }
+
+  const debounce = (cb, delay = 1000) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        cb(...args)
+      }, delay)
+    }
+  }
+
+  const throttle = (cb, delay = 1000) => {
+    let shouldWait = false;
+    return (...args) => {
+      if(shouldWait) return;
+      cb(...args);
+      shouldWait = true;
+      setTimeout(() => {
+        shouldWait = false;
+      }, delay)
+    }
+  }
+
+  const onKeyDownHandler = useMemo(
+    () => debounce((channel) => {
+      // socket.emit('typing', {toggleState: true, to: channel.id})
+    }, 1000)
+  , [])
 
   return (
     <div className="chat-box">
-      <div className="chat-header">
-        {
-          channel && <h2>{channel.name}</h2>
-        }
-      </div>
-      <ul className="message-container">
-        {
-          messages && messages.map((msg, index) => {
-            // console.log('msg: ', msg)
-            // console.log('channel ', channel)
-            // console.log('msg.from === channel.id ', channel !== null && msg.from === channel.id)
-            // console.log('msg.from === user.id ', msg.from === user.id)
-            if(channel !== null && msg.from === channel.id) {
-              return (
-                <li key={index}>
-                  <img className="message-img" alt="" src={"./connect.svg"} />
-                  <div className="message-text">
-                    {msg.msg}
-                  </div>
-                </li>
-              )
+      {
+        channel == null ?
+        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+          <h2>Choose a conversation</h2>
+          <h3>Click on an existing chat or click "New Chat" to create a new conversation"</h3>
+        </div>
+        :
+        <div>
+          <header>
+            <FaEmpire className="channel-img" />
+            <h2>{channel.username}</h2>
+          </header>
+          <ul className="chat">
+            {
+              channel !== null && channel.messages.map((msg, idx) => {
+                // console.log('mes: ', msg)
+                return (
+                  <li key={idx} className={`${msg.fromSelf ? 'you' : ''}`}>
+                    {/*<img alt="" src={"./connect.svg"} />*/}
+                    <FaChrome />
+                    <div className="message-container">
+                      <div>
+                        {msg.msg}
+                      </div>
+                    </div>
+                  </li>
+                )
+              })
             }
-            if(msg.from === user.id && channel.id === msg.to) {
-              return (
-                <li key={index}>
-                  <img className="message-img" alt="" src={"./connect.svg"} />
-                  <div className="message-text">
-                    {msg.msg}
-                  </div>
-                </li>
-              )
-            }
-          })
-        }
-      </ul>
-      <div className="footer">
-        <div id="feedback">{ feedback ? 'is typing...': '' }</div>
-        <form id="form" onSubmit={handleSubmit}>
-          <span>
-            <input
-              ref={inputRef}
-              type="text"
-              id="input"
-              value={inputVal}
-              autoComplete="off"
-              onChange={handleOnChange}
-              onKeyDown={handleOnKeyDown}
-            />
-          </span>
-          <button>Send</button>
-        </form>
-      </div>
+          </ul>
+          <footer>
+            <div id="feedback">{ feedback ? 'is typing...': '' }</div>
+            <form onSubmit={handleSubmit}>
+              <textarea
+                type="text"
+                id="input"
+                value={inputVal}
+                placeholder="Type your message"
+                rows="3"
+                autoComplete="off"
+                onChange={handleOnChange}
+                // onKeyDown={handleOnKeyDown}
+              ></textarea>
+              <input id="submit" type="submit" value="Send" />
+              {/*<button>Send</button>*/}
+            </form>
+          </footer>
+        </div>
+      }
     </div>
   )
 }

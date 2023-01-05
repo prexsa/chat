@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import socket from './socket';
 
 const UserContext = React.createContext();
@@ -8,7 +8,7 @@ const UserProvider = ({ children }) => {
 
   useEffect(() => {
     socket.on('sender', async function(user) {
-      // console.log('sender: ', user)
+      console.log('sender: ', user)
       setUser({
         id: user.id,
         name: user.name
@@ -21,6 +21,10 @@ const UserProvider = ({ children }) => {
       {children}
     </UserContext.Provider>
   )
+}
+
+export const useUserContext = () => {
+  return useContext(UserContext);
 }
 
 export { UserContext, UserProvider}

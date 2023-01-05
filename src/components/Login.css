@@ -13,3 +13,17 @@
   box-shadow: rgb(0 0 0 / 10%) 0px 0px 10px;
   box-sizing: border-box;
 }
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin: 10px 0;
+}
+.form-field > label {
+  margin: 5px 0;
+}
+.form-field > input {
+  padding: 5px;
+  border: 1px solid #dcdcdc;
+}

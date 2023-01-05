@@ -1,24 +1,225 @@
 .chat-container {
+  width: 800px;
+  height: 900px;
+  background: #ffffff;
+  margin: 0 auto;
+  font-size: 0;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: inset 0px 0px 20px 1px rgb(250, 251, 252);
+}
+aside {
+  width: 260px;
+  height: 100%;
+  background-color: #eaeef2;
+  display: inline-block;
+  font-size: 15px;
+  vertical-align: top;
+}
+main {
+  width: 540px;
+  height: 800px;
+  display: inline-block;
+  font-size: 15px;
+  vertical-align: top;
+}
+aside header {
+  padding: 30px 20px;
+}
+aside ul {
+  padding-left: 0;
+  margin: 0;
+  list-style-type: none;
+  overflow-y: auto;
+  height: 690px;
+}
+aside li {
+  padding: 5px 10px;
+  margin: 10px;
+  border-radius: 5px;
+  text-align: left;
+  background-color: #ffffff;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
   flex-direction: row;
-  width: 100vw;
-  height: 100vh;
-  margin-top: 5em;
-  /*background-color: lightgray;*/
+  align-items: center;
+  column-gap: 5px;
 }
-.sidebar {
-  width: 250px;
-  height: 75%;
-  border-radius: 0.2em;
-  position: relative;
-  /*box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);*/
-  border: 1px solid rgba(239, 239, 240, 1.0);
+aside li > .newMessages {
+  margin-left: auto;
+  margin-right: 5px;
 }
-.sidebar h2 {
-  font-weight: 400;
-  font-size: 1.25em;
-  color: grey;
+.show {
+  visibility: visible;
 }
-
+.hide {
+  visibility: hidden;
+}
+aside li:hover {
+  background-color: #5e616a;
+}
+aside li:active {
+  background-color: #31333d;
+}
+aside li img {
+  border-radius: 50%;
+  /*margin-left: 20px;*/
+  margin-right: 8px;
+}
+/*aside li div {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 12px;
+}*/
+aside li h2 {
+  font-size: 14px;
+  color: #000000;
+  font-weight: normal;
+  margin-bottom: 5px;
+}
+aside li h3 {
+  font-size: 12px;
+  color: #7e818a;
+  font-weight: normal;
+}
+aside li h2:active, aside li h3:active {
+  color: #ffffff;
+}
+.status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 7px;
+}
+.green {
+  background-color: #58b666;
+}
+.orange {
+  background-color: #ff725d;
+}
+.blue {
+  background-color: #6fbced;
+  margin-left: 7px;
+  margin-right: 0;
+}
+/*main header > * {
+  display: inline-block;
+  vertical-align: top;
+}*/
+main .chat-box {
+  padding: 10px;
+}
+main header {
+  height: 40px;
+  padding: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 10px;
+  border-bottom: 2px solid #eaeef2;
+  border-radius: 5px;
+  margin-bottom: 2px;
+}
+main header > .channel-img {
+  font-size: 30px;
+}
+main header h2 {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+main header h3 {
+  font-size: 14px;
+  font-weight: normal;
+  color: #7e818a;
+}
+.chat {
+  padding-left: 0;
+  margin: 0;
+  list-style-type: none;
+  overflow-y: auto;
+  height: 730px;
+  /*box-shadow: inset 0 0 10px 0px lightgrey;*/
+  border-top: 2px solid #eaeef2;
+  border-bottom: 2px solid #eaeef2;
+  border-radius: 5px;
+}
+.chat li {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  column-gap: 15px;
+}
+.chat > .you {
+  flex-direction: row-reverse;
+}
+.chat li .message-container {
+  border: 1px solid grey;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+.chat h2, .chat h3 {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: normal;
+}
+.chat h3 {
+  color: #bbb;
+}
+.chat .entete {
+  margin-bottom: 5px;
+}
+.chat .message {
+  padding: 20px;
+  color: #fff;
+  line-height: 25px;
+  max-width: 90%;
+  display: inline-block;
+  text-align: left;
+  border-radius: 5px;
+}
+.chat .me {
+  text-align: right;
+}
+.chat .you .message {
+  background-color: #58b666;
+}
+.chat .me .message {
+  background-color: #6fbced;
+}
+main footer {
+  /*height: 50px;*/
+  padding: 10px;
+  /*box-shadow: inset 0 0 10px 0px lightgrey;*/
+}
+main footer form {
+  display: flex;
+  align-items: center;
+}
+main footer textarea {
+  resize: none;
+  border: none;
+  display: inline-block;
+  width: 85%;
+  height: 20px;
+  /*border-radius: 3px;*/
+  padding: 8px;
+  font-size: 13px;
+  background-color: #eaeef2;
+}
+main footer textarea::placeholder {
+  color: #646464;
+}
+main footer #submit {
+  width: 15%;
+  height: 36px;
+  border: 1px solid transparent;
+  background-color: #cad5df;
+}
+main footer #submit:active {
+  border: 1px solid blue;
+}
+main footer #submit:hover {
+  cursor: pointer;
+  border: 1px solid #fff;
+}
