@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const AuthControl = require('./auth.controller');
-const { rateLimiter } = require('./rateLimiter');
+const AuthControl = require('../controller/auth.controller');
+const { rateLimiter } = require('../controller/rateLimiter');
 
 router.use(function(req, res, next) {
   res.header(

@@ -1,11 +1,12 @@
-const User = require('./auth.model');
+const User = require('../model/auth.model');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.login = (req, res) => {
-  console.log('app: body: ', req.body)
+  // console.log('app: body: ', req.body)
+  // console.log('session auth : ', req.session)
   const { username, password = "testing" } = req.body;
   User.
     findOne({
@@ -30,6 +31,7 @@ exports.login = (req, res) => {
         username,
         id: user._id,
         accessToken: token,
+        userID: user.userID
       }
 
       res.status(200).send({
@@ -63,12 +65,13 @@ exports.signup = async (req, res) => {
       req.session.user = {
         username,
         id: user._id,
-        accessToken: token,
+        userID: user.userID
+        // accessToken: token,
       }
       res.send({
         status: 'User was registered successfully!',
         username: username,
-        accessToken: token
+        // accessToken: token
       })
     })
     return;

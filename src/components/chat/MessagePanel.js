@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useSocketContext } from '../socketContext';
+import { useSocketContext } from './socketContext';
 import { FaChrome, FaEmpire } from 'react-icons/fa';
 
 function MessagePanel({ lastMessageRef }) {

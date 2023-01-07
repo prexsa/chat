@@ -1,26 +1,22 @@
-import { useState, useEffect, useRef } from 'react';
-import { useLocation } from "react-router-dom";
-import { useSocketContext } from '../socketContext';
+import { useState, useEffect } from 'react';
+import { useSocketContext } from './socketContext';
 import ChannelList from './ChannelList';
 import MessagePanel from './MessagePanel';
 import './Chat.css';
 
 function Chat() {
-  // const lastMessageRef = useRef();
-  const location = useLocation();
-  const { loginSocket, user } = useSocketContext();
-  const username = location.state.username;
+  // const { loginSocket, user } = useSocketContext();
+  // const username = user.username;
 // console.log('user: ', user)
-  useEffect(() => {
+  /*useEffect(() => {
     // console.log('how oftern')
     loginSocket(username)
-  }, [username])
+  }, [username])*/
 
-  if(!user) return;
+  // if(!user) return;
 
   return (
     <div className="chat-container">
-      {/*<button onClick={handleClickMe}>click me</button>*/}
       <aside>
         <ChannelList />
       </aside>

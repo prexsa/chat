@@ -1,13 +1,12 @@
 import React, { useContext, useState, useEffect, useRef, useMemo } from 'react';
-// import { useUserContext } from './userContext';
-import io from "socket.io-client";
-const socket = io("http://localhost:9000");
+import { useUserContext } from '../../userContext';
+import socket from '../../socket';
 
 const SocketContext = React.createContext();
 
 const SocketProvider = ({ children }) => {
-  // const { user } = useUserContext();
-  const [user, setUser] = useState(null);
+  const { user } = useUserContext();
+  // const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [channel, setChannel] = useState(null);
   const channelRef = useRef(channel);
@@ -15,19 +14,9 @@ const SocketProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [feedback, setFeedback] = useState(false);
-
+  const [friendList, setFriendList] = useState([])
+// console.log('user: ', user)
   /*useEffect(() => {
-    socket.on('sender', async function(user) {
-      // console.log('sender: ', user)
-      userRef.current = user;
-      setUser({
-        id: user.id,
-        name: user.name
-      })
-    });
-  }, []);*/
-
-  useEffect(() => {
     const sessionID = localStorage.getItem("sessionID");
     const accessToken = localStorage.getItem("accessToken")
 // console.log('sessionID: ', sessionID)
@@ -44,13 +33,16 @@ const SocketProvider = ({ children }) => {
       socket.userID = userID;
       // console.log('sessionID: ', sessionID)
       // console.log('socket: ', socket)
-      setUser({
-        userID: userID,
-        sessionID: sessionID,
-        username: username
-      })
     })
-  }, [user]);
+  }, [user]);*/
+
+  useEffect(() => {
+    socket.connect();
+    socket.on('friends', friendList => {
+      console.log('friendList: ', friendList)
+      setFriendList(friendList);
+    })
+  }, [setFriendList])
 
   const initReactiveProperties = (user) => {
     user.hasNewMessage = false;
@@ -287,10 +279,6 @@ console.log('prevUsers: ', prevUsers)
     socket.disconnect();
   }
 
-  /*useEffect(() => {
-    lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages])*/
-
   return (
     <SocketContext.Provider
       value={{
@@ -303,7 +291,9 @@ console.log('prevUsers: ', prevUsers)
         selectChannel,
         onMessageSend,
         handleTypingIndicator,
-        logoff
+        logoff,
+        friendList,
+        setFriendList
       }}>
       {children}
     </SocketContext.Provider>
@@ -314,4 +304,4 @@ export const useSocketContext = () => {
   return useContext(SocketContext);
 }
 
-export { SocketContext, SocketProvider}
+export { SocketContext, SocketProvider }

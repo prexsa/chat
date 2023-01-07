@@ -36,8 +36,8 @@ function Signup() {
           if(response.data.status) {
             setError(response.data.status)
           } else {
-            localStorage.setItem("accessToken", response.data.accessToken)
-            navigate('/chat', { state: { username: response.data.username }})
+            // localStorage.setItem("accessToken", response.data.accessToken)
+            navigate('/chat')
           }
          }}
         >

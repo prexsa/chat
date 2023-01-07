@@ -1,75 +1,32 @@
 require('dotenv').config();
 const express = require('express');
+const { Server } = require('socket.io');
+const app = express();
 const axios = require('axios');
 const helmet = require('helmet');
-const { createServer } = require('http');
-const { Server } = require('socket.io');
 const cors = require('cors');
-// const expressSession = require('express-session');
-// const Redis = require('ioredis');
-// const RedisStore = require('connect-redis')(expressSession);
-const crypto = require("crypto");
-const {
-  redisClient,
-  messageStore,
-  sessionStore } = require('./redis');
-const { sessionMiddleware, wrap } = require('./session');
-const { authorizeUser, addFriend } = require('./socketController');
+const httpServer = require('http').createServer(app);
+const { sessionMiddleware, wrap, corsConfig } = require('./session');
+const { authorizeUser, addFriend, initializeUser } = require('./controller/socketController');
+const auth = require('./routes/auth.routes');
 const connectDB = require('./connectDB');
-// const AuthControl = require('./auth.control');
-const User = require('./auth/auth.model');
-const MessageControl = require('./message/message.controller');
 
-const {
-  addUser,
-  getUser,
-  deleteUser,
-  getAllUsers,
-  userNameExist,
-  getConnectedUsers,
-  clearUsers,
-  setUserDisconnect
-} = require('./users')
+const { redisClient, messageStore, sessionStore } = require('./redis');
 
-const corsConfig = {
-  origin: 'http://localhost:3000',
-  methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
-  credentials: true
-}
-
-const app = express();
-const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: corsConfig });
-
 // middleware needs to be before routes
 // parse form data
-app.use(express.urlencoded({ extended: false }));
-// parse json
-app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(cors(corsConfig));
-// https://itnext.io/mastering-session-authentication-aa29096f6e22
+app.use(express.json());
 app.use(sessionMiddleware);
-
-app.use(function(req, res, next) {
-  if(!req.session) {
-    return next(new Error("Session Error"))
-  }
-  next()
-})
-// import routes
-const auth = require('./auth/auth.routes');
-
 app.use('/api/auth', auth);
-
-// require('./socketIO')(io);
-
-const randomId = () => crypto.randomBytes(8).toString("hex");
-
+// const randomId = () => crypto.randomBytes(8).toString("hex");
 // socket middleware
 io.use(wrap(sessionMiddleware));
 io.use(authorizeUser)
-io.use(async (socket, next) => {
+/*io.use(async (socket, next) => {
   // console.log('socket: ', socket)
   // console.log('handshake: ', socket.handshake)
   const sessionID = socket.handshake.auth.sessionID;
@@ -79,7 +36,7 @@ io.use(async (socket, next) => {
   if(sessionID) {
     // find existing session
     const session = await sessionStore.findSession(sessionID);
-    console.log('session: ', session)
+    // console.log('session: ', session)
     if(session) {
       socket.sessionID = sessionID;
       socket.userID = session.userID;
@@ -93,14 +50,16 @@ io.use(async (socket, next) => {
     return next(new Error("invalid username"))
   }
   // create new session
-  socket.sessionID = randomId();
-  socket.userID = randomId();
+  // socket.sessionID = randomId();
+  // socket.userID = randomId();
   // socket.userID = accessToken;
   socket.username = username;
   next();
-});
+});*/
 
 io.on('connection', async (socket) => {
+  initializeUser(socket)
+  // console.log('socket connection: ', socket.request.session);
   // console.log('main socket: ', socket)
   // persist session
   sessionStore.saveSession(socket.sessionID, {
@@ -109,7 +68,7 @@ io.on('connection', async (socket) => {
     connected: true,
   });
 
-  console.log('Saved Sessions: ', sessionStore.getAll())
+  // console.log('Saved Sessions: ', sessionStore.getAll())
   // emit session details
   socket.emit("session", {
     sessionID: socket.sessionID,
@@ -156,7 +115,7 @@ io.on('connection', async (socket) => {
     // socketID: socket.id
   })
 
-  socket.on("add_friend", (friendName, cb) => addFriend(socket, friendName, cb))
+  socket.on("add_friend", (name, cb) => addFriend(socket, name, cb))
 
   socket.on("private msg", ({ to, msg, fromName }) => {
     console.log('to: ', to, 'msg: ', msg )
@@ -170,7 +129,7 @@ io.on('connection', async (socket) => {
     // socket.to(to).emit("private msg", message);
     socket.to(to).to(socket.userID).emit("private msg", message);
     messageStore.saveMsg(message);
-    MessageControl.saveMessageToDB(message)
+    // MessageControl.saveMessageToDB(message)
   });
 
   socket.on('typing', ({ toggleState, to }) => {
@@ -194,7 +153,6 @@ io.on('connection', async (socket) => {
       })
     }
   });
-  console.log('all users: ', getAllUsers())
 })
 
 io.on('connection_error', (err) => {
@@ -216,8 +174,6 @@ app.post('/api/check-username', (req, res) => {
 })
 
 app.get('/api/clear', async (req, res) => {
-  /*const { username } = req.body;
-  const users = clearUsers();*/
   const cleared = await sessionStore.clearAll();
   res.status(200).send({ cleared })
 })
@@ -241,10 +197,10 @@ app.get('/api/messages', async (req, res) => {
   res.status(200).send({ messages })
 })
 
-app.post('/api/redis', async(req, res) => {
+/*app.post('/api/redis', async(req, res) => {
   // await client.connect();
   redisClient.set('financial', 'freedom')
-})
+})*/
 
 app.get('/api/redis-get', async(req, res) => {
   // await client.connect();
@@ -252,9 +208,6 @@ app.get('/api/redis-get', async(req, res) => {
   console.log('all: ', all)
 })
 
-app.get('/api/mongdb-collection-clear', (req, res) => {
-  MessageControl.clearMsgCollection();
-})
 
 const PORT = process.env.PORT || 9000;
 const DATABASE_URI = process.env.MONGO_URI;

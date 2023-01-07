@@ -1,9 +1,7 @@
-const {
-  redisClient,
-  messageStore,
-  sessionStore } = require('./redis');
-const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
+require("dotenv").config();
+const { redisClient } = require('./redis');
+const session = require("express-session");
+const RedisStore = require("connect-redis")(session);
 
 const sessionMiddleware = session({
   secret: process.env.COOKIE_SECRET,
@@ -20,11 +18,17 @@ const sessionMiddleware = session({
   },
 });
 
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 
-const wrap = expMiddleware => (socket, next) => expMiddleware(socket.request, {}, next);
-
-
-module.exports = {
-  sessionMiddleware,
-  wrap
+const corsConfig = {
+  origin: "http://localhost:3000",
+  credentials: true,
 };
+
+module.exports = { sessionMiddleware, wrap, corsConfig };
+
+/*
+  express-session will not share session obj with socket.io
+  session obj is visible with req.session
+  For the time being, send userID in response obj until a solution is found
+*/
