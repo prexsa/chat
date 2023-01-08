@@ -38,6 +38,10 @@ const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     socket.connect();
+    socket.on('current_user', username => {
+      // console.log('usename: ', username)
+      setUsername(username)
+    })
     socket.on('friends', friendList => {
       console.log('friendList: ', friendList)
       setFriendList(friendList);
@@ -300,7 +304,7 @@ console.log('prevUsers: ', prevUsers)
   return (
     <SocketContext.Provider
       value={{
-        user,
+        username,
         users,
         messages,
         channel,

@@ -33,9 +33,13 @@ module.exports.initializeUser = async socket => {
   )
   // get friend list
   const friendList = await redisClient.lrange(`friends:${socket.user.username}`, 0 , -1);
-  const updatedFriendList = await parseFriendList(friendList);
-  console.log('updatedFriendList: ', updatedFriendList)
-  socket.emit("friends", updatedFriendList)
+  const parsedFriendList = await parseFriendList(friendList);
+  const friendRooms = parsedFriendList.map(friend => friend.userID);
+  if(friendRooms.length > 0) {
+    socket.to(friendRooms).emit("connected", "true", socket.user.username)
+  }
+  socket.emit("friends", parsedFriendList)
+  socket.emit('current_user', socket.user.username)
 }
 
 module.exports.addFriend = async (socket, name, cb) => {
@@ -47,15 +51,17 @@ module.exports.addFriend = async (socket, name, cb) => {
     return;
   }
   const friend = await redisClient.hgetall(`userid:${name}`)
+  // console.log('friend: 54 ', friend)
+  if(Object.keys(friend).length <= 0) {
+    cb({done: false, errorMsg: "User doesn't exist!" });
+    return;
+  }
   const currentFriendList = await redisClient.lrange(
     `friends:${socket.user.username}`,
     0, -1
   )
-  if(!friend) {
-    cb({done: false, errorMsg: "User doesn't exist!" });
-    return;
-  }
-  if(currentFriendList && currentFriendList.indexOf(name) !== -1) {
+  // console.log('currentFriendList: ', currentFriendList)
+  if(currentFriendList && currentFriendList.indexOf(`${name}.${friend.userid}`) !== -1) {
     cb({done: false, errorMsg: "Friend already added!" });
     return;
   }
@@ -69,6 +75,7 @@ module.exports.addFriend = async (socket, name, cb) => {
     `friends:${socket.user.username}`,
     [name, friend.userid].join('.')
   )
+
   const newFriend = {
     username: name,
     userID: friend.userid,

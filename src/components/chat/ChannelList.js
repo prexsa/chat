@@ -1,14 +1,16 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { useUserContext } from '../../userContext';
 import { useSocketContext } from './socketContext';
 import AddFriend from './AddFriend';
 
 function ChannelList() {
   const navigate = useNavigate();
-  const { user, users, channel, selectChannel, logoff, friendList } = useSocketContext();
+  // const { user } = useUserContext();
+  const { username, selectChannel, logoff, friendList } = useSocketContext();
   // const username = user.username;
-  // console.log('users: ', users)
+  // console.log('user: ', user)
   // console.log('channel: ', channel)
 // console.log('username: ', username)
   const handleLogOut = () => {
@@ -25,7 +27,7 @@ function ChannelList() {
   return (
     <div>
       <header>
-        {/*<div>{username}</div>*/}
+        <div>{username}</div>
       </header>
       <button className="logout-btn" onClick={handleLogOut}>logout</button>
       <h2>Chat Circle</h2>
@@ -34,7 +36,7 @@ function ChannelList() {
         <ul>
         {
           friendList && friendList.map((friend, index) => {
-            console.log('friend: ', friend)
+            // console.log('friend: ', friend)
             // console.log('user: ', user)
             // console.log('channel: ', channel)
             {/*if(channel !== null && channel.userID === user.userID) {
