@@ -7,7 +7,12 @@ const helmet = require('helmet');
 const cors = require('cors');
 const httpServer = require('http').createServer(app);
 const { sessionMiddleware, wrap, corsConfig } = require('./session');
-const { authorizeUser, addFriend, initializeUser } = require('./controller/socketController');
+const {
+  authorizeUser,
+  addFriend,
+  initializeUser,
+  onDisconnect
+} = require('./controller/socketController');
 const auth = require('./routes/auth.routes');
 const connectDB = require('./connectDB');
 
@@ -137,22 +142,7 @@ io.on('connection', async (socket) => {
     // socket.broadcast.emit('typingResp', toggleState);
   })
 
-  socket.on('disconnect', async () => {
-    // console.log('user disconnected: ', socket.id)
-    const matchingSockets = await io.in(socket.userID).allSockets();
-    // console.log('matchingSockets: ', matchingSockets)
-    const isDisconnected = matchingSockets.size === 0;
-    if(isDisconnected) {
-      // notify other users
-      socket.broadcast.emit('user disconnected', socket.userID);
-      // update the connection status of the session
-      sessionStore.saveSession(socket.sessionID, {
-        userID: socket.userID,
-        username: socket.username,
-        connected: false,
-      })
-    }
-  });
+  socket.on('disconnect', () => onDisconnect(socket));
 })
 
 io.on('connection_error', (err) => {

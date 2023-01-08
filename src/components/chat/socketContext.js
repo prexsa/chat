@@ -42,6 +42,24 @@ const SocketProvider = ({ children }) => {
       console.log('friendList: ', friendList)
       setFriendList(friendList);
     })
+
+    socket.on('connected', (status, username) => {
+      setFriendList(prevFriends => {
+        return [...prevFriends].map((friend) => {
+          if(friend.username === username) {
+            friend.connected = status
+          }
+          return friend;
+        })
+      })
+    })
+
+    socket.on('new_friend', newFriend => {
+      // console.log('new_friend: ', newFriend)
+      setFriendList(prevFriends => {
+        return [newFriend, ...prevFriends]
+      })
+    })
   }, [setFriendList])
 
   const initReactiveProperties = (user) => {
@@ -62,9 +80,9 @@ const SocketProvider = ({ children }) => {
     });
 
     socket.on('disconnect', () => {
-      console.log('disconnect: ')
+      // console.log('disconnect: ')
       setUsers(prevUsers => {
-        console.log('disconnect user: ', prevUsers)
+        // console.log('disconnect user: ', prevUsers)
         prevUsers.forEach((user) => {
           if(user.self) {
             user.connected = false;
@@ -75,7 +93,7 @@ const SocketProvider = ({ children }) => {
     })
 
     socket.on('users', (users) => {
-      console.log('users: ', users)
+      // console.log('users: ', users)
       // console.log('socket: ', socket)
       users.forEach((user) => {
         user.messages.forEach((message) => {
@@ -106,7 +124,7 @@ const SocketProvider = ({ children }) => {
         if(a.username < b.username) return -1;
         return a.username > b.username ? 1 : 0;
       })
-      console.log('sortedUsers :', sortedUsers)
+      // console.log('sortedUsers :', sortedUsers)
       // setUsers(prevUsers => [...prevUsers, ...users])
       setUsers([...sortedUsers])
     })
