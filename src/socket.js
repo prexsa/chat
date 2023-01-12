@@ -9,5 +9,16 @@ const socket = io(URL, {
 socket.onAny((event, ...args) => {
   // console.log(event, args)
 });
+/*
+const socket = user =>
+  // console.log('user: ', user)
+  new io(URL, {
+    autoConnect: false,
+    withCredentials: true,
+    auth: {
+      token: user.accessToken,
+    }
+  });
+*/
 
 export default socket;

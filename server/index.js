@@ -11,6 +11,8 @@ const {
   authorizeUser,
   addFriend,
   initializeUser,
+  dm,
+  channelMsgs,
   onDisconnect
 } = require('./controller/socketController');
 const auth = require('./routes/auth.routes');
@@ -31,117 +33,19 @@ app.use('/api/auth', auth);
 // socket middleware
 io.use(wrap(sessionMiddleware));
 io.use(authorizeUser)
-/*io.use(async (socket, next) => {
-  // console.log('socket: ', socket)
-  // console.log('handshake: ', socket.handshake)
-  const sessionID = socket.handshake.auth.sessionID;
-  const accessToken = socket.handshake.auth.accessToken;
-  // console.log('sessionID: ', socket.handshake.auth.sessionID)
-  // console.log('accessToken: ', accessToken)
-  if(sessionID) {
-    // find existing session
-    const session = await sessionStore.findSession(sessionID);
-    // console.log('session: ', session)
-    if(session) {
-      socket.sessionID = sessionID;
-      socket.userID = session.userID;
-      socket.username = session.username;
-      return next();
-    }
-  }
-  const username = socket.handshake.auth.username;
-  // console.log('username: ', username)
-  if(!username) {
-    return next(new Error("invalid username"))
-  }
-  // create new session
-  // socket.sessionID = randomId();
-  // socket.userID = randomId();
-  // socket.userID = accessToken;
-  socket.username = username;
-  next();
-});*/
 
 io.on('connection', async (socket) => {
-  initializeUser(socket)
-  // console.log('socket connection: ', socket.request.session);
-  // console.log('main socket: ', socket)
-  // persist session
-  sessionStore.saveSession(socket.sessionID, {
-    userID: socket.userID,
-    username: socket.username,
-    connected: true,
-  });
-
-  // console.log('Saved Sessions: ', sessionStore.getAll())
-  // emit session details
-  socket.emit("session", {
-    sessionID: socket.sessionID,
-    userID: socket.userID,
-    // userID: socket.id,
-    // username: socket.username
-  });
-  // join the "userID" room
-  socket.join(socket.userID);
-
-  // fetch existing users
-  const users = [];
-  const [messages, sessions] = await Promise.all([
-    messageStore.findMsgForUser(socket.userID),
-    sessionStore.findAllSessions(),
-  ]);
-  const messagesPerUser = new Map();
-  messages.forEach((message) => {
-    const { from, to } = message;
-    const otherUser = socket.userID === from ? to : from;
-    if(messagesPerUser.has(otherUser)) {
-      messagesPerUser.get(otherUser).push(message);
-    } else {
-      messagesPerUser.set(otherUser, [message]);
-    }
-  });
-
-  sessions.forEach((session) => {
-    users.push({
-      userID: session.userID,
-      username: session.username,
-      connected: session.connected,
-      messages: messagesPerUser.get(session.userID) || []
-    })
-  })
-// console.log('users: ', users)
-  socket.emit("users", users);
-  // notify existing users
-  socket.broadcast.emit('user connected', {
-    userID: socket.userID,
-    username: socket.username,
-    connected: true,
-    messages: [],
-    // socketID: socket.id
-  })
-
+  console.log('connection')
+  initializeUser(socket);
+  socket.on('dm', message => dm(socket, message))
+  socket.on('channel_msgs', (userID, cb) => channelMsgs(socket, userID, cb))
   socket.on("add_friend", (name, cb) => addFriend(socket, name, cb))
 
-  socket.on("private msg", ({ to, msg, fromName }) => {
-    console.log('to: ', to, 'msg: ', msg )
-    const message = {
-      msg,
-      from: socket.userID,
-      to,
-      // fromName
-    }
-    console.log('message: ', message)
-    // socket.to(to).emit("private msg", message);
-    socket.to(to).to(socket.userID).emit("private msg", message);
-    messageStore.saveMsg(message);
-    // MessageControl.saveMessageToDB(message)
-  });
-
-  socket.on('typing', ({ toggleState, to }) => {
+  /*socket.on('typing', ({ toggleState, to }) => {
     io.to(to).emit('typingResp', {toggleState, to})
     // socket.broadcast.emit('typingResp', toggleState);
-  })
-
+  })*/
+  socket.on('logoff', () => onDisconnect(socket))
   socket.on('disconnect', () => onDisconnect(socket));
 })
 

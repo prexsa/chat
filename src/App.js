@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Login from './components/Login';
 import Signup from './components/Signup'
-import ChatProvider from './components/chat/ChatProvider';
+import Chat from './components/chat/Chat';
 import './App.css';
 import { UserProvider } from './userContext';
 // const socket = io(); // if FrontEnd on same domain as server
@@ -12,7 +12,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Signup />} />
-          <Route path="/chat" element={<ChatProvider />} />
+          <Route path="/chat" element={<Chat />} />
         </Routes>
       </div>
     </UserProvider>

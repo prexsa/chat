@@ -20,28 +20,6 @@ function Login() {
   const { setUser } = useUserContext();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
-  /*const onSubmit = async (data) => {
-    // e.preventDefault();
-    // const response = await axios.post('http://localhost:9000/api/login', {username: inputVal})
-    try {
-      const response = await axios.post('http://localhost:9000/api/auth/login', data, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        withCredentials: true
-      })
-      // console.log('response: ', response)
-      localStorage.setItem("accessToken", response.data.accessToken)
-      navigate('/chat', { state: { username: response.data.username }})
-    } catch(err) {
-      console.log('resp error: ', err)
-    }
-  }
-
-  const onSubmitUsername = (data) => {
-    console.log(data)
-    navigate('/chat', { state: { username: data.username, password: 'testing' }})
-  }*/
 
   const handleClear = async (e) => {
     e.preventDefault();
@@ -89,11 +67,13 @@ function Login() {
           const response = await axios.post('http://localhost:9000/api/auth/login', values, {
             withCredentials: true
           })
+          // console.log('response: ', response.data)
           if(response.data.status) {
             setError(response.data.status)
           } else {
             // console.log('response: ', response)
             // localStorage.setItem("accessToken", response.data.accessToken)
+            localStorage.setItem('user', JSON.stringify(response.data))
             setUser(response.data)
             navigate('/chat')
           }

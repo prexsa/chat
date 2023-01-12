@@ -1,28 +1,21 @@
 const { redisClient } = require('../redis');
 
 module.exports.authorizeUser = (socket, next) => {
+  // console.log('socket: ', socket.request.session)
   if(!socket.request.session || !socket.request.session.user) {
     console.log('Bad Reqeust');
     next(new Error('Not Authorized'));
   } else {
     console.log('success')
-    /*socket.user = { ...socket.request.session.user };
-    // console.log('socket.user: ', socket.user)
-    redisClient.hset(
-      `userid:${socket.user.username}`,
-      "userid",
-      socket.user.userID,
-      "connected",
-      true
-    )*/
     next();
   }
 }
 
 module.exports.initializeUser = async socket => {
   // set user to active
+  // console.log('initializeUser: ')
   socket.user = { ...socket.request.session.user };
-  console.log('socket.user: ', socket.user)
+  // console.log('socket.user: ', socket.user)
   socket.join(socket.user.userID)
   redisClient.hset(
     `userid:${socket.user.username}`,
@@ -38,13 +31,14 @@ module.exports.initializeUser = async socket => {
   if(friendRooms.length > 0) {
     socket.to(friendRooms).emit("connected", "true", socket.user.username)
   }
+  // console.log('parsedFriendList: ', parsedFriendList)
   socket.emit("friends", parsedFriendList)
   socket.emit('current_user', socket.user.username)
 }
 
 module.exports.addFriend = async (socket, name, cb) => {
-  console.log('name: ', name)
-  console.log('socket user: ', socket.user)
+  // console.log('name: ', name)
+  // console.log('socket user: ', socket.user)
 
   if(name === socket.user.username) {
     cb({ done: false, errorMsg: "Cannot add self!" })
@@ -92,6 +86,35 @@ module.exports.addFriend = async (socket, name, cb) => {
   cb({ done: true, newFriend })
 }
 
+module.exports.dm = async (socket, msg) => {
+  // console.log('msg: ', msg)
+  msg.from = socket.user.userID;
+  const messageStr = [msg.to, msg.from, msg.content].join(".");
+
+  await redisClient.lpush(`chat:${msg.to}`, messageStr);
+  await redisClient.lpush(`chat:${msg.from}`, messageStr)
+
+  socket.to(msg.to).emit("dm", msg)
+}
+
+module.exports.channelMsgs = async (socket, userID) => {
+  console.log('channelMsgs: ', userID)
+  const msgs = await redisClient.lrange(`chat:${userID}`, 0, -1);
+  const reversed = msgs.reverse();
+  const parsedMsgs = await reversed.map(msg => {
+    const parsed = msg.split('.');
+    return {
+      to: parsed[0],
+      from: parsed[1],
+      content: parsed[2],
+    }
+  })
+
+  socket.emit("channel_msgs", parsedMsgs)
+
+  // cb({ msgs: parsedMsgs })
+}
+
 module.exports.onDisconnect = async socket => {
   console.log('onDisconnect: ')
   await redisClient.hset(
@@ -102,11 +125,11 @@ module.exports.onDisconnect = async socket => {
 
   const friendList = await redisClient.lrange(`friends:${socket.user.username}`, 0, -1);
   const friendRooms = await parseFriendList(friendList).then(friends => {
-    console.log('friends: ', friends)
+    // console.log('friends: ', friends)
     return friends.map(friend => friend.userID)
   })
   // console.log('friendList: ', friendList)
-  console.log('friendRooms: ', friendRooms)
+  // console.log('friendRooms: ', friendRooms)
   socket.to(friendRooms).emit("connected", false, socket.user.username);
 }
 

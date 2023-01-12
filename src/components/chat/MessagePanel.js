@@ -1,61 +1,14 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useSocketContext } from './socketContext';
+import { useContext } from 'react';
 import { FaChrome, FaEmpire } from 'react-icons/fa';
+import Chatbox from './Chatbox';
+import { MessagesContext, FriendContext } from './Chat';
 
-function MessagePanel({ lastMessageRef }) {
-  const { user, channel, messages, feedback, onMessageSend, handleTypingIndicator } = useSocketContext();
-  const [inputVal, setInputVal] = useState('');
+function MessagePanel() {
+  const { messages } = useContext(MessagesContext);
+  const { channel } = useContext(FriendContext);
+  const user = JSON.parse(localStorage.getItem('user'));
   // console.log('channel: ', channel)
-  // console.log('user: ', user)
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if(channel === null) return;
-    if(inputVal === '') return;
-    onMessageSend(inputVal.trim())
-    setInputVal("");
-  }
-  const handleOnChange = (e) => {
-    setInputVal(e.target.value);
-  }
-
-  const handleOnKeyDown = () => {
-    // if(channel === null) return;
-    // socket.emit('typing', {toggleState: true, to: channel.id})
-      /*setTimeout(() => {
-        // socket.emit('typing', {toggleState: false, to: channel.id})
-      }, 500)*/
-      // handleTypingIndicator()
-    // onKeyDownHandler(channel)
-  }
-
-  const debounce = (cb, delay = 1000) => {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        cb(...args)
-      }, delay)
-    }
-  }
-
-  const throttle = (cb, delay = 1000) => {
-    let shouldWait = false;
-    return (...args) => {
-      if(shouldWait) return;
-      cb(...args);
-      shouldWait = true;
-      setTimeout(() => {
-        shouldWait = false;
-      }, delay)
-    }
-  }
-
-  const onKeyDownHandler = useMemo(
-    () => debounce((channel) => {
-      // socket.emit('typing', {toggleState: true, to: channel.id})
-    }, 1000)
-  , [])
-
+  // console.log('messages: ', messages)
   return (
     <div className="chat-box">
       {
@@ -72,15 +25,22 @@ function MessagePanel({ lastMessageRef }) {
           </header>
           <ul className="chat">
             {
-              channel !== null && channel.messages.map((msg, idx) => {
-                // console.log('mes: ', msg)
+              messages &&
+              messages.filter(
+                msg =>
+                (msg.to === channel.userID || msg.from === channel.userID)
+                ).map(
+                (message, idx) => {
+                // console.log('message: ', message)
                 return (
-                  <li key={idx} className={`${msg.fromSelf ? 'you' : ''}`}>
-                    {/*<img alt="" src={"./connect.svg"} />*/}
+                  <li
+                    key={idx}
+                    className={`${message.from === null || message.from === user.userID ? 'you' : ''}`}
+                  >
                     <FaChrome />
                     <div className="message-container">
                       <div>
-                        {msg.msg}
+                        {message.content}
                       </div>
                     </div>
                   </li>
@@ -89,21 +49,8 @@ function MessagePanel({ lastMessageRef }) {
             }
           </ul>
           <footer>
-            <div id="feedback">{ feedback ? 'is typing...': '' }</div>
-            <form onSubmit={handleSubmit}>
-              <textarea
-                type="text"
-                id="input"
-                value={inputVal}
-                placeholder="Type your message"
-                rows="3"
-                autoComplete="off"
-                onChange={handleOnChange}
-                // onKeyDown={handleOnKeyDown}
-              ></textarea>
-              <input id="submit" type="submit" value="Send" />
-              {/*<button>Send</button>*/}
-            </form>
+            {/*<div id="feedback">{ feedback ? 'is typing...': '' }</div>*/}
+            <Chatbox userID={channel.userID} />
           </footer>
         </div>
       }
