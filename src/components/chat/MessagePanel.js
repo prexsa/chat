@@ -1,14 +1,19 @@
-import { useContext } from 'react';
+import { useContext, useRef, useEffect } from 'react';
 import { FaChrome, FaEmpire } from 'react-icons/fa';
 import Chatbox from './Chatbox';
 import { MessagesContext, FriendContext } from './Chat';
 
 function MessagePanel() {
+  const bottomRef = useRef(null);
   const { messages } = useContext(MessagesContext);
   const { channel } = useContext(FriendContext);
   const user = JSON.parse(localStorage.getItem('user'));
   // console.log('channel: ', channel)
   // console.log('messages: ', messages)
+  useEffect(() => {
+    // console.log('bottomRef: ', bottomRef.current)
+    bottomRef.current?.scrollIntoView({ block: "end", behavior: 'smooth'});
+  }, [messages])
   return (
     <div className="chat-box">
       {
@@ -27,14 +32,13 @@ function MessagePanel() {
             {
               messages &&
               messages.filter(
-                msg =>
-                (msg.to === channel.userID || msg.from === channel.userID)
-                ).map(
-                (message, idx) => {
+                msg => (msg.to === channel.userID || msg.from === channel.userID)
+                ).map((message, idx) => {
                 // console.log('message: ', message)
                 return (
                   <li
                     key={idx}
+                    ref={bottomRef}
                     className={`${message.from === null || message.from === user.userID ? 'you' : ''}`}
                   >
                     <FaChrome />
@@ -50,7 +54,7 @@ function MessagePanel() {
           </ul>
           <footer>
             {/*<div id="feedback">{ feedback ? 'is typing...': '' }</div>*/}
-            <Chatbox userID={channel.userID} />
+            <Chatbox userID={channel.userID} from={user.userID} />
           </footer>
         </div>
       }

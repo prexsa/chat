@@ -9,7 +9,7 @@ const MessageSchema = Yup.object({
   message: Yup.string().min(1).max(255)
 })
 
-function Chatbox({ userID }) {
+function Chatbox({ userID, from }) {
   // console.log('userID: ', userID)
   const { setMessages } = useContext(MessagesContext);
   // const { onMessageSend, handleTypingIndicator } = useSocketContext();
@@ -21,11 +21,12 @@ function Chatbox({ userID }) {
         // console.log('values: ', values)
         const message = {
           to: userID,
-          from: null,
+          from: from,
           content: values.message
         }
         // onMessageSend(message);
         socket.emit('dm', message);
+        // console.log('message: ', message)
         setMessages(prevMsg => {
           return [...prevMsg, message]
         })

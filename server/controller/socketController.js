@@ -31,8 +31,23 @@ module.exports.initializeUser = async socket => {
   if(friendRooms.length > 0) {
     socket.to(friendRooms).emit("connected", "true", socket.user.username)
   }
+
+  // get chat messages
+  const messageQuery= await redisClient.lrange(`chat:${socket.user.userID}`, 0 , -1)
+  const messages = messageQuery.map(msgStr => {
+    const parsedStr = msgStr.split('.');
+    return {
+      to: parsedStr[0],
+      from: parsedStr[1],
+      content: parsedStr[2],
+    }
+  }).reverse()
+  // console.log('allMessages: ', messages)
   // console.log('parsedFriendList: ', parsedFriendList)
   socket.emit("friends", parsedFriendList)
+  if(messages && messages.length > 0) {
+    socket.emit('all_messages', messages)
+  }
   socket.emit('current_user', socket.user.username)
 }
 

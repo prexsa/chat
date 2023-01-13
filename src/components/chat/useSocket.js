@@ -18,7 +18,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel) => {
       setUsername(username)
     })
     socket.on('friends', friendList => {
-      console.log('friendList: ', friendList)
+      // console.log('friendList: ', friendList)
       setFriendList(friendList);
     })
 
@@ -34,21 +34,23 @@ const useSocket = (setFriendList, setMessages, setUsername, channel) => {
     })
 
     socket.on('new_friend', newFriend => {
-      console.log('new_friend: ', newFriend)
+      // console.log('new_friend: ', newFriend)
       setFriendList(prevFriends => {
         return [newFriend, ...prevFriends]
       })
     })
 
     socket.on('dm', msg => {
-      // console.log('ms: ', msg)
+      console.log('ms: ', msg)
       // console.log('dm channel: ', channel)
       setFriendList(prevFriends => {
-        console.log('prevFriends: ', prevFriends)
+        // console.log('prevFriends: ', prevFriends)
+        console.log('channel: ', channel)
         return [...prevFriends].map(friend => {
           if(
-            channel === null ||
-            (friend.userID === msg.from && channel.userID !== msg.from)) {
+            (channel === null && friend.userID === msg.from) ||
+            (channel !== null && channel.userID !== msg.from && friend.userID === msg.from)
+            ){
             friend.hasNewMessage = true;
           }
           return friend;
@@ -61,10 +63,11 @@ const useSocket = (setFriendList, setMessages, setUsername, channel) => {
 
     socket.on('channel_msgs', msg => {
       // console.log('channel_msgs: ', msg)
-      setMessages(msg);
+      // setMessages(msg);
     })
 
-    socket.on('msg', msgs => {
+    socket.on('all_messages', msgs => {
+      console.log('all_messages: ', msgs)
       setMessages(msgs)
     })
 
