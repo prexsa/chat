@@ -1,9 +1,13 @@
-import { useEffect, useContext } from 'react';
-import socket from '../../socket';
+import { useEffect, useContext, useRef } from 'react';
+// import socket from '../../socket';
 // import { FriendContext } from './Chat';
 
-const useSocket = (setFriendList, setMessages, setUsername, channel) => {
+const useSocket = (setFriendList, setMessages, setUsername, channel, socket) => {
   // const { channel } = useContext(FriendContext);
+  // console.log('channel: ', channel)
+  // console.log('socket: ', socket)
+  const channelRef = useRef(channel);
+  channelRef.current = channel;
   useEffect(() => {
     socket.connect();
     if(socket.connected) {
@@ -44,12 +48,12 @@ const useSocket = (setFriendList, setMessages, setUsername, channel) => {
       console.log('ms: ', msg)
       // console.log('dm channel: ', channel)
       setFriendList(prevFriends => {
-        // console.log('prevFriends: ', prevFriends)
-        console.log('channel: ', channel)
+        console.log('prevFriends: ', prevFriends)
+        console.log('channel: ', channelRef)
         return [...prevFriends].map(friend => {
           if(
-            (channel === null && friend.userID === msg.from) ||
-            (channel !== null && channel.userID !== msg.from && friend.userID === msg.from)
+            (channelRef.current === null && friend.userID === msg.from) ||
+            (channelRef.current !== null && channelRef.current.userID !== msg.from && friend.userID === msg.from)
             ){
             friend.hasNewMessage = true;
           }
@@ -67,7 +71,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel) => {
     })
 
     socket.on('all_messages', msgs => {
-      console.log('all_messages: ', msgs)
+      // console.log('all_messages: ', msgs)
       setMessages(msgs)
     })
 

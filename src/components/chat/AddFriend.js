@@ -1,8 +1,9 @@
 import { useState, useContext } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import socket from '../../socket';
+// import socket from '../../socket';
 import { FriendContext } from './Chat';
+import { SocketContext } from './Chat';
 // import { useSocketContext } from './socketContext';
 // console.log('socket: ', socket)
 const AddFriendSchema = Yup.object().shape({
@@ -15,6 +16,7 @@ const AddFriendSchema = Yup.object().shape({
 function AddFriend() {
   // const { user, users, channel, selectChannel, logoff, setFriendList } = useSocketContext();
   const { setFriendList } = useContext(FriendContext);
+  const { socket } = useContext(SocketContext)
   const [error, setError] = useState("");
   return (
     <Formik

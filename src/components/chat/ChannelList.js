@@ -1,12 +1,13 @@
 import { useContext } from 'react';
 import { FriendContext, MessagesContext, SocketContext } from "./Chat";
-import socket from '../../socket';
+// import socket from '../../socket';
 
 function ChannelList() {
   const { friendList, setFriendList, channel, setChannel } = useContext(FriendContext);
   // const { socket } = useContext(SocketContext);
 // console.log('friendList: ', friendList)
   const onChannelSelect = channel => {
+    // console.log('channel: ', channel)
     setChannel(channel)
     setFriendList(prevFriends => {
       return [...prevFriends].map(friend => {
@@ -16,10 +17,12 @@ function ChannelList() {
         return friend;
       })
     })
-    socket.emit('channel_msgs', channel.userID)
+    // socket.emit('channel_msgs', channel.userID)
   }
 
   return (
+    <>
+    <button onClick={() => setChannel(null)}>Clear Message Panel</button>
     <ul>
       {
         friendList && friendList.map((friend, index) => {
@@ -43,6 +46,7 @@ function ChannelList() {
         })
       }
     </ul>
+    </>
   )
 }
 

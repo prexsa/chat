@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100vh;
 }
 
 code {
@@ -14,4 +15,14 @@ code {
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0px !important;
+}
+
+* {
+  /*outline: 1px solid limegreen !important;*/
+  /*background: rgb(0 100 0 / 0.05) !important;*/
+  /*box-sizing: border-box*/
+}
+
+#root {
+  height: 100%;
 }

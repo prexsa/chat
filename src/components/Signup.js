@@ -32,11 +32,11 @@ function Signup() {
           actions.resetForm();
           // console.log(values);
           const response = await axios.post('http://localhost:9000/api/auth/signup', values)
-          // console.log('response: ', response.data)
+          console.log('response: ', response.data)
           if(response.data.status) {
             setError(response.data.status)
           } else {
-            // localStorage.setItem("accessToken", response.data.accessToken)
+            localStorage.setItem("accessToken", response.data.accessToken)
             navigate('/chat')
           }
          }}

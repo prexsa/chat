@@ -2,7 +2,8 @@ import { useContext } from 'react';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 // import { useSocketContext } from './socketContext';
-import socket from '../../socket';
+// import socket from '../../socket';
+import { SocketContext } from './Chat';
 import { MessagesContext } from './Chat';
 
 const MessageSchema = Yup.object({
@@ -11,6 +12,8 @@ const MessageSchema = Yup.object({
 
 function Chatbox({ userID, from }) {
   // console.log('userID: ', userID)
+  const { socket } = useContext(SocketContext);
+  // console.log('socket: ', socket)
   const { setMessages } = useContext(MessagesContext);
   // const { onMessageSend, handleTypingIndicator } = useSocketContext();
   return (
@@ -19,12 +22,15 @@ function Chatbox({ userID, from }) {
       validateSchema={MessageSchema}
       onSubmit={(values, actions) => {
         // console.log('values: ', values)
+        if(values.message.length <= 0) return;
         const message = {
           to: userID,
           from: from,
           content: values.message
         }
         // onMessageSend(message);
+        // console.log('message: ', message)
+        socket.connect();
         socket.emit('dm', message);
         // console.log('message: ', message)
         setMessages(prevMsg => {

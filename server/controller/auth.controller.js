@@ -6,7 +6,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.login = (req, res) => {
   // console.log('app: body: ', req.body)
-  // console.log('session auth : ', req.session)
   const { username, password = "testing" } = req.body;
   User.
     findOne({
@@ -25,17 +24,17 @@ exports.login = (req, res) => {
         });
       }
 
-      const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: 86400 }); // expires 24hrs
+      // console.log('user: ', user)
 
-      req.session.user = {
-        username,
+      // 86400
+      const token = jwt.sign({
         id: user._id,
-        accessToken: token,
+        username: user.username,
         userID: user.userID
-      }
+      }, JWT_SECRET, { expiresIn: 86400 }); // expires 24hrs
+// console.log('token: ', token)
 
       res.status(200).send({
-        id: user._id,
         username: user.username,
         accessToken: token,
         userID: user.userID
@@ -60,18 +59,17 @@ exports.signup = async (req, res) => {
         return;
       }
 
-      const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: 86400 }); // expires 24hrs
-      // console.log('user: ', user)
-      req.session.user = {
-        username,
+      const token = jwt.sign({
         id: user._id,
+        username: user.username,
         userID: user.userID
-        // accessToken: token,
-      }
+      }, JWT_SECRET, { expiresIn: 86400 }); // expires 24hrs
+
       res.send({
         status: 'User was registered successfully!',
         username: username,
-        // accessToken: token
+        accessToken: token,
+        userID: user.userID
       })
     })
     return;

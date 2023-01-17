@@ -72,8 +72,8 @@ function Login() {
             setError(response.data.status)
           } else {
             // console.log('response: ', response)
-            // localStorage.setItem("accessToken", response.data.accessToken)
-            localStorage.setItem('user', JSON.stringify(response.data))
+            localStorage.setItem("accessToken", response.data.accessToken)
+            // localStorage.setItem('user', JSON.stringify(response.data))
             setUser(response.data)
             navigate('/chat')
           }

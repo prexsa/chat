@@ -1,29 +1,37 @@
 import { useContext, useRef, useEffect } from 'react';
 import { FaChrome, FaEmpire } from 'react-icons/fa';
 import Chatbox from './Chatbox';
+import { useUserContext } from '../../userContext';
 import { MessagesContext, FriendContext } from './Chat';
 
 function MessagePanel() {
   const bottomRef = useRef(null);
+  const { user } = useUserContext();
   const { messages } = useContext(MessagesContext);
   const { channel } = useContext(FriendContext);
-  const user = JSON.parse(localStorage.getItem('user'));
+  // const user = JSON.parse(localStorage.getItem('user'));
+  // console.log('user: ', user)
   // console.log('channel: ', channel)
   // console.log('messages: ', messages)
   useEffect(() => {
     // console.log('bottomRef: ', bottomRef.current)
-    bottomRef.current?.scrollIntoView({ block: "end", behavior: 'smooth'});
-  }, [messages])
+    bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
+  }, [messages, channel])
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({block: 'end', inline: 'nearest'});
+  }, [channel])
+
   return (
-    <div className="chat-box">
+    <>
       {
         channel == null ?
-        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <div className="message-panel-container">
           <h2>Choose a conversation</h2>
           <h3>Click on an existing chat or click "New Chat" to create a new conversation"</h3>
         </div>
         :
-        <div>
+        <div className="message-panel-container">
           <header>
             <FaEmpire className="channel-img" />
             <h2>{channel.username}</h2>
@@ -58,7 +66,7 @@ function MessagePanel() {
           </footer>
         </div>
       }
-    </div>
+    </>
   )
 }
 

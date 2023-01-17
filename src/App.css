@@ -1,4 +1,6 @@
 .app {
+  height: 100%;
   display: flex;
+  flex-flow: column wrap;
   text-align: center;
 }

@@ -9,8 +9,8 @@ function Logout() {
 
   const handleLogout = () => {
     /*const sessionID = localStorage.getItem("sessionID");
-    localStorage.removeItem("sessionID")
-    localStorage.removeItem("accessToken")*/
+    localStorage.removeItem("sessionID")*/
+    localStorage.removeItem("accessToken")
     console.log('logoff')
     socket.emit('logoff')
     // logoff();

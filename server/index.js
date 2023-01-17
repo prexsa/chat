@@ -6,7 +6,7 @@ const axios = require('axios');
 const helmet = require('helmet');
 const cors = require('cors');
 const httpServer = require('http').createServer(app);
-const { sessionMiddleware, wrap, corsConfig } = require('./session');
+const { corsConfig } = require('./session');
 const {
   authorizeUser,
   addFriend,
@@ -18,8 +18,6 @@ const {
 const auth = require('./routes/auth.routes');
 const connectDB = require('./connectDB');
 
-const { redisClient, messageStore, sessionStore } = require('./redis');
-
 const io = new Server(httpServer, { cors: corsConfig });
 // middleware needs to be before routes
 // parse form data
@@ -27,11 +25,10 @@ const io = new Server(httpServer, { cors: corsConfig });
 app.use(helmet());
 app.use(cors(corsConfig));
 app.use(express.json());
-app.use(sessionMiddleware);
+// app.use(sessionMiddleware);
 app.use('/api/auth', auth);
-// const randomId = () => crypto.randomBytes(8).toString("hex");
 // socket middleware
-io.use(wrap(sessionMiddleware));
+// io.use(wrap(sessionMiddleware));
 io.use(authorizeUser)
 
 io.on('connection', async (socket) => {
@@ -54,10 +51,6 @@ io.on('connection_error', (err) => {
   console.log('err code: ', err.code);
   console.log('err msg: ', err.message);
   console.log('err context: ', err.context)
-})
-
-app.post('/api/check-email', (req, res) => {
-
 })
 
 app.post('/api/check-username', (req, res) => {

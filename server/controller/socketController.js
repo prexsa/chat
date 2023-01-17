@@ -1,20 +1,32 @@
 const { redisClient } = require('../redis');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const JWT_SECRET = process.env.JWT_SECRET;
 
 module.exports.authorizeUser = (socket, next) => {
   // console.log('socket: ', socket.request.session)
-  if(!socket.request.session || !socket.request.session.user) {
+  const token = socket.handshake.auth.token;
+  // console.log('token: ', token)
+  const verifyToken = jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if(err) console.log('token error: ', err);
+    // console.log('decoded: ', decoded)
+    socket.user = { ...decoded };
+    next();
+  })
+  // next();
+  /*if(!socket.request.session || !socket.request.session.user) {
     console.log('Bad Reqeust');
     next(new Error('Not Authorized'));
   } else {
     console.log('success')
     next();
-  }
+  }*/
 }
 
 module.exports.initializeUser = async socket => {
   // set user to active
   // console.log('initializeUser: ')
-  socket.user = { ...socket.request.session.user };
+  // socket.user = { ...socket.request.session.user };
   // console.log('socket.user: ', socket.user)
   socket.join(socket.user.userID)
   redisClient.hset(
@@ -60,7 +72,7 @@ module.exports.addFriend = async (socket, name, cb) => {
     return;
   }
   const friend = await redisClient.hgetall(`userid:${name}`)
-  // console.log('friend: 54 ', friend)
+  console.log('friend: 75 ', friend)
   if(Object.keys(friend).length <= 0) {
     cb({done: false, errorMsg: "User doesn't exist!" });
     return;
@@ -102,10 +114,10 @@ module.exports.addFriend = async (socket, name, cb) => {
 }
 
 module.exports.dm = async (socket, msg) => {
-  // console.log('msg: ', msg)
+  console.log('msg: ', msg)
   msg.from = socket.user.userID;
   const messageStr = [msg.to, msg.from, msg.content].join(".");
-
+console.log('messageStr: ', messageStr)
   await redisClient.lpush(`chat:${msg.to}`, messageStr);
   await redisClient.lpush(`chat:${msg.from}`, messageStr)
 

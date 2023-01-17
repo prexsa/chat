@@ -5,8 +5,8 @@ import ChannelList from './ChannelList';
 import { useUserContext } from '../../userContext';
 
 function Sidebar() {
-  // const { user } = useUserContext();
-  const user = JSON.parse(localStorage.getItem('user'))
+  const { user } = useUserContext();
+  // const user = JSON.parse(localStorage.getItem('user'))
   // console.log('user ;', user)
   return (
     <aside>
