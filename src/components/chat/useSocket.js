@@ -45,11 +45,11 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, socket) => 
     })
 
     socket.on('dm', msg => {
-      console.log('ms: ', msg)
+      // console.log('ms: ', msg)
       // console.log('dm channel: ', channel)
       setFriendList(prevFriends => {
-        console.log('prevFriends: ', prevFriends)
-        console.log('channel: ', channelRef)
+        // console.log('prevFriends: ', prevFriends)
+        // console.log('channel: ', channelRef)
         return [...prevFriends].map(friend => {
           if(
             (channelRef.current === null && friend.userID === msg.from) ||

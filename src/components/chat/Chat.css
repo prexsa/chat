@@ -225,3 +225,9 @@ main footer #submit:hover {
   cursor: pointer;
   border: 1px solid #fff;
 }
+.chatbox-submit {
+  width: 80px;
+  padding: 10px;
+  border: transparent;
+  background-color: lightsteelblue;
+}

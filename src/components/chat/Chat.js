@@ -18,7 +18,7 @@ function Main() {
   const [channel, setChannel] = useState(null);
   const [username, setUsername] = useState('');
 
-  const user = JSON.parse(localStorage.getItem('user'))
+  // const user = JSON.parse(localStorage.getItem('user'))
   const accessToken = localStorage.getItem('accessToken');
 
   const [socket, setSocket] = useState(() => socketConn(accessToken));

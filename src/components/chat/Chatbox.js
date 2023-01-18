@@ -1,62 +1,96 @@
-import { useContext } from 'react';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
+import { useContext, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+// import { Formik, Form, Field } from 'formik';
+// import * as Yup from 'yup';
 // import { useSocketContext } from './socketContext';
 // import socket from '../../socket';
 import { SocketContext } from './Chat';
 import { MessagesContext } from './Chat';
 
-const MessageSchema = Yup.object({
+/*const MessageSchema = Yup.object({
   message: Yup.string().min(1).max(255)
-})
+})*/
 
 function Chatbox({ userID, from }) {
   // console.log('userID: ', userID)
   const { socket } = useContext(SocketContext);
-  // console.log('socket: ', socket)
   const { setMessages } = useContext(MessagesContext);
-  // const { onMessageSend, handleTypingIndicator } = useSocketContext();
+  const { register, handleSubmit, reset, formState, formState: { errors, isSubmitSuccessful }} = useForm();
+  const onSubmit = ({ message }) => {
+    if(message.trim() === "") return;
+    console.log('message; ', message)
+  }
+  const handleOnKeyDown = e => {
+    if(e.key === 'Enter' && e.shiftKey === false) {
+      // console.log('target value: ', e.target.value)
+      handleSubmit(onSubmit)();
+    }
+  }
+
+  useEffect(() => {
+    if(formState.isSubmitSuccessful) {
+      reset({ message: ''})
+    }
+  }, [formState, reset])
   return (
-    <Formik
-      initialValues={{ message: '' }}
-      validateSchema={MessageSchema}
-      onSubmit={(values, actions) => {
-        // console.log('values: ', values)
-        if(values.message.length <= 0) return;
-        const message = {
-          to: userID,
-          from: from,
-          content: values.message
-        }
-        // onMessageSend(message);
-        // console.log('message: ', message)
-        socket.connect();
-        socket.emit('dm', message);
-        // console.log('message: ', message)
-        setMessages(prevMsg => {
-          return [...prevMsg, message]
-        })
-        actions.resetForm();
-      }}
-    >
-      <Form>
-        <Field
-          as="textarea"
-          type="text"
-          name="message"
-          placeholder="Type your message"
-          rows="3"
-          autoComplete="off"
-        ></Field>
-        <button type="submit" size="lg">
-          Send
-        </button>
-      </Form>
-    </Formik>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <textarea
+        type="text"
+        placeholder="type..."
+        onKeyDown={handleOnKeyDown}
+        {...register("message")}
+      />
+      <input className='chatbox-submit' type="submit" />
+    </form>
   )
 }
 
 export default Chatbox;
+/*<Formik
+  initialValues={{ message: '' }}
+  validateSchema={MessageSchema}
+  onSubmit={(values, actions) => {
+
+    console.log('values: ', values.message.trim().length)
+    if(values.message.trim() === "") return;
+    const message = {
+      to: userID,
+      from: from,
+      content: values.message
+    }
+    // onMessageSend(message);
+    // console.log('message: ', message)
+    socket.connect();
+    socket.emit('dm', message);
+    // console.log('message: ', message)
+    setMessages(prevMsg => {
+      return [...prevMsg, message]
+    })
+    actions.resetForm();
+  }}
+>
+{({ handleSubmit }) => (
+  <Form
+    onSubmit={handleSubmit}
+    onKeyDown={e => {
+      if(e.key === "Enter") handleSubmit();
+    }}
+  >
+    <Field
+      as="textarea"
+      type="text"
+      // validate={validateEmptyStr}
+      name="message"
+      placeholder="Type your message"
+      rows="3"
+      autoComplete="off"
+    ></Field>
+    <button type="submit">
+      Send
+    </button>
+  </Form>
+  )}
+</Formik>*/
 
 
 /*

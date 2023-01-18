@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, Link } from "react-router-dom";
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, useField } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useUserContext } from '../userContext';
 import './Login.css';
-
+// https://codesandbox.io/s/formik-v2-tutorial-added-textarea-ujz18?file=/src/index.js
 const LoginSchema = Yup.object().shape({
   username: Yup.string()
     .min(3, 'Too short!')
@@ -14,6 +14,19 @@ const LoginSchema = Yup.object().shape({
   password: Yup.string()
     .required('Required')
 });
+
+const MyTextInput = ({label, ...props}) => {
+  const [field, meta] = useField(props);
+  return (
+    <>
+      <label htmlFor={props.id || props.name}>{label}</label>
+      <input className="text-input" {...field} {...props} />
+      {meta.touched && meta.error ? (
+        <div className="error">{meta.error}</div>
+      ) : null}
+    </>
+  )
+}
 
 function Login() {
   const navigate = useNavigate();
