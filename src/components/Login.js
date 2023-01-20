@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from "react-router-dom";
-import { Formik, Form, Field, useField } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { MyTextInput, MyTextInputPassword } from './TextInput';
 import { useUserContext } from '../userContext';
 import './Login.css';
 // https://codesandbox.io/s/formik-v2-tutorial-added-textarea-ujz18?file=/src/index.js
@@ -15,52 +16,10 @@ const LoginSchema = Yup.object().shape({
     .required('Required')
 });
 
-const MyTextInput = ({label, ...props}) => {
-  const [field, meta] = useField(props);
-  return (
-    <>
-      <label htmlFor={props.id || props.name}>{label}</label>
-      <input className="text-input" {...field} {...props} />
-      {meta.touched && meta.error ? (
-        <div className="error">{meta.error}</div>
-      ) : null}
-    </>
-  )
-}
-
 function Login() {
   const navigate = useNavigate();
   const { setUser } = useUserContext();
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
-
-  const handleClear = async (e) => {
-    e.preventDefault();
-    const response = await axios.get('http://localhost:9000/api/clear')
-    console.log('response: ', response.data)
-  }
-
-  const handleGetAllUsers = async (e) => {
-    e.preventDefault();
-    const response = await axios.get('http://localhost:9000/api/get-users')
-    // console.log('response: ', response.data.users)
-  }
-
-  const handleRedis = async () => {
-    axios.post('http://localhost:9000/api/redis')
-  }
-
-  const handleRedisGet = async () => {
-    axios.get('http://localhost:9000/api/redis-get')
-  }
-
-  const handleShowPassword = () => {
-    setShowPassword(!showPassword)
-  }
-
-  const deleteMongodbMsgCollection = () => {
-    axios.get('http://localhost:9000/api/mongdb-collection-clear')
-  }
 
   return (
     <div className="logon-container">
@@ -95,33 +54,38 @@ function Login() {
       {({ errors, touched }) => (
         <Form>
           <div>{error}</div>
-          <div className="form-field">
-            <label htmlFor="username">Username</label>
-            <Field name="username" />
-            {errors.username && touched.username ? (
-              <div className="feedback">{errors.username}</div>
-            ) : null}
-          </div>
-          <div className="form-field">
-            <label htmlFor="password">Password</label>
-            <Field name="password" />
-            {errors.password && touched.password ? (
-              <div className="feedback">{errors.password}</div>
-            ) : null}
-          </div>
+          <MyTextInput
+            label="Username"
+            name="username"
+          />
+          <MyTextInputPassword
+            label="Password"
+            name="password"
+          />
           <button type="submit">Submit</button>
         </Form>
       )}
       </Formik>
-      {/*<button onClick={handleGetAllUsers}>get all users</button>
-      <button onClick={handleClear}>clear</button>
-      <button onClick={handleRedis}>redis</button>
-      <button onClick={handleRedisGet}>redis-get</button>
-      <button onClick={deleteMongodbMsgCollection}>mongdb-clear</button>
-      <br />*/}
-      <Link to="/register">register</Link>
+      <div className="link-container">
+        Don't have an account? <Link to="/register">Sign up here</Link>
+      </div>
     </div>
   )
 }
 
 export default Login;
+
+/*<div className="form-field">
+  <label htmlFor="username">Username</label>
+  <Field name="username" />
+  {errors.username && touched.username ? (
+    <div className="feedback">{errors.username}</div>
+  ) : null}
+</div>
+<div className="form-field">
+  <label htmlFor="password">Password</label>
+  <Field name="password" />
+  {errors.password && touched.password ? (
+    <div className="feedback">{errors.password}</div>
+  ) : null}
+</div>*/

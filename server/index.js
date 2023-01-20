@@ -27,15 +27,16 @@ app.use(cors(corsConfig));
 app.use(express.json());
 // app.use(sessionMiddleware);
 app.use('/api/auth', auth);
+app.set("trust proxy", 1);
 // socket middleware
 // io.use(wrap(sessionMiddleware));
 io.use(authorizeUser)
 
 io.on('connection', async (socket) => {
-  console.log('connection')
+  // console.log('connection')
   initializeUser(socket);
   socket.on('dm', message => dm(socket, message))
-  socket.on('channel_msgs', (userID, cb) => channelMsgs(socket, userID, cb))
+  // socket.on('channel_msgs', (userID, cb) => channelMsgs(socket, userID, cb))
   socket.on("add_friend", (name, cb) => addFriend(socket, name, cb))
 
   /*socket.on('typing', ({ toggleState, to }) => {
@@ -52,49 +53,6 @@ io.on('connection_error', (err) => {
   console.log('err msg: ', err.message);
   console.log('err context: ', err.context)
 })
-
-app.post('/api/check-username', (req, res) => {
-  // console.log('req.body: ', req.body)
-  const { username } = req.body;
-  const exist = userNameExist(username);
-  res.status(200).send({ exist })
-})
-
-app.get('/api/clear', async (req, res) => {
-  const cleared = await sessionStore.clearAll();
-  res.status(200).send({ cleared })
-})
-
-app.get('/api/get-users', (req, res) => {
-  const { username } = req.body;
-  const users = getAllUsers();
-  res.status(200).send({ users })
-})
-
-app.post('/api/channel-messages', async (req, res) => {
-  const { userID } = req.body;
-  console.log('messageStore: ', messageStore)
-  const messages = await messageStore.findMsgForUser(userID)
-  res.status(200).send({ messages })
-})
-
-app.get('/api/messages', async (req, res) => {
-  const { userID } = req.body;
-  const messages = messageStore.allMessages
-  res.status(200).send({ messages })
-})
-
-/*app.post('/api/redis', async(req, res) => {
-  // await client.connect();
-  redisClient.set('financial', 'freedom')
-})*/
-
-app.get('/api/redis-get', async(req, res) => {
-  // await client.connect();
-  const all = await sessionStore.getAll()
-  console.log('all: ', all)
-})
-
 
 const PORT = process.env.PORT || 9000;
 const DATABASE_URI = process.env.MONGO_URI;

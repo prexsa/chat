@@ -4,7 +4,6 @@
   background: #ffffff;
   margin: 0 auto;
   font-size: 0;
-  border-radius: 5px;
   overflow: hidden;
   box-shadow: inset 0px 0px 20px 1px rgb(250, 251, 252);
 }
@@ -25,7 +24,7 @@ main {
   vertical-align: top;
 }
 aside header {
-  padding: 30px 20px;
+  padding: 20px;
 }
 aside ul {
   padding-left: 0;
@@ -39,7 +38,7 @@ aside li {
   margin: 10px;
   border-radius: 5px;
   text-align: left;
-  background-color: #ffffff;
+  background-color: #fff;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -57,6 +56,8 @@ aside li > .newMessages {
 }
 aside li:hover {
   background-color: #5e616a;
+  cursor: pointer;
+  color: #fff;
 }
 aside li:active {
   background-color: #31333d;
@@ -66,14 +67,8 @@ aside li img {
   /*margin-left: 20px;*/
   margin-right: 8px;
 }
-/*aside li div {
-  display: inline-block;
-  vertical-align: top;
-  margin-top: 12px;
-}*/
 aside li h2 {
   font-size: 14px;
-  color: #000000;
   font-weight: normal;
   margin-bottom: 5px;
 }
@@ -82,8 +77,12 @@ aside li h3 {
   color: #7e818a;
   font-weight: normal;
 }
-aside li h2:active, aside li h3:active {
-  color: #ffffff;
+.active-list-item {
+  background-color: #333;
+  color: #fff;
+}
+.active-list-item h2 {
+  color: #fff;
 }
 .status {
   width: 8px;
@@ -139,7 +138,7 @@ main header h3 {
   margin: 0;
   list-style-type: none;
   overflow-y: auto;
-  height: calc(100% - 150px);
+  height: calc(100% - 100px);
   /*box-shadow: inset 0 0 10px 0px lightgrey;*/
   border-top: 2px solid #eaeef2;
   border-bottom: 2px solid #eaeef2;
@@ -148,17 +147,35 @@ main header h3 {
 .chat li {
   padding: 10px;
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: baseline;
   column-gap: 15px;
 }
 .chat > .you {
   flex-direction: row-reverse;
 }
+.icon-message-container {
+  display: flex;
+  align-items: end;
+  column-gap: 10px;
+}
+.flex-direction-row {
+  flex-direction: row;
+}
+.flex-direction-row-reverse {
+  flex-direction: row-reverse;
+}
 .chat li .message-container {
-  border: 1px solid grey;
-  padding: 10px 20px;
+  border: 1px solid #dcdcdc;
+  padding: 5px 15px;
   border-radius: 5px;
+  font-size: 14px;
+  color: #4c4c4c;
+}
+.chat-username-txt {
+  color: #4c4c4c;
+  font-weight: 500;
+  font-size: 13px;
 }
 .chat h2, .chat h3 {
   display: inline-block;
@@ -202,8 +219,8 @@ main footer textarea {
   resize: none;
   border: none;
   display: inline-block;
-  width: 85%;
-  height: 20px;
+  width: 100%;
+  height: 43px;
   /*border-radius: 3px;*/
   padding: 8px;
   font-size: 13px;
@@ -230,4 +247,27 @@ main footer #submit:hover {
   padding: 10px;
   border: transparent;
   background-color: lightsteelblue;
+}
+
+.chatbox-submit:hover {
+  cursor: pointer;
+  background-color: red;
+}
+
+.btn-icon-txt {
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+}
+
+.add-friend-header-txt {
+  font-size: 16px;
+}
+
+.hidden-txt {
+  visibility: hidden;
+}
+
+.feedback {
+  color: red;
 }

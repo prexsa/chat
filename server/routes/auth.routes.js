@@ -11,7 +11,7 @@ router.use(function(req, res, next) {
   next();
 });
 
-router.route('/login').post(rateLimiter(60, 10), AuthControl.login)
+router.route('/login').get(AuthControl.verifyToken).post(rateLimiter(60, 10), AuthControl.login)
 router.route('/signup').post(AuthControl.signup)
 
 module.exports = router;

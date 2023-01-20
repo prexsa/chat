@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form } from 'formik';
 import { useNavigate, Link } from "react-router-dom";
+import { FaArrowLeft } from 'react-icons/fa';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { MyTextInput, MyTextInputPassword } from './TextInput';
 import './Login.css';
 
 const SignupSchema = Yup.object().shape({
@@ -19,8 +21,11 @@ function Signup() {
   const navigate = useNavigate();
   return (
     <div className="logon-container">
-      <Link to="/">back</Link>
+      {/*<div className="signup-header">
+        <Link to="/" className="back-svg"><FaArrowLeft /></Link>
+      </div>*/}
       <h2>Sign up</h2>
+      <div>{error}</div>
       <Formik
         initialValues={{
            username: '',
@@ -43,27 +48,40 @@ function Signup() {
         >
         {({ errors, touched }) => (
            <Form>
-            <div className="form-field">
-              <label htmlFor="username">Username</label>
-              <Field name="username" />
-              {errors.username && touched.username ? (
-                <div className="feedback">{errors.username}</div>
-              ) : null}
-              {error}
-            </div>
-            <div className="form-field">
-              <label htmlFor="password">Password</label>
-              <Field name="password" />
-              {errors.password && touched.password ? (
-                <div className="feedback">{errors.password}</div>
-              ) : null}
-            </div>
+            <MyTextInput
+              label="Username"
+              name="username"
+            />
+            <MyTextInputPassword
+              label="Password"
+              name="password"
+            />
             <button type="submit">Submit</button>
           </Form>
         )}
       </Formik>
+      <div className="link-container">
+        Already have an account? <Link to="/">Login</Link>
+      </div>
     </div>
   )
 }
 
 export default Signup;
+/*
+<div className="form-field">
+  <label htmlFor="username">Username</label>
+  <Field name="username" />
+  {errors.username && touched.username ? (
+    <div className="feedback">{errors.username}</div>
+  ) : null}
+  {error}
+</div>
+<div className="form-field">
+  <label htmlFor="password">Password</label>
+  <Field name="password" />
+  {errors.password && touched.password ? (
+    <div className="feedback">{errors.password}</div>
+  ) : null}
+</div>
+*/

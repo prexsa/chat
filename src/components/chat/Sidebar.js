@@ -10,11 +10,10 @@ function Sidebar() {
   // console.log('user ;', user)
   return (
     <aside>
+      <Logout />
       <header>
         <div>{user?.username}</div>
       </header>
-      <Logout />
-      <h2>Chat Circle</h2>
       <AddFriend />
       <ChannelList />
     </aside>

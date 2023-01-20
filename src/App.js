@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from './components/Login';
 import Signup from './components/Signup'
 import Chat from './components/chat/Chat';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { UserProvider } from './userContext';
 // const socket = io(); // if FrontEnd on same domain as server

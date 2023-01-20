@@ -1,5 +1,5 @@
 import { useContext, useRef, useEffect } from 'react';
-import { FaChrome, FaEmpire } from 'react-icons/fa';
+import { FaUserCircle, FaEmpire } from 'react-icons/fa';
 import Chatbox from './Chatbox';
 import { useUserContext } from '../../userContext';
 import { MessagesContext, FriendContext } from './Chat';
@@ -14,9 +14,9 @@ function MessagePanel() {
   // console.log('channel: ', channel)
   // console.log('messages: ', messages)
   useEffect(() => {
-    // console.log('bottomRef: ', bottomRef.current)
-    bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
-  }, [messages, channel])
+    // bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
+    bottomRef.current?.scrollIntoView(false);
+  }, [messages])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({block: 'end', inline: 'nearest'});
@@ -33,7 +33,7 @@ function MessagePanel() {
         :
         <div className="message-panel-container">
           <header>
-            <FaEmpire className="channel-img" />
+            <FaUserCircle className="channel-img" />
             <h2>{channel.username}</h2>
           </header>
           <ul className="chat">
@@ -43,22 +43,30 @@ function MessagePanel() {
                 msg => (msg.to === channel.userID || msg.from === channel.userID)
                 ).map((message, idx) => {
                 // console.log('message: ', message)
+                const isYou = message.from === null || message.from === user.userID;
                 return (
                   <li
                     key={idx}
-                    ref={bottomRef}
-                    className={`${message.from === null || message.from === user.userID ? 'you' : ''}`}
+                    className={`${isYou ? 'you' : ''}`}
                   >
-                    <FaChrome />
-                    <div className="message-container">
-                      <div>
-                        {message.content}
+                    <div className={`icon-message-container ${isYou ? "flex-direction-row-reverse" : "flex-direction-row"}`}>
+                      <FaUserCircle />
+                      <div className="message-container">
+                        <div>
+                          {message.content}
+                        </div>
                       </div>
+                    </div>
+                    <div>
+                      {
+                        (isYou) ? null : <div className="chat-username-txt">{channel.username}</div>
+                      }
                     </div>
                   </li>
                 )
               })
             }
+            <li ref={bottomRef}></li>
           </ul>
           <footer>
             {/*<div id="feedback">{ feedback ? 'is typing...': '' }</div>*/}

@@ -1,8 +1,24 @@
 const User = require('../model/auth.model');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const JWT_SECRET = process.env.JWT_SECRET;
+const { jwtSign, jwtVerify , getJwt } = require('./jwt.controller');
+
+exports.verifyToken = (req, res) => {
+  const token = getJwt(req);
+  // console.log('token: ', token)
+  jwtVerify(token, JWT_SECRET).then(decoded => {
+    // console.log('decoded: ', decoded)
+    res.status(200).send({
+      loggedIn: true,
+      username: decoded.username,
+      userID: decoded.userID
+    })
+  }).catch(err => {
+    console.log('check token error: ', err)
+    if(err) res.status(401)
+  })
+}
 
 exports.login = (req, res) => {
   // console.log('app: body: ', req.body)
@@ -23,30 +39,27 @@ exports.login = (req, res) => {
           status: 'Invalid password!'
         });
       }
-
       // console.log('user: ', user)
-
-      // 86400
-      const token = jwt.sign({
+      const payload = {
         id: user._id,
         username: user.username,
         userID: user.userID
-      }, JWT_SECRET, { expiresIn: 86400 }); // expires 24hrs
-// console.log('token: ', token)
-
-      res.status(200).send({
-        username: user.username,
-        accessToken: token,
-        userID: user.userID
+      }
+      jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then(token => {
+        res.status(200).send({
+          username: user.username,
+          accessToken: token,
+          userID: user.userID
+        })
       })
     })
 }
 
 exports.signup = async (req, res) => {
-  console.log('signup ', req.body)
+  // console.log('signup ', req.body)
   const { username, password } = req.body;
   const record = await User.findOne({ username: username })
-  console.log('record: ', record)
+  // console.log('record: ', record)
   if(record === null) {
     const user = new User({
       username: username,
@@ -59,17 +72,18 @@ exports.signup = async (req, res) => {
         return;
       }
 
-      const token = jwt.sign({
+      const payload = {
         id: user._id,
         username: user.username,
         userID: user.userID
-      }, JWT_SECRET, { expiresIn: 86400 }); // expires 24hrs
-
-      res.send({
-        status: 'User was registered successfully!',
-        username: username,
-        accessToken: token,
-        userID: user.userID
+      }
+      jwtSign(payload, JWT_SECRET, { expiresIn: "7d"}).then(token => {
+        res.send({
+          status: 'User was registered successfully!',
+          username: username,
+          accessToken: token,
+          userID: user.userID
+        })
       })
     })
     return;
