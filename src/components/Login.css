@@ -28,6 +28,10 @@
   border: 1px solid #dcdcdc;
 }
 
+.marginTop20 {
+  margin-top: 20px;
+}
+
 .input-label {
   font-weight: 500;
   color: #40464a;
@@ -36,7 +40,8 @@
 .password-svg {
   margin-left: auto;
   position: relative;
-  bottom: 24px;
+  bottom: 26px;
+  font-size: 23px;
   margin-right: 1px;
   color: grey;
   background-color: white;

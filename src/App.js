@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import Login from './components/Login';
-import Signup from './components/Signup'
+// import Login from './components/Login';
+// import Signup from './components/Signup'
+import LoginRFH from './components/Login.RFH';
+import SignupRFH from './components/Signup.RFH'
 import Chat from './components/chat/Chat';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -11,8 +13,8 @@ function App() {
     <UserProvider>
       <div className="app">
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Signup />} />
+          <Route path="/" element={<LoginRFH />} />
+          <Route path="/register" element={<SignupRFH />} />
           <Route path="/chat" element={<Chat />} />
         </Routes>
       </div>
