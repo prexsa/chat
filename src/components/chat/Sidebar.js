@@ -1,5 +1,6 @@
 // import { useContext } from 'react';
 import AddFriend from './AddFriend';
+import AddFriendRFH from './AddFriend.RFH';
 import Logout from '../Logout';
 import ChannelList from './ChannelList';
 import { useUserContext } from '../../userContext';
@@ -14,7 +15,7 @@ function Sidebar() {
       <header>
         <div>{user?.username}</div>
       </header>
-      <AddFriend />
+      <AddFriendRFH />
       <ChannelList />
     </aside>
   )
