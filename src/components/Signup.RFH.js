@@ -15,7 +15,7 @@ function Signup() {
 
   const handleOnSubmit = async (values) => {
     console.log('onSubmit: ', values)
-    const response = await axios.post('http://localhost:9000/api/auth/signup', values, {
+    const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/auth/signup`, values, {
       withCredentials: true
     })
     console.log('response: ', response.data)

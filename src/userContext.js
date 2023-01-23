@@ -17,7 +17,7 @@ const UserProvider = ({ children }) => {
       navigate('/');
       return;
     }
-    axios.get('http://localhost:9000/api/auth/login', {
+    axios.get(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, {
       headers: {
         'authorization': `token ${accessToken}`
       }

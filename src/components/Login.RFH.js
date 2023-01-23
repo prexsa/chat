@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useUserContext } from '../userContext';
 import './Login.css';
 
-
+// console.log('process: ', process.env)
 function Login() {
   const navigate = useNavigate();
   const { register, handleSubmit, reset, formState: { errors }} = useForm();
@@ -16,7 +16,7 @@ function Login() {
 
   const handleOnSubmit = async (values) => {
     console.log('onSubmit: ', values)
-    const response = await axios.post('http://localhost:9000/api/auth/login', values, {
+    const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}api/auth/login`, values, {
       withCredentials: true
     })
     if(response.data.status) {
