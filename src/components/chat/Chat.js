@@ -27,7 +27,7 @@ function Main() {
   useSocket(setFriendList, setMessages, setUsername, channel, socket);
 
   return (
-    <FriendContext.Provider value={{ friendList, setFriendList, channel, setChannel }}>
+    <FriendContext.Provider value={{ friendList, setFriendList, channel, setChannel, username }}>
       <SocketContext.Provider value={{ socket }}>
         <div className="chat-container">
           <Sidebar />

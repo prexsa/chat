@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
 const UserContext = React.createContext();
-const EXPRESS_ENDPOINT = `http://localhost:9000`;
+// const EXPRESS_ENDPOINT = `http://localhost:9000`;
 
 const UserProvider = ({ children }) => {
   const navigate = useNavigate();

@@ -9,7 +9,7 @@ function Chatbox({ userID, from }) {
   const { setMessages } = useContext(MessagesContext);
   const { register, handleSubmit, reset, formState } = useForm();
   // const { ref, onChange, ...rest } = register('message');
-  const [message, setMessage] = useState('');
+  // const [message, setMessage] = useState('');
   const onSubmit = (data) => {
     // console.log('data: ', data)
     if(data.message.trim() === "") return;
@@ -55,7 +55,7 @@ function Chatbox({ userID, from }) {
   const handleOnChange = e => {
     // console.log('e: ', e.target.value)
     // reset textarea back to original height if message body is empty
-    setMessage(e.target.value)
+    // setMessage(e.target.value)
     if(e.target.value === "") {
       e.target.style.height = "43px";
       e.target.style.position = 'relative';
