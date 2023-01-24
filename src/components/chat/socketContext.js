@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef, useMemo } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { useUserContext } from '../../userContext';
 import socket from '../../socket';
 
@@ -10,10 +10,10 @@ const SocketProvider = ({ children }) => {
   const [username, setUsername] = useState('');
   const [channel, setChannel] = useState(null);
   const channelRef = useRef(channel);
-  const userRef = useRef(user)
+  // const userRef = useRef(user)
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [feedback, setFeedback] = useState(false);
+  // const [feedback, setFeedback] = useState(false);
   const [friendList, setFriendList] = useState([]);
 
   useEffect(() => {
@@ -98,6 +98,7 @@ const SocketProvider = ({ children }) => {
         if(user.id === channel.id) {
           user.hasNewMessage = false;
         }
+        return user;
       })
       return [...prevUsers]
     })
@@ -128,7 +129,7 @@ const SocketProvider = ({ children }) => {
         users,
         messages,
         channel,
-        feedback,
+        // feedback,
         // loginSocket,
         selectChannel,
         handleTypingIndicator,

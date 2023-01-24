@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
 const UserContext = React.createContext();
+const EXPRESS_ENDPOINT = `http://localhost:9000`;
 
 const UserProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -17,6 +18,8 @@ const UserProvider = ({ children }) => {
       navigate('/');
       return;
     }
+    // process.env.REACT_APP_SERVER_URL
+    // EXPRESS_ENDPOINT
     axios.get(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, {
       headers: {
         'authorization': `token ${accessToken}`
@@ -32,7 +35,7 @@ const UserProvider = ({ children }) => {
       localStorage.setItem("accessToken", null)
       return;
     })
-  }, [])
+  }, [navigate])
 
   return (
     <UserContext.Provider

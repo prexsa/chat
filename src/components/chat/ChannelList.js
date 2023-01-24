@@ -1,9 +1,9 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
-import { FriendContext, MessagesContext, SocketContext } from "./Chat";
+import { FriendContext } from "./Chat";
 
 function ChannelList() {
-  const { friendList, setFriendList, channel, setChannel } = useContext(FriendContext);
+  const { friendList, setFriendList, setChannel } = useContext(FriendContext);
   const [activeIndex, setActiveIndex] = useState(null);
 
   const onChannelSelect = (channel, index) => {

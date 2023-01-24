@@ -1,5 +1,5 @@
 import { useContext, useRef, useEffect } from 'react';
-import { FaUserCircle, FaEmpire } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
 import Chatbox from './Chatbox';
 import { useUserContext } from '../../userContext';
 import { MessagesContext, FriendContext } from './Chat';

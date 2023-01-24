@@ -156,7 +156,7 @@ main header h3 {
 }
 .icon-message-container {
   display: flex;
-  align-items: end;
+  align-items: flex-end;
   column-gap: 10px;
 }
 .flex-direction-row {

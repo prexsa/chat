@@ -1,4 +1,4 @@
-import { useEffect, useContext, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 // import socket from '../../socket';
 // import { FriendContext } from './Chat';
 
@@ -87,7 +87,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, socket) => 
       socket.off('dm');
       socket.off('msg')
     }
-  }, [setFriendList, setMessages, setUsername])
+  }, [setFriendList, setMessages, setUsername, socket])
 
   /*useEffect(() => {
     // console.log('channel: ', channel)

@@ -1,6 +1,4 @@
 import { createContext, useState, useEffect } from 'react';
-import { SocketProvider } from './socketContext';
-
 import MessagePanel from './MessagePanel';
 import Sidebar from './Sidebar';
 import './Chat.css';

@@ -5,10 +5,9 @@ import { MessagesContext } from './Chat';
 
 function Chatbox({ userID, from }) {
   // console.log('userID: ', userID)
-  const taRef = useRef();
   const { socket } = useContext(SocketContext);
   const { setMessages } = useContext(MessagesContext);
-  const { register, handleSubmit, reset, formState, formState: { errors, isSubmitSuccessful }} = useForm();
+  const { register, handleSubmit, reset, formState } = useForm();
   // const { ref, onChange, ...rest } = register('message');
   const [message, setMessage] = useState('');
   const onSubmit = (data) => {
