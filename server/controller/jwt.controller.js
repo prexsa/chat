@@ -10,7 +10,7 @@ const jwtSign = (payload, secret, options) => {
 }
 
 const jwtVerify = (token, secret) => {
-  console.log('token: ', token.toString())
+  // console.log('token: ', token.toString())
   return new Promise((resolve, reject) => {
     jwt.verify(token, secret, (err, decoded) => {
       if(err) reject(err);

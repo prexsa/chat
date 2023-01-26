@@ -6,8 +6,6 @@ import axios from 'axios';
 import { useUserContext } from '../userContext';
 import './Login.css';
 
-// const EXPRESS_ENDPOINT = `http://localhost:9000`;
-// console.log(process.env.REACT_APP_SERVER_URL)
 function Login() {
   const navigate = useNavigate();
   const { register, handleSubmit, reset, formState: { errors }} = useForm();
@@ -20,13 +18,10 @@ function Login() {
     const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, values, {
       withCredentials: true
     })
-    /*const response = await axios.post(`${EXPRESS_ENDPOINT}/api/auth/login`, values, {
-      withCredentials: true
-    })*/
     if(response.data.status) {
       setError(response.data.status)
     } else {
-      console.log('response: ', response.data)
+      // console.log('response: ', response.data)
       localStorage.setItem("accessToken", response.data.accessToken);
       setUser({...response.data});
       navigate('/chat');

@@ -6,8 +6,6 @@ import axios from 'axios';
 import { useUserContext } from '../userContext';
 import './Login.css';
 
-// const EXPRESS_ENDPOINT = `http://localhost:9000`;
-
 function Signup() {
   const navigate = useNavigate();
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
@@ -16,14 +14,10 @@ function Signup() {
   const [error, setError] = useState(null);
 
   const handleOnSubmit = async (values) => {
-    console.log('onSubmit: ', values)
-    // process.env.REACT_APP_SERVER_URL
+    // console.log('onSubmit: ', values)
     const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/auth/signup`, values, {
       withCredentials: true
     })
-    /*const response = await axios.post(`${EXPRESS_ENDPOINT}/api/auth/signup`, values, {
-      withCredentials: true
-    })*/
     console.log('response: ', response.data)
     if(response.data.status) {
       setError(response.data.status)
