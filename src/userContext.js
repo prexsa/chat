@@ -7,17 +7,19 @@ const UserContext = React.createContext();
 
 const UserProvider = ({ children }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({
+    username: '',
+    userID: '',
+    loggedIn: null,
+  });
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
     // const user = JSON.parse(localStorage.getItem('user'));
     // console.log('user: ', user)
     // setUser(user)
     // console.log('accessToken: ', accessToken)
-    if(accessToken === null) {
-      navigate('/');
-      return;
-    }
+    if(accessToken === null) return;
+    // console.log('hello')
     // process.env.REACT_APP_SERVER_URL
     // EXPRESS_ENDPOINT
     axios.get(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, {
@@ -25,7 +27,7 @@ const UserProvider = ({ children }) => {
         'authorization': `token ${accessToken}`
       }
     }).then(response => {
-      // console.log('response: ', response)
+      console.log('response: ', response.data)
       const data = response.data;
       // console.log('data: ', data)
       setUser(data)

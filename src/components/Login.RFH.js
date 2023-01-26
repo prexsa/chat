@@ -16,7 +16,7 @@ function Login() {
   const [error, setError] = useState(null);
 
   const handleOnSubmit = async (values) => {
-    console.log('onSubmit: ', values)
+    // console.log('onSubmit: ', values)
     const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, values, {
       withCredentials: true
     })
@@ -26,8 +26,9 @@ function Login() {
     if(response.data.status) {
       setError(response.data.status)
     } else {
+      console.log('response: ', response.data)
       localStorage.setItem("accessToken", response.data.accessToken);
-      setUser(response.data);
+      setUser({...response.data});
       navigate('/chat');
     }
     reset({username: '', password: ''})

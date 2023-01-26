@@ -6,6 +6,7 @@ const { jwtSign, jwtVerify , getJwt } = require('./jwt.controller');
 
 exports.verifyToken = (req, res) => {
   const token = getJwt(req);
+  // console.log('token; ', token)
   // console.log('token: ', token)
   jwtVerify(token, JWT_SECRET).then(decoded => {
     // console.log('decoded: ', decoded)
@@ -16,7 +17,7 @@ exports.verifyToken = (req, res) => {
     })
   }).catch(err => {
     console.log('check token error: ', err)
-    if(err) res.status(401)
+    if(err) res.status(401).send({ loggedIn: false, status: err })
   })
 }
 
@@ -36,7 +37,8 @@ exports.login = (req, res) => {
       if(!passwordIsValid) {
         return res.status(200).send({
           accessToken: null,
-          status: 'Invalid password!'
+          status: 'Invalid password!',
+          loggedIn: false,
         });
       }
       // console.log('user: ', user)
@@ -49,7 +51,8 @@ exports.login = (req, res) => {
         res.status(200).send({
           username: user.username,
           accessToken: token,
-          userID: user.userID
+          userID: user.userID,
+          loggedIn: true
         })
       })
     })
@@ -68,7 +71,7 @@ exports.signup = async (req, res) => {
     });
     user.save((err, user) =>{
       if(err) {
-        res.status(500).send({ status: err });
+        res.status(500).send({ status: err, loggedIn: false });
         return;
       }
 
@@ -82,7 +85,8 @@ exports.signup = async (req, res) => {
           status: 'User was registered successfully!',
           username: username,
           accessToken: token,
-          userID: user.userID
+          userID: user.userID,
+          loggedIn: true,
         })
       })
     })
