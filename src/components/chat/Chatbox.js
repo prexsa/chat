@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { SocketContext, MessagesContext } from './Chat';
 
@@ -7,8 +7,7 @@ function Chatbox({ userID, from }) {
   const { socket } = useContext(SocketContext);
   const { setMessages } = useContext(MessagesContext);
   const { register, handleSubmit, reset, formState } = useForm();
-  // const { ref, onChange, ...rest } = register('message');
-  // const [message, setMessage] = useState('');
+  const [feedbackToggle, setFeedbackToggle] = useState(false);
   const onSubmit = (data) => {
     // console.log('data: ', data)
     if(data.message.trim() === "") return;
@@ -29,32 +28,32 @@ function Chatbox({ userID, from }) {
   }
 
   const handleOnKeyDown = e => {
+    // console.log('e: ', e.target.value)
     if(e.key === 'Enter' && e.shiftKey === false) {
       // console.log('target value: ', e.target.value)
+      setFeedbackToggle(false);
+      const feedback = {
+        userID,
+        showFeedback: false
+      }
+      socket.connect();
+      socket.emit('feedback_typing', feedback)
       handleSubmit(onSubmit)();
     }
-
-    /*const el = e.target;
-    const comp = window.getComputedStyle(el, null);
-    console.log('comp: ', comp.getPropertyValue('font-size'))*/
-    // resize textarea as message body increases
-    // const textareaHeight = parseInt(e.target.style.height);
-    // e.target.style.height = `${e.target.scrollHeight}px`;
-    // console.log('scrollHeight: ', e.target.scrollHeight)
-    // e.target.style.overflowY = 'hidden';
-    // e.target.style.position = 'relative';
-    // e.target.style.top = 43 - e.target.scrollHeight
-    // e.target.style.top = `-${Math.floor(e.target.style.fontSize / 2)}px`;
-    // e.target.style.top = `${textareaHeight}-${e.target.scrollHeight}px`;
-    // console.log('textareaHeight: ', textareaHeight)
-    // console.log('e: ',`${e.target.scrollHeight}px`)
-    // console.log('value: ', e.target.value)
   }
 
   const handleOnChange = e => {
-    // console.log('e: ', e.target.value)
     // reset textarea back to original height if message body is empty
     // setMessage(e.target.value)
+    if(!feedbackToggle) {
+      setFeedbackToggle(true);
+      const feedback = {
+        userID,
+        showFeedback: true
+      }
+      socket.connect();
+      socket.emit('feedback_typing', feedback)
+    }
     if(e.target.value === "") {
       e.target.style.height = "43px";
       e.target.style.position = 'relative';
@@ -75,9 +74,11 @@ function Chatbox({ userID, from }) {
         type="text"
         placeholder="type..."
         onKeyDown={handleOnKeyDown}
-        onChange={handleOnChange}
+        // onChange={handleOnChange}
         name="message"
-        {...register('message')}
+        {...register('message', {
+          onChange: handleOnChange
+        })}
       />
       <input className='chatbox-submit' type="submit" />
     </form>
@@ -85,5 +86,3 @@ function Chatbox({ userID, from }) {
 }
 
 export default Chatbox;
-        /*
-        {...rest}*/

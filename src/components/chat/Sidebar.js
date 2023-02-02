@@ -1,5 +1,3 @@
-// import { useContext } from 'react';
-// import AddFriend from './AddFriend';
 import AddFriendRFH from './AddFriend.RFH';
 import Logout from '../Logout';
 import ChannelList from './ChannelList';

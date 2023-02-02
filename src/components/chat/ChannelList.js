@@ -2,7 +2,6 @@ import { useContext, useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 import { FriendContext, SocketContext } from "./Chat";
 
-
 function ChannelList() {
   const { friendList, setFriendList, setChannel } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
@@ -33,12 +32,12 @@ function ChannelList() {
         {
           friendList && friendList.map((friend, index) => {
             return (
-              <li className={`${activeIndex === index ? 'active-list-item': ''}`} key={friend.userID} onClick={() => onChannelSelect(friend, index)}>
+              <li
+                className={`${activeIndex === index ? 'active-list-item': ''}`}
+                key={friend.userID}
+                onClick={() => onChannelSelect(friend, index)}
+              >
                 <span className={`status ${friend.connected === 'true' ? 'green' : 'orange'}`}></span>
-                {/*<img
-                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/chat_avatar_01.jpg"
-                  alt=""
-                />*/}
                 <FaUserCircle />
                 <div>
                   <h2>{friend.username}</h2>

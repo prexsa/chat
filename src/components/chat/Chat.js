@@ -4,7 +4,6 @@ import Sidebar from './Sidebar';
 import './Chat.css';
 import socketConn from '../../socket';
 import useSocket from './useSocket';
-// import { useUserContext } from '../../userContext';
 export const FriendContext = createContext();
 export const MessagesContext = createContext();
 export const SocketContext = createContext();
@@ -15,6 +14,7 @@ function Main() {
   const [messages, setMessages] = useState([]);
   const [channel, setChannel] = useState(null);
   const [username, setUsername] = useState('');
+  const [feedback, setFeedback] = useState(false);
 
   // const user = JSON.parse(localStorage.getItem('user'))
   const accessToken = localStorage.getItem('accessToken');
@@ -24,7 +24,7 @@ function Main() {
     setSocket(() => socketConn(accessToken));
   }, [accessToken]);
 // console.log('socket: ', socket)
-  useSocket(setFriendList, setMessages, setUsername, channel, socket);
+  useSocket(setFriendList, setMessages, setUsername, channel, setFeedback, socket);
 
   return (
     <FriendContext.Provider value={{ friendList, setFriendList, channel, setChannel, username }}>
@@ -32,7 +32,7 @@ function Main() {
         <div className="chat-container">
           <Sidebar />
           <main>
-            <MessagesContext.Provider value={{ messages, setMessages }}>
+            <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
               <MessagePanel />
             </MessagesContext.Provider>
           </main>
@@ -43,7 +43,3 @@ function Main() {
 }
 
 export default Main;
-
-// https://codepen.io/robinllopis/pen/mLrRRB
-// https://www.freecodecamp.org/news/build-a-realtime-chat-app-with-react-express-socketio-and-harperdb/
-// https://codepen.io/arthak/pen/oWEwqB

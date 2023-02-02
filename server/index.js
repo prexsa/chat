@@ -42,10 +42,12 @@ io.on('connection', async (socket) => {
 
   socket.on('clear_has_new_message', roomId => removeRoomId(socket, roomId))
 
-  /*socket.on('typing', ({ toggleState, to }) => {
-    io.to(to).emit('typingResp', {toggleState, to})
-    // socket.broadcast.emit('typingResp', toggleState);
-  })*/
+  socket.on('feedback_typing', ({userID, showFeedback}) => {
+    console.log('userID: ', userID)
+    socket.to(userID).emit('typing_feedback', showFeedback)
+    /*io.to(to).emit('typingResp', {toggleState, to})
+    // socket.broadcast.emit('typingResp', toggleState);*/
+  })
   socket.on('logoff', () => onDisconnect(socket))
   socket.on('disconnect', () => onDisconnect(socket));
 })

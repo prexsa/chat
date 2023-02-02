@@ -7,16 +7,12 @@ import { MessagesContext, FriendContext } from './Chat';
 function MessagePanel() {
   const bottomRef = useRef(null);
   const { user } = useUserContext();
-  const { messages } = useContext(MessagesContext);
+  const { messages, feedback } = useContext(MessagesContext);
   const { channel } = useContext(FriendContext);
-  // const user = JSON.parse(localStorage.getItem('user'));
-  // console.log('user: ', user)
-  // console.log('channel: ', channel)
-  // console.log('messages: ', messages)
   useEffect(() => {
     // bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
     bottomRef.current?.scrollIntoView(false);
-  }, [messages])
+  }, [messages, feedback])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({block: 'end', inline: 'nearest'});
@@ -66,10 +62,9 @@ function MessagePanel() {
                 )
               })
             }
-            <li ref={bottomRef}></li>
+            <li ref={bottomRef} id="feedback">{feedback ? `${user.username} is typing...` : ''}</li>
           </ul>
           <footer>
-            {/*<div id="feedback">{ feedback ? 'is typing...': '' }</div>*/}
             <Chatbox userID={channel.userID} from={user.userID} />
           </footer>
         </div>

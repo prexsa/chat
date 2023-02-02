@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react';
-// import socket from '../../socket';
-// import { FriendContext } from './Chat';
 
-const useSocket = (setFriendList, setMessages, setUsername, channel, socket) => {
+const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback, socket) => {
   // const { channel } = useContext(FriendContext);
   // console.log('channel: ', channel)
   // console.log('socket: ', socket)
@@ -73,6 +71,11 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, socket) => 
     socket.on('all_messages', msgs => {
       // console.log('all_messages: ', msgs)
       setMessages(msgs)
+    })
+
+    socket.on('typing_feedback', feedbackToggle => {
+      // console.log('typing_feedback: ', feedbackToggle)
+      setFeedback(feedbackToggle)
     })
 
     socket.on('connection_error', () => {

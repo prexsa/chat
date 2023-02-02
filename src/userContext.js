@@ -20,7 +20,7 @@ const UserProvider = ({ children }) => {
         'authorization': `token ${accessToken}`
       }
     }).then(response => {
-      console.log('response: ', response.data)
+      // console.log('response: ', response.data)
       const data = response.data;
       // console.log('data: ', data)
       setUser(data)
