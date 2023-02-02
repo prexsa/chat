@@ -4,6 +4,16 @@
   flex-flow: column wrap;
   text-align: center;
 }
+.pnf-container {
+  margin: auto;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+.pnf-container h3 {
+  color: grey;
+  margin-bottom: 15px;
+}
 .loading-wrapper {
   width: 200px;
   height: 60px;

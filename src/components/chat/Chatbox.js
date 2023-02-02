@@ -1,7 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { SocketContext } from './Chat';
-import { MessagesContext } from './Chat';
+import { SocketContext, MessagesContext } from './Chat';
 
 function Chatbox({ userID, from }) {
   // console.log('userID: ', userID)

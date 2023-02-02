@@ -12,6 +12,7 @@ const {
   addFriend,
   initializeUser,
   dm,
+  removeRoomId,
   channelMsgs,
   onDisconnect
 } = require('./controller/socketController');
@@ -38,6 +39,8 @@ io.on('connection', async (socket) => {
   socket.on('dm', message => dm(socket, message))
   // socket.on('channel_msgs', (userID, cb) => channelMsgs(socket, userID, cb))
   socket.on("add_friend", (name, cb) => addFriend(socket, name, cb))
+
+  socket.on('clear_has_new_message', roomId => removeRoomId(socket, roomId))
 
   /*socket.on('typing', ({ toggleState, to }) => {
     io.to(to).emit('typingResp', {toggleState, to})

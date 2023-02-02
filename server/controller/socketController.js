@@ -27,10 +27,28 @@ module.exports.initializeUser = async socket => {
   // get friend list
   const friendList = await redisClient.lrange(`friends:${socket.user.username}`, 0 , -1);
   const parsedFriendList = await parseFriendList(friendList);
+  // console.log('parsedFriendList: ', parsedFriendList)
   const friendRooms = parsedFriendList.map(friend => friend.userID);
+  // console.log('friendRooms: ', friendRooms)
   if(friendRooms.length > 0) {
     socket.to(friendRooms).emit("connected", "true", socket.user.username)
   }
+
+  // get new msg indicator notice, while user was away
+  const hasMessages = await redisClient.smembers(`hasMsg:${socket.user.username}`);
+  // console.log('has ', hasMessages )
+  if(hasMessages.length > 0) {
+    hasMessages.map(roomId => {
+      parsedFriendList.map(friend => {
+        if(friend.userID === roomId) {
+          friend.hasNewMessage = true;
+        }
+        return friend;
+      })
+    })
+  }
+  // console.log('parsedFriendList: ', parsedFriendList)
+  socket.emit("friends", parsedFriendList)
 
   // get chat messages
   const messageQuery= await redisClient.lrange(`chat:${socket.user.userID}`, 0 , -1)
@@ -43,8 +61,6 @@ module.exports.initializeUser = async socket => {
     }
   }).reverse()
   // console.log('allMessages: ', messages)
-  // console.log('parsedFriendList: ', parsedFriendList)
-  socket.emit("friends", parsedFriendList)
   if(messages && messages.length > 0) {
     socket.emit('all_messages', messages)
   }
@@ -103,9 +119,19 @@ module.exports.addFriend = async (socket, name, cb) => {
 
 module.exports.dm = async (socket, msg) => {
   console.log('msg: ', msg)
+  // check if the user is online
   msg.from = socket.user.userID;
+  const username = socket.user.username
+
+  const { connected, friendUN } = await getFriendConnectionState(username, msg.to);
+  // console.log('connected: ', connected, 'friendUN: ', friendUN)
+  if(connected === 'false') {
+    // console.log('connected false')
+    await redisClient.sadd(`hasMsg:${friendUN}`,`${msg.from}`)
+  }
+  // console.log('socket: ', socket.user.username)
   const messageStr = [msg.to, msg.from, msg.content].join(".");
-console.log('messageStr: ', messageStr)
+// console.log('messageStr: ', messageStr)
   await redisClient.lpush(`chat:${msg.to}`, messageStr);
   await redisClient.lpush(`chat:${msg.from}`, messageStr)
 
@@ -113,7 +139,7 @@ console.log('messageStr: ', messageStr)
 }
 
 module.exports.channelMsgs = async (socket, userID) => {
-  console.log('channelMsgs: ', userID)
+  // console.log('channelMsgs: ', userID)
   const msgs = await redisClient.lrange(`chat:${userID}`, 0, -1);
   const reversed = msgs.reverse();
   const parsedMsgs = await reversed.map(msg => {
@@ -126,6 +152,10 @@ module.exports.channelMsgs = async (socket, userID) => {
   })
 
   socket.emit("channel_msgs", parsedMsgs)
+}
+
+module.exports.removeRoomId = async (socket, roomId) => {
+  await redisClient.srem(`hasMsg:${socket.user.username}`, roomId)
 }
 
 module.exports.onDisconnect = async socket => {
@@ -162,4 +192,24 @@ const parseFriendList = async (friendList) => {
     })
   }
   return newFriendList;
+}
+
+const getFriendConnectionState = async (username, friendid) => {
+  const friendList = await redisClient.lrange(`friends:${username}`, 0 , -1);
+  let friendConnectionStatus = false;
+  let parseFriendUN = ''
+  for(let i = 0; i < friendList.length; i++) {
+    const friend = friendList[i];
+    parseFriendUN = friend.split('.')[0];
+    const parseFriendID = friend.split('.')[1];
+    // console.log('friend: ', friend)
+    if(parseFriendID === friendid) {
+      // console.log('connection status: ', await redisClient.hgetall(`userid:${parseFriendUN}`))
+      friendConnectionStatus = await redisClient.hget(`userid:${parseFriendUN}`, 'connected')
+      return {
+        connected: friendConnectionStatus,
+        friendUN: parseFriendUN
+      };
+    }
+  }
 }

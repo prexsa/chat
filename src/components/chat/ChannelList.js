@@ -1,9 +1,11 @@
 import { useContext, useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
-import { FriendContext } from "./Chat";
+import { FriendContext, SocketContext } from "./Chat";
+
 
 function ChannelList() {
   const { friendList, setFriendList, setChannel } = useContext(FriendContext);
+  const { socket } = useContext(SocketContext);
   const [activeIndex, setActiveIndex] = useState(null);
 
   const onChannelSelect = (channel, index) => {
@@ -15,6 +17,8 @@ function ChannelList() {
       return [...prevFriends].map(friend => {
         if(friend.userID === channel.userID) {
           friend.hasNewMessage = false;
+          socket.connect();
+          socket.emit('clear_has_new_message', channel.userID)
         }
         return friend;
       })
