@@ -90,7 +90,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       socket.off('dm');
       socket.off('msg')
     }
-  }, [setFriendList, setMessages, setUsername, socket])
+  }, [setFriendList, setMessages, setUsername, socket, setFeedback])
 
   /*useEffect(() => {
     // console.log('channel: ', channel)
