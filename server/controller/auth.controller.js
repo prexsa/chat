@@ -25,35 +25,33 @@ exports.verifyToken = (req, res) => {
 exports.login = (req, res) => {
   // console.log('app: body: ', req.body)
   const { username, password = "testing" } = req.body;
-  User.findOne({ username: username }).exec((err, user) => {
-      if(err) {
-        res.status(500).send({ status: err });
-        return;
-      }
-      if(!user) return res.status(200).send({ loggedIn: false, status: "User not found" });
-      const passwordIsValid = bcrypt.compareSync(password, user.password);
-      if(!passwordIsValid) {
-        return res.status(200).send({
-          accessToken: null,
-          status: 'Invalid password!',
-          loggedIn: false,
-        });
-      }
-      // console.log('user: ', user)
-      const payload = {
-        id: user._id,
+  User.findOne({ username: username }).then((user) => {
+    if(!user) return res.status(200).send({ loggedIn: false, status: "User not found" });
+    const passwordIsValid = bcrypt.compareSync(password, user.password);
+    if(!passwordIsValid) {
+      return res.status(200).send({
+        accessToken: null,
+        status: 'Invalid password!',
+        loggedIn: false,
+      });
+    }
+    // console.log('user: ', user)
+    const payload = {
+      id: user._id,
+      username: user.username,
+      userID: user.userID
+    }
+    jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then(token => {
+      res.status(200).send({
         username: user.username,
-        userID: user.userID
-      }
-      jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then(token => {
-        res.status(200).send({
-          username: user.username,
-          accessToken: token,
-          userID: user.userID,
-          loggedIn: true
-        })
+        accessToken: token,
+        userID: user.userID,
+        loggedIn: true
       })
     })
+  }).catch(err => {
+    res.status(500).send({ status: err });
+  })
 }
 
 exports.signup = async (req, res) => {

@@ -9,7 +9,13 @@ if(process.env.NODE_ENV === 'development') {
 }
 
 const login = async (values) => {
-  return await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/auth/signup`, values, {
+  return await axios.post(`${SERVER_ENDPOINT}/api/auth/login`, values, {
+      withCredentials: true
+    })
+}
+
+const register = async (values) => {
+  return await axios.post(`${SERVER_ENDPOINT}/api/auth/signup`, values, {
       withCredentials: true
     })
 }
@@ -28,6 +34,7 @@ const updatePassword = async (values) =>{
 
 const AuthServices = {
   login,
+  register,
   userExist,
   updatePassword
 }

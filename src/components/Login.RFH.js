@@ -16,9 +16,7 @@ function Login() {
 
   const handleOnSubmit = async (values) => {
     // console.log('onSubmit: ', values)
-    const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, values, {
-      withCredentials: true
-    })
+    const response = await Auth.login(values)
     if(response.data.status) {
       setError(response.data.status)
     } else {
@@ -45,34 +43,31 @@ function Login() {
         )
       : null}
       <form onSubmit={handleSubmit(handleOnSubmit, onErrors)}>
-        <div className="form-field">
-          <label className="input-label" htmlFor="username">Username</label>
-          <input 
-            className="text-input" 
+        <div className="form-field floating-label-cntr">
+          <input
+            className="floating-input" 
             type="text" 
-            name="username" 
-            placeholder="Username"
-            {...register("username", registerOptions.username)} 
+            placeholder="Username or Email"
+            {...register("username", { required: true })} 
           />
-          <small className="text-danger">
-            {errors?.username && errors.username.message}
-          </small>
+          <label className="floating-label" htmlFor="username">Username or Email</label>
         </div>
-        <div className="form-field">
-          <label className="input-label" htmlFor="password">Password</label>
-          <div className="password-cntr">
-            <input 
-              className="text-input" 
-              type="text" 
-              name="password" 
-              {...register("password", registerOptions.password)} 
-              />
-            <FaEyeSlash className='fa-eye' onClick={() => setShow(!show)} />
-            <small className="text-danger">
-              {errors?.password && errors.password.message}
-            </small>
-          </div>
+        <small className="text-danger">
+          {errors?.username && errors.username.message}
+        </small>
+        <div className="form-field floating-label-cntr">
+          <input
+            className="floating-input" 
+            type={show ? "text" : "password"} 
+            placeholder="Password"
+            {...register("password", { required: true })} 
+          />
+          <label className="floating-label" htmlFor="username">Password</label>
+          <FaEyeSlash className='fa-eye' onClick={() => setShow(!show)} />
         </div>
+        <small className="text-danger">
+          {errors?.password && errors.password.message}
+        </small>
         <div className="form-field marginTop20">
           <button type="submit" className="btn btn-primary btn-sm">Login</button>
         </div>
