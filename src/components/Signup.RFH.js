@@ -43,8 +43,8 @@ function Signup() {
   }
 
   return (
-    <div className="logon-container">
-      <h2>Sign up</h2>
+    <div className="centered-cntr">
+      <h3>Sign up</h3>
       {error ? (
         <div className="text-danger">{error}</div>
         )

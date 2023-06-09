@@ -22,7 +22,7 @@ function Login() {
   const [error, setError] = useState(null);
 
   return (
-    <div className="logon-container">
+    <div className="centered-cntr">
       <h2>Log in</h2>
       <Formik
         initialValues={{ username: '', password: ''}}

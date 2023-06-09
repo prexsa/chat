@@ -8,6 +8,4 @@ const redisClient = new Redis(redisURL);
 // const { InMemorySessionStore, RedisSessionStore } = require('./sessionStore');
 // const sessionStore = new InMemorySessionStore(redisClient);
 
-module.exports = {
-  redisClient
-};
+module.exports = { redisClient };

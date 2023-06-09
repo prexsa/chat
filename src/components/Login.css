@@ -1,4 +1,4 @@
-.logon-container {
+.centered-cntr {
   margin: auto;
   padding: 25px 35px;
   height: fit-content;
@@ -12,13 +12,33 @@
   border-radius: 3px;
   box-shadow: rgb(0 0 0 / 10%) 0px 0px 10px;
   box-sizing: border-box;
+  border: 1px solid #d3d3d3;
 }
-
+.centered-cntr .fa-lock {
+  margin: 10px 0;
+  box-sizing: content-box;
+  border: 2px solid #d3d3d3;
+  border-radius: 50%;
+  padding: 15px;
+  font-size: 40px;
+  color: #6c6868;
+}
+.centered-cntr h3 {
+  margin: 8px 0;
+}
+.centered-cntr p {
+  font-size: 14px;
+  color: #6c6868;
+  margin: 0;
+}
+.form-cntr {
+  margin-top: 30px;
+}
 .form-field {
   display: flex;
   flex-direction: column;
   text-align: left;
-  margin: 10px 0 0;
+  margin: 25px 0 0;
 }
 .form-field > label {
   margin: 5px 0;
@@ -27,32 +47,80 @@
   padding: 2px 5px;
   border: 1px solid #dcdcdc;
 }
-
 .marginTop20 {
   margin-top: 20px;
 }
-
 .input-label {
   font-weight: 500;
   color: #40464a;
 }
-
-.password-svg {
-  margin-left: auto;
+.floating-label-cntr {
   position: relative;
-  bottom: 26px;
-  font-size: 23px;
-  margin-right: 1px;
-  color: grey;
-  background-color: white;
-  padding: 3px 4px;
+  /*margin-bottom: 20px;*/
 }
-
-.password-svg:hover {
+.floating-input {
+  display: block;
+  line-height: 2em;
+  margin: 0;
+  padding-left: 10px;
+  width: 100%;
+  font-size: medium;
+  border: 1px solid #f4f4f4;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-weight: 500;
+}
+.floating-input:focus {
+  border: 1px solid #2c7ac9;
+}
+.floating-label {
+  display: block;
+  position: absolute;
+  opacity: 0;
+  bottom: 1.9rem;
+  color: #5d5d5d;
+  transition: 0.2s ease-in-out transform;
+  font-size: 12px;
+}
+.floating-input:placeholder-shown + .floating-label {
+  visibility: hidden;
+  z-index: -1;
+  transition: 0.2s ease-in-out;
+}
+.floating-input:not(:placeholder-shown) + .floating-label,
+.floating-input:focus:not(:placeholder-shown) + .floating-label {
+  visibility: visible;
+  z-index: 1;
+  opacity: 1;
+  transform: translateY(-10px);
+  transition: 0.2s ease-in-out transform;
+}
+.password-cntr {
+  position: relative;
+  width: 100%;
+}
+input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+.password-cntr input[type="password"],
+.password-cntr input[type="text"]{
+  width: 100%;
+  /*padding: 12px 36px 12px 12px;*/
+  box-sizing: border-box;
+}
+.fa-eye {
+  position: absolute;
+  top: 13%;
+  right: 4%;
   cursor: pointer;
-  color: lightgrey;
+  color: #d3d3d3;
 }
-
 .link-container {
   font-size: 14px;
   color: #40464a;
@@ -70,4 +138,10 @@
 .logout-btn:hover {
   /*border: 1px solid #c5c5c5;*/
   color: #f4f4f4;
+}
+.error-feedback-sm {
+  text-align: left;
+  display: flex;
+  margin: 1px;
+  padding: 1px;
 }

@@ -5,6 +5,7 @@ import './Login.css'
 
 const MyTextInput = ({label, ...props}) => {
   const [field, meta] = useField(props);
+  
   return (
     <div className="form-field">
       <label className="input-label" htmlFor={props.id || props.name}>{label}</label>
@@ -19,6 +20,7 @@ const MyTextInput = ({label, ...props}) => {
 const MyTextInputPassword = ({label, ...props}) => {
   const [show, setShow] = useState(false);
   const [field, meta] = useField(props);
+
   return (
     <div className="form-field">
       <label className="input-label" htmlFor={props.id || props.name}>{label}</label>

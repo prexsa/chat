@@ -1,6 +1,7 @@
 const User = require('../model/auth.model');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const { sendMail } = require('./nodemailer.controller')
 const JWT_SECRET = process.env.JWT_SECRET;
 const { jwtSign, jwtVerify , getJwt } = require('./jwt.controller');
 
@@ -24,10 +25,7 @@ exports.verifyToken = (req, res) => {
 exports.login = (req, res) => {
   // console.log('app: body: ', req.body)
   const { username, password = "testing" } = req.body;
-  User.
-    findOne({
-      username: username
-    }).exec((err, user) => {
+  User.findOne({ username: username }).exec((err, user) => {
       if(err) {
         res.status(500).send({ status: err });
         return;
@@ -95,4 +93,25 @@ exports.signup = async (req, res) => {
     res.status(200).send({ loggedIn: false, status: "Username taken"})
     return;
   }
+}
+
+
+exports.sendResetLink = async (req, res) => {
+  const { keyType, value } = req.body;
+  console.log('req.body: ', req.body)
+  // findOne returns an obj
+  const recordFound = await User.findOne({ [keyType]: value })
+  console.log('recordFound: ', recordFound)
+  const { userID, email } = recordFound
+  const payload = { userID, email }
+  sendMail(payload)
+  const status = recordFound !== null ? 'success' : 'failed'
+  res.status(200).send({ status })
+}
+
+exports.passwordReset = async (req, res) => {
+  const { userId, password } = req.body
+  const result = await User.findOneAndUpdate({ userID: userId }, { $set: { password: bcrypt.hashSync(password, 8), }});
+  // console.log('result: ;', result)
+  res.status(200).send({ status: 'success' })
 }

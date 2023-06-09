@@ -13,5 +13,7 @@ router.use(function(req, res, next) {
 
 router.route('/login').get(AuthControl.verifyToken).post(rateLimiter(60, 10), AuthControl.login)
 router.route('/signup').post(AuthControl.signup)
+router.route('/pw-reset').post(AuthControl.sendResetLink)
+router.route('/update-pw').post(AuthControl.passwordReset)
 
 module.exports = router;
