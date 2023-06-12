@@ -14,8 +14,14 @@ const login = async (values) => {
     })
 }
 
-const register = async (values) => {
+const signup = async (values) => {
   return await axios.post(`${SERVER_ENDPOINT}/api/auth/signup`, values, {
+      withCredentials: true
+    })
+}
+
+const addUsername = async (values) => {
+  return await axios.post(`${SERVER_ENDPOINT}/api/auth/add-username`, values, {
       withCredentials: true
     })
 }
@@ -32,9 +38,11 @@ const updatePassword = async (values) =>{
   })
 }
 
+
 const AuthServices = {
   login,
-  register,
+  signup,
+  addUsername,
   userExist,
   updatePassword
 }

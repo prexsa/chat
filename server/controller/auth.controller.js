@@ -56,39 +56,39 @@ exports.login = (req, res) => {
 
 exports.signup = async (req, res) => {
   // console.log('signup ', req.body)
-  const { username, password } = req.body;
-  const record = await User.findOne({ username: username })
+  const { fname, lname, email, password } = req.body;
+  const record = await User.findOne({ email: email })
   // console.log('record: ', record)
   if(record === null) {
     const user = new User({
-      username: username,
+      // username: username,
+      firstname: fname,
+      lastname: lname,
+      email: email,
       password: bcrypt.hashSync(req.body.password, 8),
       userID: crypto.randomUUID()
     });
-    user.save((err, user) =>{
-      if(err) {
-        res.status(500).send({ status: err, loggedIn: false });
-        return;
-      }
-
+    user.save().then(() => {
       const payload = {
         id: user._id,
-        username: user.username,
+        // username: user.username,
         userID: user.userID
       }
       jwtSign(payload, JWT_SECRET, { expiresIn: "7d"}).then(token => {
         res.send({
           status: 'User was registered successfully!',
-          username: username,
+          // username: username,
           accessToken: token,
           userID: user.userID,
           loggedIn: true,
         })
       })
+    }).catch((err) => {
+      console.log('signup error: ', err)
+      res.status(500).send({ status: err, loggedIn: false });
     })
-    return;
   } else {
-    res.status(200).send({ loggedIn: false, status: "Username taken"})
+    res.status(200).send({ loggedIn: false, status: "That email is in use"})
     return;
   }
 }

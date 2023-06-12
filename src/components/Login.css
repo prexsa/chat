@@ -47,6 +47,9 @@
   padding: 2px 5px;
   border: 1px solid #dcdcdc;
 }
+.red-outline-color {
+  outline-color: rgb(220, 53, 69);
+}
 .marginTop20 {
   margin-top: 20px;
 }
@@ -84,6 +87,7 @@
   color: #5d5d5d;
   transition: 0.2s ease-in-out transform;
   font-size: 12px;
+  font-weight: 700;
 }
 .floating-input:placeholder-shown + .floating-label {
   visibility: hidden;
