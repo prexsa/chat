@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate, Link } from "react-router-dom";
-import { FaEyeSlash, FaRocketchat } from 'react-icons/fa';
+import { FaEyeSlash } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import { useUserContext } from '../userContext';
 import Auth from '../services/Auth';
 import './Login.css';
@@ -16,24 +15,41 @@ function Login() {
 
   const handleOnSubmit = async (values) => {
     // console.log('onSubmit: ', values)
+    // check str if it's an email or a username
+    const emailFormat = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const keyType = emailFormat.test(values.inputValue) ? 'email' : 'username'
+    values.keyType = keyType
+    // console.log('values: ', values)
     const response = await Auth.login(values)
+    // console.log('response: ', response)
     if(response.data.status) {
       setError(response.data.status)
     } else {
-      // console.log('response: ', response.data)
-      localStorage.setItem("accessToken", response.data.accessToken);
-      setUser({...response.data});
-      navigate('/chat');
+      // console.log("fdjslkf;j: ", response.data.hasOwnProperty("username"))
+      if(response.data.hasOwnProperty("username")) {
+        // console.log('response: ', response.data)
+        localStorage.setItem("accessToken", response.data.accessToken);
+        setUser({...response.data});
+        // navigate('/chat');
+      } else {
+        // if username has not been created, redirect user to create username
+        navigate('/select-username', { state: { userID: response.data.userID }});
+      }
     }
-    reset({username: '', password: ''})
+    reset({inputValue: '', password: ''})
   }
+
+  const clearErrorMsg = useCallback(() => {
+    setTimeout(() => {
+      setError(null)
+    }, 3000)
+  }, [])
+
+  useEffect(() => {
+    clearErrorMsg()
+  }, [error, clearErrorMsg])
 
   const onErrors = errors => console.error(errors)
-
-  const registerOptions = {
-    username: { required: "Username is required" },
-    password: { required: "Password is required" }
-  }
 
   return (
     <div className="centered-cntr">
@@ -48,12 +64,12 @@ function Login() {
             className="floating-input" 
             type="text" 
             placeholder="Username or Email"
-            {...register("username", { required: true })} 
+            {...register("inputValue", { required: true })} 
           />
-          <label className="floating-label" htmlFor="username">Username or Email</label>
+          <label className="floating-label" htmlFor="inputValue">Username or Email</label>
         </div>
         <small className="text-danger">
-          {errors?.username && errors.username.message}
+          {errors?.inputValue && errors.inputValue.message}
         </small>
         <div className="form-field floating-label-cntr">
           <input
@@ -62,7 +78,7 @@ function Login() {
             placeholder="Password"
             {...register("password", { required: true })} 
           />
-          <label className="floating-label" htmlFor="username">Password</label>
+          <label className="floating-label" htmlFor="password">Password</label>
           <FaEyeSlash className='fa-eye' onClick={() => setShow(!show)} />
         </div>
         <small className="text-danger">

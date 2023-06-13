@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate, Link } from "react-router-dom";
 import { FaEyeSlash } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import { useUserContext } from '../userContext';
 import Auth from '../services/Auth';
 import './Login.css';
@@ -23,7 +22,7 @@ function Signup() {
     } else {
       localStorage.setItem("accessToken", response.data.accessToken);
       setUser(response.data);
-      navigate('/select-username');
+      navigate('/select-username', { state: { userID: response.data.userID }});
     }
     reset()
   }
@@ -109,7 +108,7 @@ function Signup() {
         </small>
         <div className="form-field marginTop20 form-group">
           <button type="submit" className="btn btn-primary btn-sm">Register</button>
-          <button type="button" onClick={() => reset()} className="btn btn-secondary">Reset</button>
+          <button type="button" onClick={() => reset()} className="btn btn-link btn-sm">Reset</button>
         </div>
       </form>
       <div className="link-container">

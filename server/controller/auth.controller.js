@@ -23,9 +23,9 @@ exports.verifyToken = (req, res) => {
 }
 
 exports.login = (req, res) => {
-  // console.log('app: body: ', req.body)
-  const { username, password = "testing" } = req.body;
-  User.findOne({ username: username }).then((user) => {
+  console.log('app: body: ', req.body)
+  const { inputValue, password = "testing", keyType } = req.body;
+  User.findOne({ [keyType]: inputValue }).then((user) => {
     if(!user) return res.status(200).send({ loggedIn: false, status: "User not found" });
     const passwordIsValid = bcrypt.compareSync(password, user.password);
     if(!passwordIsValid) {
@@ -35,12 +35,12 @@ exports.login = (req, res) => {
         loggedIn: false,
       });
     }
-    // console.log('user: ', user)
     const payload = {
       id: user._id,
       username: user.username,
       userID: user.userID
     }
+    // console.log('payload: ', payload)
     jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then(token => {
       res.status(200).send({
         username: user.username,
@@ -57,6 +57,7 @@ exports.login = (req, res) => {
 exports.signup = async (req, res) => {
   // console.log('signup ', req.body)
   const { fname, lname, email, password } = req.body;
+  // console.log('req.body: ', req.body)
   const record = await User.findOne({ email: email })
   // console.log('record: ', record)
   if(record === null) {
@@ -90,6 +91,32 @@ exports.signup = async (req, res) => {
   } else {
     res.status(200).send({ loggedIn: false, status: "That email is in use"})
     return;
+  }
+}
+
+exports.addUsername = async (req, res) => {
+  const { userID, username } = req.body;
+  console.log('req.body: ', req.body)
+  const isUsernameFound = await User.findOne({ username: username })
+  // if username is null, username is available
+  if(isUsernameFound === null) {
+    const user = await User.findOneAndUpdate({ userID: userID }, { $set: { username: username }})
+    const payload = {
+      id: user._id,
+      username: username,
+      userID: userID
+    }
+    // console.log('payload: ', payload)
+    jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then(token => {
+      res.status(200).send({
+        username: username,
+        accessToken: token,
+        userID: userID,
+        loggedIn: true
+      })
+    })
+  } else {
+    res.status(200).send({ loggedIn: false, status: 'Username is taken'})
   }
 }
 

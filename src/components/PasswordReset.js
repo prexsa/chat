@@ -9,7 +9,6 @@ function PasswordReset() {
   const [queryParameters] = useSearchParams();
   const userId = queryParameters.get('userId')
   const expireTime = queryParameters.get('expireTime')
-  const [feedback, setFeedback] = useState({})
   const [isTimeExpired, setIsTimeExpired] = useState(false);
   const [isUpdateSuccessful, setIsUpdateSuccessful] = useState(false)
   const {
@@ -27,12 +26,12 @@ function PasswordReset() {
         navigate('/forgot-password')
       }, 4000)
     }
-  })
+  }, [navigate])
 
   useEffect(() => {
     // console.log('hel')
     checkExpireTime(expireTime)
-  }, [expireTime])
+  }, [expireTime, checkExpireTime])
 
   const handleOnSubmit = async (values) => {
     const resp = await Auth.updatePassword({ ...values, userId })

@@ -15,5 +15,6 @@ router.route('/login').get(AuthControl.verifyToken).post(rateLimiter(60, 10), Au
 router.route('/signup').post(AuthControl.signup)
 router.route('/pw-reset').post(AuthControl.sendResetLink)
 router.route('/update-pw').post(AuthControl.passwordReset)
+router.route('/add-username').post(AuthControl.addUsername)
 
 module.exports = router;

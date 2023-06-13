@@ -5,6 +5,7 @@ import LoginRFH from './components/Login.RFH';
 import SignupRFH from './components/Signup.RFH'
 import ForgotPassword from './components/ForgotPassword'
 import PwReset from './components/PasswordReset'
+import Username from './components/Username'
 import Chat from './components/chat/Chat';
 import PageNotFound from './components/PageNotFound';
 import PrivateRoutes from './components/PrivateRoutes';
@@ -23,6 +24,7 @@ function App() {
           <Route path="/register" element={<SignupRFH />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/pw-reset" element={<PwReset />} />
+          <Route path="/select-username" element={<Username />} />
           <Route element={<PrivateRoutes />}>
             <Route path="/chat" element={<Chat />} />
           </Route>
