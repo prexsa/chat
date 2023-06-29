@@ -30,12 +30,12 @@ function Main() {
     <FriendContext.Provider value={{ friendList, setFriendList, channel, setChannel, username }}>
       <SocketContext.Provider value={{ socket }}>
         <div className="chat-container">
-          <Sidebar />
-          <main>
-            <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
+          <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
+            <Sidebar />
+            <main>
               <MessagePanel />
-            </MessagesContext.Provider>
-          </main>
+            </main>
+          </MessagesContext.Provider>
         </div>
       </SocketContext.Provider>
     </FriendContext.Provider>

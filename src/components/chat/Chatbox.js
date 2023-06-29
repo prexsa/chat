@@ -8,6 +8,7 @@ function Chatbox({ userID, from }) {
   const { setMessages } = useContext(MessagesContext);
   const { register, handleSubmit, reset, formState } = useForm();
   const [feedbackToggle, setFeedbackToggle] = useState(false);
+
   const onSubmit = (data) => {
     // console.log('data: ', data)
     if(data.message.trim() === "") return;

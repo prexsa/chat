@@ -22,7 +22,7 @@ function AddFriend() {
     // console.log('data: ', data)
     if(data.name.trim() === "") return;
     socket.connect();
-    socket.emit("add_friend", data.name, ({ errorMsg, done, newFriend}) => {
+    socket.emit("add_friend", data.name, ({ errorMsg, done, newFriend }) => {
       console.log('add_friend: ', done,'errorMsg: ', errorMsg, ' new: ', newFriend)
       if(done) {
         setFriendList(currFriendList => [newFriend, ...currFriendList])

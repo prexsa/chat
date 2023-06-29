@@ -30,7 +30,7 @@ function Login() {
         // console.log('response: ', response.data)
         localStorage.setItem("accessToken", response.data.accessToken);
         setUser({...response.data});
-        // navigate('/chat');
+        navigate('/chat');
       } else {
         // if username has not been created, redirect user to create username
         navigate('/select-username', { state: { userID: response.data.userID }});

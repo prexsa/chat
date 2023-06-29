@@ -23,7 +23,7 @@ const SocketProvider = ({ children }) => {
       setUsername(username)
     })
     socket.on('friends', friendList => {
-      // console.log('friendList: ', friendList)
+      console.log('friendList: ', friendList)
       setFriendList(friendList);
     })
 

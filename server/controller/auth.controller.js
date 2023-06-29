@@ -23,7 +23,7 @@ exports.verifyToken = (req, res) => {
 }
 
 exports.login = (req, res) => {
-  console.log('app: body: ', req.body)
+  // console.log('app: body: ', req.body)
   const { inputValue, password = "testing", keyType } = req.body;
   User.findOne({ [keyType]: inputValue }).then((user) => {
     if(!user) return res.status(200).send({ loggedIn: false, status: "User not found" });
@@ -37,13 +37,13 @@ exports.login = (req, res) => {
     }
     const payload = {
       id: user._id,
-      username: user.username,
+      username: user?.username,
       userID: user.userID
     }
     // console.log('payload: ', payload)
     jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then(token => {
       res.status(200).send({
-        username: user.username,
+        username: user?.username,
         accessToken: token,
         userID: user.userID,
         loggedIn: true
