@@ -222,6 +222,78 @@ main header h3 {
   font-weight: normal;
   color: #7e818a;
 }
+.message-chanel-actions {
+  margin-left: auto;
+}
+.leave-icon {
+  transition: all .2s ease-in-out;
+  color: #7e818a;
+  border-radius: 50%;
+  padding: 2px;
+  font-size: 22px;
+}
+.leave-icon:hover {
+  transform: scale(1.5);
+  cursor: pointer;
+}
+.leave-icon:active {
+  color: red;
+  border: 1px solid red;
+  border-radius: 50%;
+  padding: 1px;
+}
+.tooltip-text {
+  position: relative;
+}
+.tooltip-text:before {
+  content: attr(data-text);
+  position: absolute;
+  /* vertically center */
+  top: 50%;
+  transform: translateY(-50%);
+  /* move to right */
+  left: 100%;
+  margin-left: 15px;
+  width: 130px;
+  font-weight: 500;
+  padding: 5px 2px;
+  border-radius: 5px;
+  background-color: #7e818a;
+  color: #fff;
+  text-align: center;
+  display: none; /* hide by default */
+}
+.tooltip-text.left:before {
+  /* reset defaults */
+  left: initial;
+  margin: initial;
+  /* set new values */
+  right: -6%;
+  margin-right: 0px;
+}
+.tooltip-text.bottom:before {
+  /* reset defaults */
+  top: initial;
+  transform: initial;
+  /* set new values */
+  bottom: -110%;
+  transform: translateY(90%);
+}
+.tooltip-text:after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  margin-left: -20px;
+  top: 100%;
+  transform: translateY(0%);
+  /* the arrow */
+  border: 10px solid #000;
+  border-color: transparent transparent #7e818a transparent;
+  display: none;
+}
+.tooltip-text:hover:before, .tooltip-text:hover:after {
+  display: block;
+}
 .chat {
   padding-left: 0;
   margin: 0;

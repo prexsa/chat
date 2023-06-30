@@ -122,13 +122,31 @@ module.exports.initializeUser = async socket => {
   socket.emit('current_user', socket.user.username)
 }
 
-const makePrivateRoomConnections = async (userId, friendId) => {
+const createRoomId = async (userId, friendId) => {
   // const roomId = crypto.randomUUID()
-  const roomId = `${userId}:${friendId}`
-  // check if connections already exists
-  const rooms = await redisClient.smembers(`rooms:${userId}`);
-  await redisClient.sadd(`rooms:${userId}`, roomId)
-  await redisClient.sadd(`rooms:${friendId}`, roomId)
+  let roomId = getRoomId(userId, friendId) 
+  if(roomId == '') {
+    const roomId = `${userId}:${friendId}`
+    // check if connections already exists
+    // const rooms = await redisClient.smembers(`rooms:${userId}`);
+    await redisClient.sadd(`rooms:${userId}`, roomId)
+    await redisClient.sadd(`rooms:${friendId}`, roomId)
+  }
+}
+
+const getRoomId = async (userId, friendId) => {
+  // use 'sismember' to check for existence, 1 = true, 0 = false
+  const keyVariant_1 = `${userId}:${friendId}`
+  const keyVariant_2 = `${friendId}:${userId}`
+  let roomId = ''
+  const key_1 = await redisClient.sismember(`rooms:${userId}`, keyVariant_1)
+  const key_2 = await redisClient.sismember(`rooms:${userId}`, keyVariant_2)
+  if(key_1 === 1) {
+    roomId = keyVariant_1
+  } else if (key_2 === 1) {
+    roomId = keyVariant_2
+  }
+  return roomId
 }
 
 module.exports.addFriend = async (socket, name, cb) => {
@@ -139,6 +157,7 @@ module.exports.addFriend = async (socket, name, cb) => {
     cb({ done: false, errorMsg: "Cannot add self!" })
     return;
   }
+
   const friend = await redisClient.hgetall(`userid:${name}`)
   // console.log('friend: 75 ', friend)
   if(Object.keys(friend).length <= 0) {
@@ -146,7 +165,6 @@ module.exports.addFriend = async (socket, name, cb) => {
     return;
   }
 
-  // 
   const currentFriendList = await redisClient.lrange(
     `friends:${socket.user.username}`,
     0, -1
@@ -186,6 +204,7 @@ module.exports.addFriend = async (socket, name, cb) => {
 const incrementUnreadCount = async (roomId, userId) => {
   // saved as redis hash
   await redisClient.hincrby(`unreadCount:${roomId}:${userId}`, 'count', 1)
+  // https://www.tabnine.com/code/javascript/functions/ioredis/Redis/hincrby
 }
 
 const resetUnreadCount = async (roomId, userId) => {
@@ -200,6 +219,8 @@ module.exports.dm = async (socket, msg) => {
   const username = socket.user.username
   incrementUnreadCount(msg.to, socket.user.userID)
   updateFriendsList(socket)
+
+  getRoomId(socket.user.userID, msg.to)
 
   const { connected, friendUN } = await getFriendConnectionState(username, msg.to);
   // console.log('connected: ', connected, 'friendUN: ', friendUN)

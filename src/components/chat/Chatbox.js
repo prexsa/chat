@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { FaPaperclip } from 'react-icons/fa';
 import { useForm } from 'react-hook-form';
 import { SocketContext, MessagesContext } from './Chat';
 

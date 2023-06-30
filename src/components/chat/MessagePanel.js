@@ -1,14 +1,16 @@
 import { useContext, useRef, useEffect } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaTimes } from 'react-icons/fa';
 import Chatbox from './Chatbox';
 import { useUserContext } from '../../userContext';
-import { MessagesContext, FriendContext } from './Chat';
+import { MessagesContext, FriendContext, SocketContext } from './Chat';
 
 function MessagePanel() {
   const bottomRef = useRef(null);
   const { user } = useUserContext();
   const { messages, feedback } = useContext(MessagesContext);
   const { channel } = useContext(FriendContext);
+  const { socket } = useContext(SocketContext);
+
   useEffect(() => {
     // bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
     bottomRef.current?.scrollIntoView(false);
@@ -18,19 +20,32 @@ function MessagePanel() {
     bottomRef.current?.scrollIntoView({block: 'end', inline: 'nearest'});
   }, [channel])
 
+  const handleRemoveChannel = (userId) => {
+    console.log('channel: ', channel)
+    /*socket.connect()
+    socket.emit('remove_channel', )*/
+  }
+
   return (
     <>
       {
         channel == null ?
         <div className="message-panel-container">
           <h2>Choose a conversation</h2>
-          <h3>Click on an existing chat or click "New Chat" to create a new conversation"</h3>
+          <h3>Click on an existing chat or click "New Chat" to create a new conversation</h3>
         </div>
         :
         <div className="message-panel-container">
           <header>
             <FaUserCircle className="channel-img" />
             <h2>{channel.username}</h2>
+            <div className="message-chanel-actions">
+              <div className="leave-icon-container">
+                <span data-text="Leave chat" className="tooltip-text bottom left">
+                  <FaTimes className="leave-icon" />
+                </span>
+              </div>
+            </div>
           </header>
           <ul className="chat">
             {
