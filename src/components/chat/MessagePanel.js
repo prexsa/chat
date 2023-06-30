@@ -20,10 +20,20 @@ function MessagePanel() {
     bottomRef.current?.scrollIntoView({block: 'end', inline: 'nearest'});
   }, [channel])
 
-  const handleRemoveChannel = (userId) => {
+  const handleRemoveChannel = () => {
     console.log('channel: ', channel)
-    /*socket.connect()
-    socket.emit('remove_channel', )*/
+    console.log('user: ', user)
+    socket.connect()
+    socket.emit('remove_channel', {
+      user: {
+        userId: user.userID,
+        username: user.username 
+      }, 
+      channel: {
+        channelId: channel.userID,
+        channelname: channel.username
+      }
+    })
   }
 
   return (
@@ -42,7 +52,7 @@ function MessagePanel() {
             <div className="message-chanel-actions">
               <div className="leave-icon-container">
                 <span data-text="Leave chat" className="tooltip-text bottom left">
-                  <FaTimes className="leave-icon" />
+                  <FaTimes className="leave-icon" onClick={handleRemoveChannel} />
                 </span>
               </div>
             </div>

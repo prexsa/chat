@@ -14,6 +14,7 @@ const {
   dm,
   // removeRoomId,
   clearUnreadCount,
+  disconnectUserRelationship,
   channelMsgs,
   onDisconnect
 } = require('./controller/socketController');
@@ -42,6 +43,8 @@ io.on('connection', async (socket) => {
   socket.on("add_friend", (name, cb) => addFriend(socket, name, cb))
 
   socket.on('clear_unread_count', ({ roomId }) => clearUnreadCount(socket, roomId ))
+
+  socket.on('remove_channel', ({ user, channel }) => disconnectUserRelationship(user, channel)) 
 
   socket.on('feedback_typing', ({userID, showFeedback}) => {
     console.log('userID: ', userID)

@@ -122,31 +122,35 @@ module.exports.initializeUser = async socket => {
   socket.emit('current_user', socket.user.username)
 }
 
-const createRoomId = async (userId, friendId) => {
+const createRoomId = (userId, friendId) => {
   // const roomId = crypto.randomUUID()
-  let roomId = getRoomId(userId, friendId) 
-  if(roomId == '') {
-    const roomId = `${userId}:${friendId}`
-    // check if connections already exists
-    // const rooms = await redisClient.smembers(`rooms:${userId}`);
-    await redisClient.sadd(`rooms:${userId}`, roomId)
-    await redisClient.sadd(`rooms:${friendId}`, roomId)
-  }
+  getRoomId(userId, friendId).then(async (resp) => {
+    const { roomId } = resp
+    // console.log('roomId: ', roomId)
+    if(roomId == '') {
+      const roomId = `${userId}:${friendId}`
+      await redisClient.sadd(`rooms:${userId}`, roomId)
+      await redisClient.sadd(`rooms:${friendId}`, roomId)
+    }
+  }).catch((err) => console.log('err: ', err))
 }
 
 const getRoomId = async (userId, friendId) => {
   // use 'sismember' to check for existence, 1 = true, 0 = false
   const keyVariant_1 = `${userId}:${friendId}`
   const keyVariant_2 = `${friendId}:${userId}`
+  // console.log({ keyVariant_1, keyVariant_2})
   let roomId = ''
   const key_1 = await redisClient.sismember(`rooms:${userId}`, keyVariant_1)
   const key_2 = await redisClient.sismember(`rooms:${userId}`, keyVariant_2)
+  // console.log({ key_1, key_2 })
   if(key_1 === 1) {
     roomId = keyVariant_1
   } else if (key_2 === 1) {
     roomId = keyVariant_2
   }
-  return roomId
+
+  return { roomId }
 }
 
 module.exports.addFriend = async (socket, name, cb) => {
@@ -266,9 +270,27 @@ module.exports.channelMsgs = async (socket, userID) => {
   socket.emit("channel_msgs", parsedMsgs)
 }
 
-module.exports.removeRoomId = async (socket, roomId) => {
-  await redisClient.srem(`hasMsg:${socket.user.username}`, roomId)
+
+module.exports.disconnectUserRelationship = async (user, channel) => {
+  const { userId, username } = user
+  const { channelId, channelname } = channel
+  removeFromFriendList(username, channelname, channelId)
+  removeFromFriendList(channelname, username, userId)
+  // createRoomId(userId, channelId)
+  /*getRoomId(userId, channelId).then(async (resp) => {
+    // console.log('resp: ', resp)
+    const { roomId } = resp;
+    if(roomId === '') return
+    await redisClient.srem(`rooms:${userId}`, roomId)
+    await redisClient.srem(`rooms:${channelId}`, roomId)
+
+  }).catch((err) => console.log('err: ', err))*/
+
 }
+
+/*module.exports.removeRoomId = async (socket, roomId) => {
+  await redisClient.srem(`hasMsg:${socket.user.username}`, roomId)
+}*/
 
 module.exports.clearUnreadCount = async (socket, roomId) => {
   console.log({ roomId })
@@ -293,6 +315,12 @@ module.exports.onDisconnect = async socket => {
   // console.log('friendList: ', friendList)
   // console.log('friendRooms: ', friendRooms)
   socket.to(friendRooms).emit("connected", false, socket.user.username);
+}
+
+const removeFromFriendList = async (username, friendname, friendId) => {
+  const friendStr = `${friendname}.${friendId}`
+  const resp = await redisClient.lrem(`friends:${username}`, 0, friendStr)
+  // console.log('resp: ', resp)
 }
 
 const parseFriendList = async (friendList) => {
