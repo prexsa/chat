@@ -20,7 +20,7 @@ function Chatbox({ userID, from }) {
       content: data.message
     }
     // onMessageSend(message);
-    // console.log('message: ', message)
+    console.log('message: ', message)
     socket.connect();
     socket.emit('dm', message);
     // console.log('message: ', message)

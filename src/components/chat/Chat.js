@@ -12,7 +12,13 @@ export const SocketContext = createContext();
 function Main() {
   const [friendList, setFriendList] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [channel, setChannel] = useState(null);
+  const [channel, setChannel] = useState({
+    username: '',
+    userID: '',
+    connected: '',
+    unreadCount: '',
+    lastestMessage: ''
+  });
   const [username, setUsername] = useState('');
   const [feedback, setFeedback] = useState(false);
 
@@ -20,6 +26,11 @@ function Main() {
   const accessToken = localStorage.getItem('accessToken');
 
   const [socket, setSocket] = useState(() => socketConn(accessToken));
+
+  useEffect(() => {
+    // console.log('friendList: ', friendList)
+  }, [friendList])
+
   useEffect(() => {
     setSocket(() => socketConn(accessToken));
   }, [accessToken]);

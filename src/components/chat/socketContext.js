@@ -2,19 +2,28 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { useUserContext } from '../../userContext';
 import socket from '../../socket';
 
+
+/*
+  NOT IN USE
+*/
 const SocketContext = React.createContext();
 
 const SocketProvider = ({ children }) => {
-  const { user } = useUserContext();
+  // const userRef = useRef(user)
   // const [user, setUser] = useState(null);
-  const [username, setUsername] = useState('');
+  const { user } = useUserContext();
+  /*const [username, setUsername] = useState('');
   const [channel, setChannel] = useState(null);
   const channelRef = useRef(channel);
-  // const userRef = useRef(user)
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [friendList, setFriendList] = useState([]);*/
   // const [feedback, setFeedback] = useState(false);
-  const [friendList, setFriendList] = useState([]);
+
+  useEffect(() => {
+    console.log('SC friendList: ', friendList);
+    console.log('SC channel: ', channel)
+  },[friendList, channel])
 
   useEffect(() => {
     socket.connect();
@@ -28,6 +37,7 @@ const SocketProvider = ({ children }) => {
     })
 
     socket.on('connected', (status, username) => {
+      console.log('connected')
       setFriendList(prevFriends => {
         return [...prevFriends].map((friend) => {
           if(friend.username === username) {
@@ -66,10 +76,11 @@ const SocketProvider = ({ children }) => {
   }, [setFriendList, setMessages, setChannel])
 
   useEffect(() => {
-    // console.log('channel: ', channel)
+    console.log('channel: ', channel)
     if(channel !== null) {
       socket.connect();
-      socket.emit('channel_msgs', channel.userID, ({ msgs }) => {
+      // console.log('ehl')
+      socket.emit('room_msgs', channel.userID, ({ msgs }) => {
         console.log('cb: ', msgs)
         setMessages(msgs)
       })
@@ -89,7 +100,7 @@ const SocketProvider = ({ children }) => {
     // socket.emit('login', username)
   }*/
 
-  const selectChannel = (channel) => {
+  /*const selectChannel = (channel) => {
     // console.log('channel; ', channel)
     setChannel(channel);
     channelRef.current = channel;
@@ -102,7 +113,7 @@ const SocketProvider = ({ children }) => {
       })
       return [...prevUsers]
     })
-  }
+  }*/
 
   const clearTypingIndicator = (channel) => {
     socket.emit('typing', {toggleState: false, to: channel.id})
@@ -129,13 +140,14 @@ const SocketProvider = ({ children }) => {
         users,
         messages,
         channel,
+        setChannel,
         // feedback,
         // loginSocket,
-        selectChannel,
+        // selectChannel,
         handleTypingIndicator,
         logoff,
-        friendList,
-        setFriendList
+        // friendList,
+        // setFriendList
       }}>
       {children}
     </SocketContext.Provider>

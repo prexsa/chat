@@ -30,7 +30,7 @@ function AddFriend() {
         handleClose();
       } else {
         setRespErr(errorMsg);
-        reset({ name: ''})
+        reset({ name: '' })
       }
     })
   }

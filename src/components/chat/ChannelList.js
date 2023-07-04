@@ -9,10 +9,11 @@ function ChannelList() {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const onChannelSelect = (channelObj, index) => {
-    console.log('channel: ', channelObj)
+    // console.log('channel: ', channelObj)
     setActiveIndex(index)
     setChannel(channelObj)
-    if(channelObj === null && index === null) return;
+    if(channelObj.userID === "" && index === null) return;
+    // get messages for channel
     setFriendList(prevFriends => {
       return [...prevFriends].map(friend => {
         if(friend.userID === channelObj.userID) {
@@ -20,7 +21,8 @@ function ChannelList() {
           // friend.unreadCount = 0;
           console.log('friend: ', friend)
           socket.connect();
-          socket.emit('clear_unread_count', { roomId: channelObj.userID })
+          // socket.emit('clear_unread_count', { roomId: channelObj.userID })
+          socket.emit('handle_room_selected', { channelId: channelObj.userID })
         }
         return friend;
       })
@@ -52,7 +54,7 @@ function ChannelList() {
 
   return (
     <div className="channel-list-cntr">
-      <button className="btn btn-link" onClick={() => onChannelSelect(null, null)}>Clear Message Panel</button>
+      <button className="btn btn-link" onClick={() => onChannelSelect({ userID: "" }, null)}>Clear Message Panel</button>
       <ul>
         {
           friendList && friendList.map((friend, index) => {
@@ -75,7 +77,7 @@ function ChannelList() {
                     <p className="snippet">{friend.latestMessage}</p>
                     <div className="newMessages">
                     {
-                      friend.unreadCount === '0' ?
+                      friend.unreadCount === '0' || friend.unreadCount === 0 ?
                       <FaCheck className="faCheck-img" />
                       :
                       <span className={setBadgeCSS(friend.unreadCount)}>{friend.unreadCount}</span>

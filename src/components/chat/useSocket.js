@@ -42,6 +42,22 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       })
     })
 
+    socket.on('remove_from_chat', ({ roomId, usernameToRemove}) => {
+      // console.log('remove_from_chat: ', { roomId, usernameToRemove })
+      setFriendList(prevFriends => {
+        // console.log('prevFriends: ', prevFriends)
+        if(prevFriends === undefined) return
+        let index = null;
+        for(const [key, { userID, username }] of [...prevFriends].entries()) {
+          if(userID === roomId && username === usernameToRemove) {
+            index = key
+          }
+        }
+        const updatedFriendsList = prevFriends.slice(0, index).concat(prevFriends.slice(index + 1))
+        return updatedFriendsList
+      })
+    })
+
     socket.on('dm', msg => {
       // console.log('ms: ', msg)
       // console.log('dm channel: ', channel)
@@ -68,8 +84,25 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       // setMessages(msg);
     })
 
+    socket.on('unread-count', ({ userId, count }) => {
+      // console.log('unread-count: ', { userId, count })
+      setFriendList(prevFriends => {
+        return [...prevFriends].map(friend => {
+          if(friend.userID === userId) {
+            friend.unreadCount = count
+          }
+          return friend
+        })
+      })
+    })
+
     socket.on('all_messages', msgs => {
       // console.log('all_messages: ', msgs)
+      setMessages(msgs)
+    })
+
+    socket.on('room_msgs', msgs => {
+      console.log('msgs: ', msgs)
       setMessages(msgs)
     })
 
@@ -88,7 +121,8 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       socket.off('connected');
       socket.off('new_friend');
       socket.off('dm');
-      socket.off('msg')
+      socket.off('msg');
+      socket.off('remove_from_chat')
     }
   }, [setFriendList, setMessages, setUsername, socket, setFeedback])
 

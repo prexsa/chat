@@ -8,9 +8,10 @@ function MessagePanel() {
   const bottomRef = useRef(null);
   const { user } = useUserContext();
   const { messages, feedback } = useContext(MessagesContext);
-  const { channel } = useContext(FriendContext);
+  const { channel, setFriendList, setChannel } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
-
+// console.log('messages; ', messages)
+// console.log('user; ', user)
   useEffect(() => {
     // bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
     bottomRef.current?.scrollIntoView(false);
@@ -23,6 +24,20 @@ function MessagePanel() {
   const handleRemoveChannel = () => {
     console.log('channel: ', channel)
     console.log('user: ', user)
+    // if(channel.userID === '') return
+    // remove channel from your friend's list
+    setFriendList(prevFriends => {
+      // console.log('prevFriends: ', prevFriends)
+      if(prevFriends === undefined) return
+      let index = null;
+      for(const [key, { userID, username }] of [...prevFriends].entries()) {
+        if(userID === channel.userID && username === channel.username) {
+          index = key
+        }
+      }
+      const updatedFriendsList = prevFriends.slice(0, index).concat(prevFriends.slice(index + 1))
+      return updatedFriendsList
+    })
     socket.connect()
     socket.emit('remove_channel', {
       user: {
@@ -34,12 +49,13 @@ function MessagePanel() {
         channelname: channel.username
       }
     })
+    setChannel({ userID: "" })
   }
 
   return (
     <>
       {
-        channel == null ?
+        channel.userID === "" ?
         <div className="message-panel-container">
           <h2>Choose a conversation</h2>
           <h3>Click on an existing chat or click "New Chat" to create a new conversation</h3>
@@ -59,10 +75,7 @@ function MessagePanel() {
           </header>
           <ul className="chat">
             {
-              messages &&
-              messages.filter(
-                msg => (msg.to === channel.userID || msg.from === channel.userID)
-                ).map((message, idx) => {
+              messages.map((message, idx) => {
                 // console.log('message: ', message)
                 const isYou = message.from === null || message.from === user.userID;
                 return (

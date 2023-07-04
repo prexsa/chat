@@ -13,9 +13,10 @@ const {
   initializeUser,
   dm,
   // removeRoomId,
-  clearUnreadCount,
+  // clearUnreadCount,
+  handleRoomSelected, 
   disconnectUserRelationship,
-  channelMsgs,
+  // getRoomMessages,
   onDisconnect
 } = require('./controller/socketController');
 const auth = require('./routes/auth.routes');
@@ -39,13 +40,11 @@ io.on('connection', async (socket) => {
   // console.log('connection')
   initializeUser(socket);
   socket.on('dm', message => dm(socket, message))
-  // socket.on('channel_msgs', (userID, cb) => channelMsgs(socket, userID, cb))
+  // socket.on('room_msgs', (roomId, cb) => getRoomMessages(socket, roomId, cb))
   socket.on("add_friend", (name, cb) => addFriend(socket, name, cb))
-
-  socket.on('clear_unread_count', ({ roomId }) => clearUnreadCount(socket, roomId ))
-
-  socket.on('remove_channel', ({ user, channel }) => disconnectUserRelationship(user, channel)) 
-
+  // socket.on('clear_unread_count', ({ roomId }) => clearUnreadCount(socket, roomId ))
+  socket.on('handle_room_selected', ({ channelId }) => handleRoomSelected(socket, channelId))
+  socket.on('remove_channel', ({ user, channel }) => disconnectUserRelationship(socket, user, channel)) 
   socket.on('feedback_typing', ({userID, showFeedback}) => {
     console.log('userID: ', userID)
     socket.to(userID).emit('typing_feedback', showFeedback)
