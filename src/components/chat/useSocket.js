@@ -79,11 +79,6 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       })
     })
 
-    socket.on('channel_msgs', msg => {
-      // console.log('channel_msgs: ', msg)
-      // setMessages(msg);
-    })
-
     socket.on('unread-count', ({ userId, count }) => {
       // console.log('unread-count: ', { userId, count })
       setFriendList(prevFriends => {
@@ -102,7 +97,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
     })
 
     socket.on('room_msgs', msgs => {
-      console.log('msgs: ', msgs)
+      // console.log('msgs: ', msgs)
       setMessages(msgs)
     })
 

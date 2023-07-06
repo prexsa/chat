@@ -73,35 +73,38 @@ function MessagePanel() {
               </div>
             </div>
           </header>
-          <ul className="chat">
-            {
-              messages.map((message, idx) => {
-                // console.log('message: ', message)
-                const isYou = message.from === null || message.from === user.userID;
-                return (
-                  <li
-                    key={idx}
-                    className={`${isYou ? 'you' : ''}`}
-                  >
-                    <div className={`icon-message-container ${isYou ? "flex-direction-row-reverse" : "flex-direction-row"}`}>
-                      <FaUserCircle />
-                      <div className="message-container">
-                        <div>
-                          {message.content}
+          <div className="message-box-container">
+            <ul className="chat">
+              {
+                messages.map((message, idx) => {
+                  // console.log('message: ', message)
+                  const isYou = message.from === null || message.from === user.userID;
+                  return (
+                    <li
+                      key={idx}
+                      className={`${isYou ? 'you' : ''}`}
+                    >
+                      <div className={`icon-message-container ${isYou ? "flex-direction-row-reverse" : "flex-direction-row"}`}>
+                        <FaUserCircle />
+                        <div className="message-container">
+                          <div>
+                            {message.content}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div>
-                      {
-                        (isYou) ? null : <div className="chat-username-txt">{channel.username}</div>
-                      }
-                    </div>
-                  </li>
-                )
-              })
-            }
-            <li ref={bottomRef} id="feedback">{feedback ? `${user.username} is typing...` : ''}</li>
-          </ul>
+                      <div>
+                        {
+                          (isYou) ? null : <div className="chat-username-txt">{channel.username}</div>
+                        }
+                      </div>
+                    </li>
+                  )
+                })
+              }
+              <li ref={bottomRef}></li>
+              <li ref={bottomRef}>{feedback ? `${user.username} is typing...` : ''}</li>
+            </ul>
+          </div>
           <footer>
             <Chatbox userID={channel.userID} from={user.userID} />
           </footer>
