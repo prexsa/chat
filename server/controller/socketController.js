@@ -39,22 +39,31 @@ const updateFriendsList = async (socket) => {
   */
   const asyncRes = await Promise.all(
     parsedFriendList.map(async friend => {
-      const roomId = friend.userID
+      const friendId = friend.userID
+      const { roomId } = await getRoomId(socket.user.userID, friendId)
       // console.log({ roomId, userID: socket.user.userID})
       /*friend.unreadCount = await redisClient.hget(`unreadCount:${roomId}:${socket.user.userID}`, "count")
       const lastestMessage = await redisClient.zrevrange(`room:messages:${roomId}:${socket.user.userID}`, 0, 0)*/
       // friend.unreadCount = await redisClient.hget(`unreadCount:${socket.user.userID}:${roomId}`, "count")
-      friend.unreadCount = await redisClient.hget(`unreadCount:${socket.user.userID}:${roomId}`, "count")
+      friend.unreadCount = await redisClient.hget(`unreadCount:${roomId.id}`, "count")
       // console.log('friend.unreadCount ', { userID: socket.user.userID, friend })
-      const latestMessage = await redisClient.zrevrange(`room:messages:${socket.user.userID}:${roomId}`, 0, 0)
-      // console.log('lastestMessage: ', lastestMessage)
-      if(latestMessage.length <= 0) {
+      // zrevrange returns an []
+      const messages = await redisClient.zrevrange(`messages:${roomId.id}`, 0, -1)
+      console.log('lastestMessage: ', messages)
+      if(messages.length <= 0) {
         friend.latestMessage = ""
       } else {
         // console.log('lastestMessage;  hello',  lastestMessage)
-        const parsedJson = JSON.parse(latestMessage)
+        let latestMessage = ''
+        const parsedJson = messages.map(message => {
+          const parsedJson = JSON.parse(message)
+          if(latestMessage === '' && parsedJson.from !== socket.user.userID) {
+            latestMessage = parsedJson.content
+          }
+          return parsedJson
+        })
         // console.log('parsedJson: ', parsedJson)
-        friend.latestMessage = parsedJson.content
+        friend.latestMessage = latestMessage
       }
       // console.log('friend: ', friend)
       return friend;
