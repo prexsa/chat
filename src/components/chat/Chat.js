@@ -29,7 +29,8 @@ function Main() {
 
   useEffect(() => {
     // console.log('friendList: ', friendList)
-  }, [friendList])
+    // console.log('chat: ', { channel })
+  }, [channel])
 
   useEffect(() => {
     setSocket(() => socketConn(accessToken));

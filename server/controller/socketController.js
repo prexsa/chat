@@ -41,35 +41,30 @@ const updateFriendsList = async (socket) => {
     parsedFriendList.map(async friend => {
       const friendId = friend.userID
       const { roomId } = await getRoomId(socket.user.userID, friendId)
-      // console.log({ roomId, userID: socket.user.userID})
-      /*friend.unreadCount = await redisClient.hget(`unreadCount:${roomId}:${socket.user.userID}`, "count")
-      const lastestMessage = await redisClient.zrevrange(`room:messages:${roomId}:${socket.user.userID}`, 0, 0)*/
-      // friend.unreadCount = await redisClient.hget(`unreadCount:${socket.user.userID}:${roomId}`, "count")
       friend.unreadCount = await redisClient.hget(`unreadCount:${roomId.id}`, "count")
       // console.log('friend.unreadCount ', { userID: socket.user.userID, friend })
       // zrevrange returns an []
       const messages = await redisClient.zrevrange(`messages:${roomId.id}`, 0, -1)
-      console.log('lastestMessage: ', messages)
       if(messages.length <= 0) {
         friend.latestMessage = ""
       } else {
-        // console.log('lastestMessage;  hello',  lastestMessage)
         let latestMessage = ''
-        const parsedJson = messages.map(message => {
+        for(const message of messages) {
           const parsedJson = JSON.parse(message)
           if(latestMessage === '' && parsedJson.from !== socket.user.userID) {
             latestMessage = parsedJson.content
+            break;
           }
+        }
+        /*messages.map(message => {
           return parsedJson
-        })
+        })*/
         // console.log('parsedJson: ', parsedJson)
         friend.latestMessage = latestMessage
       }
-      // console.log('friend: ', friend)
       return friend;
     })
   )
-
   // console.log('asyncRes: ', asyncRes)
   socket.emit("friends", asyncRes)
 }
@@ -95,49 +90,6 @@ module.exports.initializeUser = async socket => {
 
   addUserToGeneralAssembly(socket.user.username)
   updateFriendsList(socket)
-  // check list for new messages by rooms
-  // get new msg indicator notice, while user was away
-  // const hasMessages = await redisClient.smembers(`hasMsg:${socket.user.username}`);
-  // console.log('has ', hasMessages )
-  /*
-    * map over roomId,
-    * map over room messages, get count of key: 'read', and stop count when 'read' value is 'true'
-  */
-  /*if(hasMessages.length > 0) {
-    hasMessages.map(roomId => {
-      parsedFriendList.map(async friend => {
-
-        if(friend.userID === roomId) {
-          friend.unreadCount = await redisClient.hget(`unreadCount:${roomId}:${socket.user.userID}`, "count")
-          const lastestMessage = await redisClient.zrevrange(`room:messages:${roomId}:${socket.user.userID}`, 0, 0)
-          const parsedJson = JSON.parse(lastestMessage)
-          console.log('parsedJson: ', parsedJson)
-          friend.lastestMessage = parsedJson.content
-        }
-
-        return friend;
-      })
-    })
-  }*/
-
-  /*const messageQuery= await redisClient.lrange(`chat:${socket.user.userID}`, 0 , -1)
-  const messages = messageQuery.map(msgStr => {
-    const parsedStr = msgStr.split('.');
-    // check is message has been read
-    // if(parsedStr[3] === "false") unreadCount += 1;
-    return {
-      to: parsedStr[0],
-      from: parsedStr[1],
-      content: parsedStr[2]
-    }
-  }).reverse()
-  // console.log('allMessages: ', messages)
-  // get count of unread messages
-
-  if(messages && messages.length > 0) {
-    socket.emit('all_messages', messages)
-  }*/
-
   socket.emit('current_user', socket.user.username)
 }
 
@@ -292,6 +244,11 @@ const resetUnreadCount = async (roomId, userId) => {
   return Promise.resolve({ count })
 }
 
+module.exports.clearUnreadCount = async (socket, roomId) => {
+  // console.log("clearUnreadCount ", { userID: socket.user.userID, roomId })
+  resetUnreadCount(socket.user.userID, roomId)
+}
+
 module.exports.dm = async (socket, msg) => {
   console.log('msg: ', msg)
   // check if the user is online
@@ -303,20 +260,6 @@ module.exports.dm = async (socket, msg) => {
   // updateFriendsList(socket)
   const { roomId } = await getRoomId(socket.user.userID, msg.to)
 
-/*  const { connected, friendUN } = await getFriendConnectionState(username, msg.to);
-  // console.log('connected: ', connected, 'friendUN: ', friendUN)
-  if(connected === 'false') {
-    // console.log('connected false')
-    await redisClient.sadd(`hasMsg:${friendUN}`,`${msg.from}`)
-  }
-  // console.log('socket: ', socket.user.username)
-  const messageStr = [msg.to, msg.from, msg.content, msg.read].join(".");
-// console.log('messageStr: ', messageStr)
-  await redisClient.lpush(`chat:${msg.to}`, messageStr);
-  await redisClient.lpush(`chat:${msg.from}`, messageStr)*/
-
-  socket.to(msg.to).emit("dm", msg)
-
   // messages are stored in sorted set
   const unixDateTime = Date.now()
   const message = {
@@ -325,32 +268,17 @@ module.exports.dm = async (socket, msg) => {
     content: msg.content,
     date: unixDateTime
   }
+  // save message
   await redisClient.zadd(`messages:${roomId.id}`, unixDateTime, JSON.stringify(message))
+  socket.to(msg.to).emit("dm", msg)
 }
 // https://developer.redis.com/howtos/chatapp/
 // https://redis.io/docs/data-types/sorted-sets/
 
-/*module.exports.getRoomMessages = async (socket, roomId) => {
-  console.log('channelMsgs: ', roomId)
-  const msgs = await redisClient.lrange(`chat:${userID}`, 0, -1);
-  const reversed = msgs.reverse();
-  const parsedMsgs = await reversed.map(msg => {
-    const parsed = msg.split('.');
-    return {
-      to: parsed[0],
-      from: parsed[1],
-      content: parsed[2],
-      read: parsed[3]
-    }
-  })
-
-  socket.emit("room_msgs", parsedMsgs)
-}*/
-
 module.exports.disconnectUserRelationship = async (socket, user, channel) => {
   const { userId, username } = user
   const { channelId, channelname } = channel
-  console.log({ user, channel })
+  console.log("disconnectUserRelationship ", { user, channel })
   removeFromFriendList(username, channelname, channelId)
   removeFromFriendList(channelname, username, userId)
   // get roomId 
@@ -361,18 +289,6 @@ module.exports.disconnectUserRelationship = async (socket, user, channel) => {
   socket.to(channelId).emit('remove_from_chat', { roomId: userId, usernameToRemove: username })
   // socket.to(friend.userid).emit('new_friend', self)
 }
-
-/*module.exports.removeRoomId = async (socket, roomId) => {
-  await redisClient.srem(`hasMsg:${socket.user.username}`, roomId)
-}*/
-/*
-module.exports.clearUnreadCount = async (socket, roomId) => {
-  console.log("fn: clearUnreadCount: ", { roomId })
-  // set messages key 'read' to false
-  const { count } = await resetUnreadCount(socket.user.userID, roomId)
-  // emit to yourself
-  socket.emit('unread-count', { userId: socket.user.userID , count })
-}*/
 
 module.exports.handleRoomSelected = async (socket, channelId) => {
   // reset unread count

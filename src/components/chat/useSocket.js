@@ -60,23 +60,29 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
 
     socket.on('dm', msg => {
       // console.log('ms: ', msg)
-      // console.log('dm channel: ', channel)
+      // console.log('dm channel: ', channelRef.current)
+      if(channelRef.current.userID === msg.from) {
+        socket.emit('clear_unread_count', { roomId: msg.from })
+      }
+      // socket.emit('handle_room_selected', { channelId: channelObj.userID })
       setFriendList(prevFriends => {
         // console.log('prevFriends: ', prevFriends)
         // console.log('channel: ', channelRef)
         return [...prevFriends].map(friend => {
-          if(
-            (channelRef.current === null && friend.userID === msg.from) ||
-            (channelRef.current !== null && channelRef.current.userID !== msg.from && friend.userID === msg.from)
-            ){
-            friend.hasNewMessage = true;
+          // if channel is active
+          if(msg.from === friend.userID) {
+            friend.latestMessage = msg.content
           }
           return friend;
         })
       })
-      setMessages(prevMsg => {
-        return [...prevMsg, msg]
-      })
+
+      // if incoming messages matches active channel, add messages to message array
+      if(msg.from === channelRef.current.userID) {
+        setMessages(prevMsg => {
+          return [...prevMsg, msg]
+        })
+      }
     })
 
     socket.on('unread-count', ({ userId, count }) => {
@@ -118,8 +124,9 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       socket.off('dm');
       socket.off('msg');
       socket.off('remove_from_chat')
+      socket.off('unread-count')
     }
-  }, [setFriendList, setMessages, setUsername, socket, setFeedback])
+  }, [setFriendList, setMessages, setUsername, socket, setFeedback, channelRef])
 
   /*useEffect(() => {
     // console.log('channel: ', channel)

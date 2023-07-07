@@ -4,7 +4,7 @@ import { FriendContext, SocketContext, MessagesContext } from "./Chat";
 
 function ChannelList() {
   const { friendList, setFriendList, channel, setChannel } = useContext(FriendContext);
-  const { messages } = useContext(MessagesContext);
+  // const { messages } = useContext(MessagesContext);
   const { socket } = useContext(SocketContext);
   const [activeIndex, setActiveIndex] = useState(null);
 
@@ -19,7 +19,7 @@ function ChannelList() {
         if(friend.userID === channelObj.userID) {
           // friend.hasNewMessage = false;
           // friend.unreadCount = 0;
-          console.log('friend: ', friend)
+          // console.log('friend: ', friend)
           socket.connect();
           // socket.emit('clear_unread_count', { roomId: channelObj.userID })
           socket.emit('handle_room_selected', { channelId: channelObj.userID })
@@ -28,25 +28,6 @@ function ChannelList() {
       })
     })
   }
-
-  /*useEffect(() => {
-    // console.log('messages; ', messages)
-    // console.log('channel: ', channel)
-    const lastestMsgOverTheWire = messages[messages.length - 1];
-    // console.log('lastestMsgOverTheWire; ', lastestMsgOverTheWire)
-    // if(channel === null) return;
-    setFriendList(prevFriends => {
-      return[...prevFriends].map(friend => {
-        // if channel is not active
-        // console.log('friend: ', friend)
-        if(channel === null || (friend.userID !== channel.userID && friend.userID === lastestMsgOverTheWire.to)) {
-          friend.latestMessage = lastestMsgOverTheWire.content;
-          friend.unreadCount = friend?.unreadCount
-        }
-        return friend;
-      })
-    })
-  }, [messages, channel])*/
 
   const setBadgeCSS = (value) => {
     return Number(value) < 10 ? 'badge' : 'badge double-digits';
@@ -58,7 +39,11 @@ function ChannelList() {
       <ul>
         {
           friendList && friendList.map((friend, index) => {
-            console.log({ friend })
+            // console.log({ friend })
+            // clear unreadCount if channel is active
+            if(friend.userID === channel.userID) {
+              friend.unreadCount = 0
+            }
             return (
               <li
                 className={`${activeIndex === index ? 'active-list-item': ''} list-item-cntr`}

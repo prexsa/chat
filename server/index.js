@@ -13,7 +13,7 @@ const {
   initializeUser,
   dm,
   // removeRoomId,
-  // clearUnreadCount,
+  clearUnreadCount,
   handleRoomSelected, 
   disconnectUserRelationship,
   // getRoomMessages,
@@ -42,7 +42,7 @@ io.on('connection', async (socket) => {
   socket.on('dm', message => dm(socket, message))
   // socket.on('room_msgs', (roomId, cb) => getRoomMessages(socket, roomId, cb))
   socket.on("add_friend", (name, cb) => addFriend(socket, name, cb))
-  // socket.on('clear_unread_count', ({ roomId }) => clearUnreadCount(socket, roomId ))
+  socket.on('clear_unread_count', ({ roomId }) => clearUnreadCount(socket, roomId ))
   socket.on('handle_room_selected', ({ channelId }) => handleRoomSelected(socket, channelId))
   socket.on('remove_channel', ({ user, channel }) => disconnectUserRelationship(socket, user, channel)) 
   socket.on('feedback_typing', ({userID, showFeedback}) => {
