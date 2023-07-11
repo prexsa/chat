@@ -295,7 +295,8 @@ main header h3 {
   display: block;
 }
 .message-box-container {
-  height: calc(100% - 100px);
+  height: calc(100% - 200px);
+  /*height: calc(100% - 100px);*/
   overflow-y: auto;
 }
 .chat {

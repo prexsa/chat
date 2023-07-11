@@ -1,4 +1,4 @@
-import { useContext, useRef, useEffect } from 'react';
+import { useContext, useRef, useEffect, useState } from 'react';
 import { FaUserCircle, FaTimes } from 'react-icons/fa';
 import Chatbox from './Chatbox';
 import { useUserContext } from '../../userContext';
@@ -10,16 +10,21 @@ function MessagePanel() {
   const { messages, feedback } = useContext(MessagesContext);
   const { channel, setFriendList, setChannel } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
+  const [picture, setPicture] = useState(null)
 // console.log('messages; ', messages)
 // console.log('user; ', user)
   useEffect(() => {
     // bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
     bottomRef.current?.scrollIntoView(false);
-  }, [messages, feedback])
+  }, [messages, feedback, picture])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({block: 'end', inline: 'nearest'});
   }, [channel])
+
+  const handleClearPicture = () => {
+    setPicture(null)
+  }
 
   const handleRemoveChannel = () => {
     console.log('channel: ', channel)
@@ -102,11 +107,14 @@ function MessagePanel() {
                 })
               }
               <li ref={bottomRef}></li>
+              <li ref={bottomRef}>
+                <img className="image" style={{width: '100px'}} src={picture && picture} alt="" onClick={handleClearPicture} />
+              </li>
               <li ref={bottomRef}>{feedback ? `${user.username} is typing...` : ''}</li>
             </ul>
           </div>
           <footer>
-            <Chatbox userID={channel.userID} from={user.userID} />
+            <Chatbox userID={channel.userID} from={user.userID} handleSetPicture={setPicture} />
           </footer>
         </div>
       }

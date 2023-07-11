@@ -2,6 +2,9 @@ const { redisClient } = require('../redis');
 const JWT_SECRET = process.env.JWT_SECRET;
 const { jwtVerify } = require('./jwt.controller');
 const crypto = require('crypto');
+const { writeFile, readFile } = require('fs');
+const path = require('path');
+const { cloudinary } = require('../cloudinary');
 
 module.exports.authorizeUser = (socket, next) => {
   // console.log('socket: ', socket.request.session)
@@ -306,6 +309,48 @@ module.exports.handleRoomSelected = async (socket, channelId) => {
   const parsedJson = messages.map(message => JSON.parse(message))
   // console.log('parsedJson: ', parsedJson )
   socket.emit('room_msgs', parsedJson)
+}
+// https://www.reddit.com/r/reactjs/comments/w22mag/how_to_handle_sending_images_and_videos_in_a_chat/
+// https://stackskills.com/courses/181862/lectures/2751724
+module.exports.uploadFile = async (socket, fileName, file, cb) => {
+  // console.log('uploadFile: ', { fileName, file })
+  // const userId = socket.user.userID
+  // const { roomId } = await getRoomId(userId, channelId)
+  /*const tmpFileDir = path.join(__dirname, "../tmp/upload")
+  // write file to tmp/upload folder
+  writeFile(tmpFileDir + "/" + `${fileName}`, file, (err) => {
+    // console.log('err: ', err)
+    cb({ message: err ? "failure" : "success" })
+  })*/
+  cloudinary.uploader
+    .upload("https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg", { 
+      public_id: "olympic_flag",
+      overwrite: true, 
+      faces: true})
+    .then(result=>console.log(result))
+    .catch(err => console.log(err));
+/*
+  cloudinary.uploader.upload("https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg",
+  { public_id: "olympic_flag" }).then((error, result) => console.log(result)) */
+  
+
+  /*const readStream = fs.createReadStream(path.resolve(tmpFileDir, fileName), { encoding: 'binary'})
+  const chunks = []
+
+  readStream.on('readable', function() {
+    console.log('Image Loading')
+  })
+
+  readStream.on('data', function(chunk) {
+    chunks.push(chunk)
+    socket.emit('img-chunk', chunk)
+  })
+
+  readStream.on('end', function() {
+    console.log('Image loaded')
+  })*/
+
+  // await redisClient.hset(`file:${roomId.id}`)
 }
 
 module.exports.onDisconnect = async socket => {

@@ -14,7 +14,8 @@ const {
   dm,
   // removeRoomId,
   clearUnreadCount,
-  handleRoomSelected, 
+  handleRoomSelected,
+  uploadFile, 
   disconnectUserRelationship,
   // getRoomMessages,
   onDisconnect
@@ -22,7 +23,10 @@ const {
 const auth = require('./routes/auth.routes');
 const connectDB = require('./connectDB');
 
-const io = new Server(httpServer, { cors: corsConfig });
+const io = new Server(httpServer, { 
+  cors: corsConfig,
+  maxHttpBufferSize: 1e8 // 100 MB 
+});
 // middleware needs to be before routes
 // parse form data
 // app.use(express.urlencoded({ extended: true }));
@@ -44,7 +48,8 @@ io.on('connection', async (socket) => {
   socket.on("add_friend", (name, cb) => addFriend(socket, name, cb))
   socket.on('clear_unread_count', ({ roomId }) => clearUnreadCount(socket, roomId ))
   socket.on('handle_room_selected', ({ channelId }) => handleRoomSelected(socket, channelId))
-  socket.on('remove_channel', ({ user, channel }) => disconnectUserRelationship(socket, user, channel)) 
+  socket.on('remove_channel', ({ user, channel }) => disconnectUserRelationship(socket, user, channel))
+  socket.on('upload_file', ({ fileName, file }, cb) => uploadFile(socket, fileName, file, cb))
   socket.on('feedback_typing', ({userID, showFeedback}) => {
     console.log('userID: ', userID)
     socket.to(userID).emit('typing_feedback', showFeedback)

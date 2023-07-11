@@ -1,6 +1,6 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import { FaUserCircle, FaCheck } from 'react-icons/fa';
-import { FriendContext, SocketContext, MessagesContext } from "./Chat";
+import { FriendContext, SocketContext } from "./Chat";
 
 function ChannelList() {
   const { friendList, setFriendList, channel, setChannel } = useContext(FriendContext);
