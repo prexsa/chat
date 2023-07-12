@@ -312,28 +312,45 @@ module.exports.handleRoomSelected = async (socket, channelId) => {
 }
 // https://www.reddit.com/r/reactjs/comments/w22mag/how_to_handle_sending_images_and_videos_in_a_chat/
 // https://stackskills.com/courses/181862/lectures/2751724
-module.exports.uploadFile = async (socket, fileName, file, cb) => {
+module.exports.uploadFile = async (socket, fileObj, cb) => {
+  const { to: channelId, from: userId, fileName, file } = fileObj
   // console.log('uploadFile: ', { fileName, file })
   // const userId = socket.user.userID
-  // const { roomId } = await getRoomId(userId, channelId)
-  /*const tmpFileDir = path.join(__dirname, "../tmp/upload")
+  const tmpFileDir = path.join(__dirname, "../tmp/upload")
   // write file to tmp/upload folder
   writeFile(tmpFileDir + "/" + `${fileName}`, file, (err) => {
     // console.log('err: ', err)
-    cb({ message: err ? "failure" : "success" })
-  })*/
-  cloudinary.uploader
-    .upload("https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg", { 
-      public_id: "olympic_flag",
-      overwrite: true, 
-      faces: true})
-    .then(result=>console.log(result))
-    .catch(err => console.log(err));
-/*
-  cloudinary.uploader.upload("https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg",
-  { public_id: "olympic_flag" }).then((error, result) => console.log(result)) */
+    if(err) console.error('upload write file error: ', err)
+    // write file success
+    // upload file to cloudinary
+    cloudinary.uploader
+      .upload(tmpFileDir + "/" + fileName, { 
+        public_id: fileName,
+        overwrite: true, 
+        faces: true})
+      .then(async result => {
+        console.log(result)
+        // destruct { url, public_id, secure_url, asset_id }
+        const { url, public_id, secure_url, asset_id } = result
+        // save url to redis
+        // get roomId
+        const { roomId } = await getRoomId(userId, channelId)
+        const unixDateTime = Date.now()
+        const message = {
+          to: channelId,
+          from: userId,
+          isImage: true,
+          content: url,
+          date: unixDateTime
+        }
+        // save message
+        await redisClient.zadd(`messages:${roomId.id}`, unixDateTime, JSON.stringify(message))
+        socket.to(channelId).emit("dm", message)
+        cb({ message })
+      })
+      .catch(err => console.log(err));
+  })
   
-
   /*const readStream = fs.createReadStream(path.resolve(tmpFileDir, fileName), { encoding: 'binary'})
   const chunks = []
 

@@ -4,13 +4,38 @@ import { useForm } from 'react-hook-form';
 import { SocketContext, MessagesContext } from './Chat';
 // https://refine.dev/blog/how-to-multipart-file-upload-with-react-hook-form/#create-express-server
 // https://www.commoninja.com/blog/handling-multiple-uploads-react-hook-form#Creating-the-Functions-for-Image-Preview-and-Handling-Form-Submission
-function Chatbox({ userID, from, handleSetPicture }) {
+function Chatbox({ userID, from, picture, handleSetPicture }) {
   // console.log('userID: ', userID)
   const { socket } = useContext(SocketContext);
   const { setMessages } = useContext(MessagesContext);
-  const { register, handleSubmit, reset, formState } = useForm();
+  const { register, handleSubmit, reset, resetField, formState } = useForm();
   const [feedbackToggle, setFeedbackToggle] = useState(false);
-  // const [picture, setPicture] = useState(null)
+  const [file, setFile] = useState(null)
+
+  useEffect(() => {
+    // console.log('picture: ', picture)
+    // console.log('file; ', file)
+    if(file === null) return
+    const fileObj = {
+      to: userID,
+      from: from,
+      fileName: file.name,
+      file: file
+    }
+    console.log('fileObj: ', file)
+    socket.emit('upload_file', fileObj, (resp) => {
+      // console.log('file upload cb: ', { resp })
+      const { message } = resp
+      console.log('msg; ', message)
+      setMessages(prevMsg => {
+        return [...prevMsg, message]
+      })
+      handleSetPicture(null)
+      setFile(null)
+      // reset the file input field
+      resetField("file")
+    })
+  }, [picture])
 
   const onSubmit = (data) => {
     console.log('data: ', data)
@@ -30,21 +55,10 @@ function Chatbox({ userID, from, handleSetPicture }) {
       return [...prevMsg, message]
     })
   }
-  const onFileSubmit = data => {
-    console.log('data: ', data.file)
-    console.log('name: ', data.file[0].name)
-    /*const formData = new FormData()
-    formData.append('file', data.file[0]);
-    console.log('formData: ', { formData })*/
-    const fileName = data.file[0].name
-    const file = data.file[0]
-    socket.emit('upload_file', ({ fileName, file }), (resp) => {
-      console.log('file upload cb: ', { resp })
-    })
-  }
 
   const onChangePicture = (e) => {
     handleSetPicture(URL.createObjectURL(e.target.files[0]))
+    setFile(e.target.files[0])
     // setPicture(URL.createObjectURL(e.target.files[0]))
   }
 
@@ -103,19 +117,23 @@ function Chatbox({ userID, from, handleSetPicture }) {
           onChange: handleOnChange
         })}
       />
+      <form>
+        <div className="file-upload">
+          <label>
+            <FaPaperclip className="faPaperclip" />
+          </label>
+          <input 
+            type="file" 
+            id="file"
+            accept="image/png, image/jpeg" 
+            name="file" 
+            {...register('file', {
+              onChange: onChangePicture
+            })} 
+          />
+        </div>
+      </form>
       <input className='chatbox-submit' type="submit" />
-    </form>
-    <form onSubmit={handleSubmit(onFileSubmit)}>
-      <input 
-        type="file" 
-        accept="image/png, image/jpeg" 
-        name="file" 
-        {...register('file', {
-          onChange: onChangePicture
-        })} 
-      />
-      <input type="submit" />
-      <FaPaperclip />
     </form>
     </>
   )

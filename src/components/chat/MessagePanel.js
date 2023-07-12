@@ -14,6 +14,7 @@ function MessagePanel() {
 // console.log('messages; ', messages)
 // console.log('user; ', user)
   useEffect(() => {
+    console.log('picture: ', picture)
     // bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
     bottomRef.current?.scrollIntoView(false);
   }, [messages, feedback, picture])
@@ -83,6 +84,7 @@ function MessagePanel() {
               {
                 messages.map((message, idx) => {
                   // console.log('message: ', message)
+                  // check message if isImage key exist
                   const isYou = message.from === null || message.from === user.userID;
                   return (
                     <li
@@ -93,7 +95,12 @@ function MessagePanel() {
                         <FaUserCircle />
                         <div className="message-container">
                           <div>
-                            {message.content}
+                          {
+                            message.hasOwnProperty('isImage') ?
+                            <img className="image" style={{width: '100px'}} src={message.content} alt="" onClick={handleClearPicture} />
+                            :            
+                            message.content
+                          }
                           </div>
                         </div>
                       </div>
@@ -107,14 +114,16 @@ function MessagePanel() {
                 })
               }
               <li ref={bottomRef}></li>
-              <li ref={bottomRef}>
-                <img className="image" style={{width: '100px'}} src={picture && picture} alt="" onClick={handleClearPicture} />
+              <li ref={bottomRef} className="you">
+                <div className=" icon-message-container flex-direction-row">
+                  <img className="image" style={{width: '100px'}} src={picture && picture} alt="" onClick={handleClearPicture} />
+                </div>
               </li>
               <li ref={bottomRef}>{feedback ? `${user.username} is typing...` : ''}</li>
             </ul>
           </div>
           <footer>
-            <Chatbox userID={channel.userID} from={user.userID} handleSetPicture={setPicture} />
+            <Chatbox userID={channel.userID} from={user.userID} picture={picture} handleSetPicture={setPicture} />
           </footer>
         </div>
       }

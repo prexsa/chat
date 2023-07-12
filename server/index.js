@@ -49,7 +49,7 @@ io.on('connection', async (socket) => {
   socket.on('clear_unread_count', ({ roomId }) => clearUnreadCount(socket, roomId ))
   socket.on('handle_room_selected', ({ channelId }) => handleRoomSelected(socket, channelId))
   socket.on('remove_channel', ({ user, channel }) => disconnectUserRelationship(socket, user, channel))
-  socket.on('upload_file', ({ fileName, file }, cb) => uploadFile(socket, fileName, file, cb))
+  socket.on('upload_file', (fileObj, cb) => uploadFile(socket, fileObj, cb))
   socket.on('feedback_typing', ({userID, showFeedback}) => {
     console.log('userID: ', userID)
     socket.to(userID).emit('typing_feedback', showFeedback)
