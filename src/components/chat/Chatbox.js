@@ -103,23 +103,11 @@ function Chatbox({ userID, from, picture, handleSetPicture }) {
   }, [formState, reset]);
 
   return (
-    <>
-    {/*<img className="image" style={{width: '100px'}} src={picture && picture} alt="" />*/}
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <textarea
-        className="chatbox-textarea"
-        type="text"
-        placeholder="type..."
-        onKeyDown={handleOnKeyDown}
-        // onChange={handleOnChange}
-        name="message"
-        {...register('message', {
-          onChange: handleOnChange
-        })}
-      />
+    <div className="chatbox-container">
+      {/*<img className="image" style={{width: '100px'}} src={picture && picture} alt="" />*/}
       <form>
         <div className="file-upload">
-          <label>
+          <label htmlFor="file">
             <FaPaperclip className="faPaperclip" />
           </label>
           <input 
@@ -133,9 +121,21 @@ function Chatbox({ userID, from, picture, handleSetPicture }) {
           />
         </div>
       </form>
-      <input className='chatbox-submit' type="submit" />
-    </form>
-    </>
+      <form onSubmit={handleSubmit(onSubmit)} className="textarea-form">
+        <textarea
+          className="chatbox-textarea"
+          type="text"
+          placeholder="type..."
+          onKeyDown={handleOnKeyDown}
+          // onChange={handleOnChange}
+          name="message"
+          {...register('message', {
+            onChange: handleOnChange
+          })}
+        />
+        <input className='chatbox-submit' type="submit" />
+      </form>
+    </div>
   )
 }
 

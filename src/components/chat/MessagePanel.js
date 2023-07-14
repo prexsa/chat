@@ -3,6 +3,7 @@ import { FaUserCircle, FaTimes } from 'react-icons/fa';
 import Chatbox from './Chatbox';
 import { useUserContext } from '../../userContext';
 import { MessagesContext, FriendContext, SocketContext } from './Chat';
+import VerticallyCenteredModal from '../VerticallyCenteredModal'
 
 function MessagePanel() {
   const bottomRef = useRef(null);
@@ -11,10 +12,12 @@ function MessagePanel() {
   const { channel, setFriendList, setChannel } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
   const [picture, setPicture] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  const [images, setImages] = useState([])
 // console.log('messages; ', messages)
 // console.log('user; ', user)
   useEffect(() => {
-    console.log('picture: ', picture)
+    // console.log('picture: ', picture)
     // bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
     bottomRef.current?.scrollIntoView(false);
   }, [messages, feedback, picture])
@@ -23,8 +26,15 @@ function MessagePanel() {
     bottomRef.current?.scrollIntoView({block: 'end', inline: 'nearest'});
   }, [channel])
 
-  const handleClearPicture = () => {
+  /*const handleClearPicture = () => {
+    console.log('handleClearPicture; ')
     setPicture(null)
+  }*/
+
+  const displayModal = (imgSrc) => {
+    console.log('displayModal; ')
+    setShowModal(true)
+    setImages([imgSrc])
   }
 
   const handleRemoveChannel = () => {
@@ -68,6 +78,12 @@ function MessagePanel() {
         </div>
         :
         <div className="message-panel-container">
+          { /* The Modal */ }
+          <VerticallyCenteredModal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            images={images}
+          />
           <header>
             <FaUserCircle className="channel-img" />
             <h2>{channel.username}</h2>
@@ -97,7 +113,12 @@ function MessagePanel() {
                           <div>
                           {
                             message.hasOwnProperty('isImage') ?
-                            <img className="image" style={{width: '100px'}} src={message.content} alt="" onClick={handleClearPicture} />
+                            <img 
+                              className="file-upload-image" 
+                              src={message.content} 
+                              alt="" 
+                              onClick={() => displayModal(message.content)} 
+                            />
                             :            
                             message.content
                           }
@@ -116,7 +137,7 @@ function MessagePanel() {
               <li ref={bottomRef}></li>
               <li ref={bottomRef} className="you">
                 <div className=" icon-message-container flex-direction-row">
-                  <img className="image" style={{width: '100px'}} src={picture && picture} alt="" onClick={handleClearPicture} />
+                  <img className="file-upload-image" src={picture && picture} alt="" />
                 </div>
               </li>
               <li ref={bottomRef}>{feedback ? `${user.username} is typing...` : ''}</li>

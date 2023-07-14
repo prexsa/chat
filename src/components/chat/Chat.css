@@ -295,8 +295,8 @@ main header h3 {
   display: block;
 }
 .message-box-container {
-  height: calc(100% - 200px);
-  /*height: calc(100% - 100px);*/
+  /*height: calc(100% - 200px);*/
+  height: calc(100% - 100px);
   overflow-y: auto;
 }
 .chat {
@@ -370,10 +370,22 @@ main header h3 {
 .chat .me .message {
   background-color: #6fbced;
 }
+.file-upload-image {
+  width: 150px;
+}
+.file-upload-image:hover {
+  cursor: pointer;
+}
 main footer {
   /*height: 50px;*/
   padding: 10px 5px;
   /*box-shadow: inset 0 0 10px 0px lightgrey;*/
+}
+.chatbox-container {
+  display: flex;
+}
+.textarea-form {
+  width: 100%;
 }
 main footer form {
   display: flex;
@@ -408,6 +420,11 @@ main footer #submit:hover {
 }
 .file-upload {
   height: 43px;
+  width: 50px;
+  background-color: #ebeef2;
+}
+.file-upload:hover {
+  background-color: #f2efeb;
 }
 .file-upload > input {
   display: none;
@@ -417,7 +434,7 @@ main footer #submit:hover {
   color: #6495ed;
   box-sizing: content-box;
   padding: 0 8px;
-  background-color: #ebeef2;
+  background-color: transparent;
   height: 43px;
   /*font-size: initial;*/
 }
