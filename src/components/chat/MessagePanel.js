@@ -14,6 +14,7 @@ function MessagePanel() {
   const [picture, setPicture] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [images, setImages] = useState([])
+  const [imageIndex, setImageIndex] = useState(0)
 // console.log('messages; ', messages)
 // console.log('user; ', user)
   useEffect(() => {
@@ -31,10 +32,24 @@ function MessagePanel() {
     setPicture(null)
   }*/
 
+  const extractAllImagesFromMessages = async (selectedImgSrc) => {
+    const images = await messages.filter(message => (message.hasOwnProperty('isImage') === true));
+    let index = 0;
+    for(let [key, value] of images.entries()) {
+      if(value.content === selectedImgSrc) {
+        index = key;
+        break;
+      }
+    }
+    setImages(images)
+    setImageIndex(index)
+  }
+
   const displayModal = (imgSrc) => {
-    console.log('displayModal; ')
+    // console.log('displayModal; ')
     setShowModal(true)
-    setImages([imgSrc])
+    // setImages([imgSrc])
+    extractAllImagesFromMessages(imgSrc)
   }
 
   const handleRemoveChannel = () => {
@@ -83,6 +98,7 @@ function MessagePanel() {
             show={showModal}
             onHide={() => setShowModal(false)}
             images={images}
+            activeindex={imageIndex}
           />
           <header>
             <FaUserCircle className="channel-img" />

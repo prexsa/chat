@@ -1,8 +1,8 @@
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Modal } from 'react-bootstrap';
+import Carousel from './Carousel'
 
 function VerticallyCenteredModal(props) {
-  console.log('props; ', { props })
+  // console.log('props activeIndex; ', props.activeindex)
   return (
     <Modal
       {...props}
@@ -12,20 +12,19 @@ function VerticallyCenteredModal(props) {
       contentClassName="custom-modal-style"
     >
       <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
+        {/*<Modal.Title id="contained-modal-title-vcenter">
           Modal heading
-        </Modal.Title>
+        </Modal.Title>*/}
       </Modal.Header>
       <Modal.Body bsPrefix="custom-modal-body">
-        <img
-          className="modal-image" 
-          src={props.images[0]} 
-          alt="" 
+        <Carousel
+          activeIndex={props.activeindex}
+          images={props.images}
         />
       </Modal.Body>
-      <Modal.Footer>
+      {/*<Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>
-      </Modal.Footer>
+      </Modal.Footer>*/}
     </Modal>
   );
 }
