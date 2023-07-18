@@ -2,7 +2,7 @@ const { redisClient } = require('../redis');
 const JWT_SECRET = process.env.JWT_SECRET;
 const { jwtVerify } = require('./jwt.controller');
 const crypto = require('crypto');
-const { writeFile, readFile } = require('fs');
+const { writeFile, readFile, stat, unlink } = require('fs');
 const path = require('path');
 const { cloudinary } = require('../cloudinary');
 
@@ -298,6 +298,8 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
         faces: true})
       .then(async result => {
         console.log(result)
+        // delete the stored images from tmp folder
+        deleteStoredFile(fileName);
         // destruct { url, public_id, secure_url, asset_id }
         const { url, public_id, secure_url, asset_id } = result
         // save url to redis
@@ -336,6 +338,19 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
   })*/
 
   // await redisClient.hset(`file:${roomId.id}`)
+}
+
+const deleteStoredFile = (fileName) => {
+  const tmpFileDir = path.join(__dirname, "../tmp/upload");
+  stat(tmpFileDir + "/" + fileName, (err, stats) => {
+    if(err) {
+      return console.error(err)
+    }
+    unlink(tmpFileDir + "/" + fileName, (err) => {
+      if(err) return console.log(err);
+      console.log('file deleted successfully');
+    })
+  })
 }
 
 module.exports.onDisconnect = async socket => {
