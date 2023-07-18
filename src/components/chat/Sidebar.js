@@ -1,5 +1,6 @@
 import { FaUserCircle, FaSearch } from 'react-icons/fa';
 import AddFriendRFH from './AddFriend.RFH';
+import CreateGroup from './CreateGroup';
 import Logout from '../Logout';
 import ChannelList from './ChannelList';
 import { useUserContext } from '../../userContext';
@@ -20,6 +21,7 @@ function Sidebar() {
         <input className="search-input" placeholder='Search friends' />
       </div>
       <AddFriendRFH />
+      <CreateGroup />
       <ChannelList />
     </aside>
   )

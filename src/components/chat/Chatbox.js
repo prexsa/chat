@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { SocketContext, MessagesContext } from './Chat';
 // https://refine.dev/blog/how-to-multipart-file-upload-with-react-hook-form/#create-express-server
 // https://www.commoninja.com/blog/handling-multiple-uploads-react-hook-form#Creating-the-Functions-for-Image-Preview-and-Handling-Form-Submission
-function Chatbox({ userID, from, picture, handleSetPicture }) {
+function Chatbox({ userId, from, picture, handleSetPicture }) {
   // console.log('userID: ', userID)
   const { socket } = useContext(SocketContext);
   const { setMessages } = useContext(MessagesContext);
@@ -17,16 +17,16 @@ function Chatbox({ userID, from, picture, handleSetPicture }) {
     // console.log('file; ', file)
     if(file === null) return
     const fileObj = {
-      to: userID,
+      to: userId,
       from: from,
       fileName: file.name,
       file: file
     }
-    console.log('fileObj: ', file)
+    // console.log('fileObj: ', file)
     socket.emit('upload_file', fileObj, (resp) => {
       // console.log('file upload cb: ', { resp })
       const { message } = resp
-      console.log('msg; ', message)
+      // console.log('msg; ', message)
       setMessages(prevMsg => {
         return [...prevMsg, message]
       })
@@ -38,11 +38,11 @@ function Chatbox({ userID, from, picture, handleSetPicture }) {
   }, [picture])
 
   const onSubmit = (data) => {
-    console.log('data: ', data)
+    // console.log('data: ', data)
     if(data.message.trim() === "") return;
     // console.log('message; ', message)
     const message = {
-      to: userID,
+      to: userId,
       from: from,
       content: data.message
     }
@@ -68,7 +68,7 @@ function Chatbox({ userID, from, picture, handleSetPicture }) {
       // console.log('target value: ', e.target.value)
       setFeedbackToggle(false);
       const feedback = {
-        userID,
+        userId,
         showFeedback: false
       }
       socket.connect();
@@ -83,7 +83,7 @@ function Chatbox({ userID, from, picture, handleSetPicture }) {
     if(!feedbackToggle) {
       setFeedbackToggle(true);
       const feedback = {
-        userID,
+        userId,
         showFeedback: true
       }
       socket.connect();

@@ -16,7 +16,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
     }
     // console.log('connect', () => console.log('connect to socket server'))
     socket.on('current_user', username => {
-      //console.log('usename: ', username)
+      // console.log('usename: ', username)
       setUsername(username)
     })
     socket.on('friends', friendList => {
@@ -24,10 +24,10 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       setFriendList(friendList);
     })
 
-    socket.on('connected', (status, username) => {
+    socket.on('connected', (status, userId) => {
       setFriendList(prevFriends => {
         return [...prevFriends].map((friend) => {
-          if(friend.username === username) {
+          if(friend.userId === userId) {
             friend.connected = status
           }
           return friend;
@@ -48,8 +48,8 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
         // console.log('prevFriends: ', prevFriends)
         if(prevFriends === undefined) return
         let index = null;
-        for(const [key, { userID, username }] of [...prevFriends].entries()) {
-          if(userID === roomId && username === usernameToRemove) {
+        for(const [key, { userId, username }] of [...prevFriends].entries()) {
+          if(userId === roomId && username === usernameToRemove) {
             index = key
           }
         }
@@ -61,7 +61,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
     socket.on('dm', msg => {
       // console.log('ms: ', msg)
       // console.log('dm channel: ', channelRef.current)
-      if(channelRef.current.userID === msg.from) {
+      if(channelRef.current.userId === msg.from) {
         socket.emit('clear_unread_count', { roomId: msg.from })
       }
       // socket.emit('handle_room_selected', { channelId: channelObj.userID })
@@ -70,7 +70,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
         // console.log('channel: ', channelRef)
         return [...prevFriends].map(friend => {
           // if channel is active
-          if(msg.from === friend.userID) {
+          if(msg.from === friend.userId) {
             friend.latestMessage = msg.content
           }
           return friend;
@@ -78,7 +78,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       })
 
       // if incoming messages matches active channel, add messages to message array
-      if(msg.from === channelRef.current.userID) {
+      if(msg.from === channelRef.current.userId) {
         setMessages(prevMsg => {
           return [...prevMsg, msg]
         })
@@ -89,7 +89,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       // console.log('unread-count: ', { userId, count })
       setFriendList(prevFriends => {
         return [...prevFriends].map(friend => {
-          if(friend.userID === userId) {
+          if(friend.userId === userId) {
             friend.unreadCount = count
           }
           return friend

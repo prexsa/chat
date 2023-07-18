@@ -61,8 +61,8 @@ function MessagePanel() {
       // console.log('prevFriends: ', prevFriends)
       if(prevFriends === undefined) return
       let index = null;
-      for(const [key, { userID, username }] of [...prevFriends].entries()) {
-        if(userID === channel.userID && username === channel.username) {
+      for(const [key, { userId, username }] of [...prevFriends].entries()) {
+        if(userId === channel.userId && username === channel.username) {
           index = key
         }
       }
@@ -72,21 +72,21 @@ function MessagePanel() {
     socket.connect()
     socket.emit('remove_channel', {
       user: {
-        userId: user.userID,
+        userId: user.userId,
         username: user.username 
       }, 
       channel: {
-        channelId: channel.userID,
+        channelId: channel.userId,
         channelname: channel.username
       }
     })
-    setChannel({ userID: "" })
+    setChannel({ userId: "" })
   }
 
   return (
     <>
       {
-        channel.userID === "" ?
+        channel.userId === "" ?
         <div className="message-panel-container">
           <h2>Choose a conversation</h2>
           <h3>Click on an existing chat or click "New Chat" to create a new conversation</h3>
@@ -117,7 +117,7 @@ function MessagePanel() {
                 messages.map((message, idx) => {
                   // console.log('message: ', message)
                   // check message if isImage key exist
-                  const isYou = message.from === null || message.from === user.userID;
+                  const isYou = message.from === null || message.from === user.userId;
                   return (
                     <li
                       key={idx}
@@ -160,7 +160,7 @@ function MessagePanel() {
             </ul>
           </div>
           <footer>
-            <Chatbox userID={channel.userID} from={user.userID} picture={picture} handleSetPicture={setPicture} />
+            <Chatbox userId={channel.userId} from={user.userId} picture={picture} handleSetPicture={setPicture} />
           </footer>
         </div>
       }

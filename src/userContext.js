@@ -8,7 +8,7 @@ const UserProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState({
     username: '',
-    userID: '',
+    userId: '',
     loggedIn: null,
   });
   useEffect(() => {

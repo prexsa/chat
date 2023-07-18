@@ -12,17 +12,17 @@ function ChannelList() {
     // console.log('channel: ', channelObj)
     setActiveIndex(index)
     setChannel(channelObj)
-    if(channelObj.userID === "" && index === null) return;
+    if(channelObj.userId === "" && index === null) return;
     // get messages for channel
     setFriendList(prevFriends => {
       return [...prevFriends].map(friend => {
-        if(friend.userID === channelObj.userID) {
+        if(friend.userId === channelObj.userId) {
           // friend.hasNewMessage = false;
           // friend.unreadCount = 0;
           // console.log('friend: ', friend)
           socket.connect();
           // socket.emit('clear_unread_count', { roomId: channelObj.userID })
-          socket.emit('handle_room_selected', { channelId: channelObj.userID })
+          socket.emit('handle_room_selected', { channelId: channelObj.userId })
         }
         return friend;
       })
@@ -32,22 +32,22 @@ function ChannelList() {
   const setBadgeCSS = (value) => {
     return Number(value) < 10 ? 'badge' : 'badge double-digits';
   }
-
+// console.log('friendList: ', friendList)
   return (
     <div className="channel-list-cntr">
-      <button className="btn btn-link" onClick={() => onChannelSelect({ userID: "" }, null)}>Clear Message Panel</button>
+      <button className="btn btn-link" onClick={() => onChannelSelect({ userId: "" }, null)}>Clear Message Panel</button>
       <ul>
         {
           friendList && friendList.map((friend, index) => {
-            // console.log({ friend })
+            // console.log(friend)
             // clear unreadCount if channel is active
-            if(friend.userID === channel.userID) {
+            if(friend.userId === channel.userId) {
               friend.unreadCount = 0
             }
             return (
               <li
                 className={`${activeIndex === index ? 'active-list-item': ''} list-item-cntr`}
-                key={friend.userID}
+                key={friend?.userId || friend?.roomId}
                 onClick={() => onChannelSelect(friend, index)}
               >
                 {/*<span className={`status ${friend.connected === 'true' ? 'green' : 'orange'}`}></span>*/}
@@ -55,7 +55,7 @@ function ChannelList() {
                 <FaUserCircle className="faUserCicle-channelList" />
                 <div className="list-item-right">
                   <div className="list-item-right-header">
-                    <h3 className="header-item-name">{friend.username}</h3>
+                    <h3 className="header-item-name">{friend?.username || friend?.title}</h3>
                     <div className="header-item-time">10:30 PM</div>
                   </div>
                   <div className="message-alerts">

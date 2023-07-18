@@ -33,7 +33,7 @@ function Login() {
         navigate('/chat');
       } else {
         // if username has not been created, redirect user to create username
-        navigate('/select-username', { state: { userID: response.data.userID }});
+        navigate('/select-username', { state: { userId: response.data.userId }});
       }
     }
     reset({inputValue: '', password: ''})

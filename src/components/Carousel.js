@@ -18,6 +18,7 @@ function NoTransitionCarousel({ activeIndex, images }) {
       activeIndex={index} 
       slide={false} 
       onSelect={handleSelect}
+      indicators={false}
     >
       {
         images && images.map((image, imgIndex) => {

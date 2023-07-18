@@ -14,7 +14,7 @@ exports.verifyToken = (req, res) => {
     res.status(200).send({
       loggedIn: true,
       username: decoded.username,
-      userID: decoded.userID
+      userId: decoded.userId
     })
   }).catch(err => {
     console.log('check token error: ', err)
@@ -38,14 +38,14 @@ exports.login = (req, res) => {
     const payload = {
       id: user._id,
       username: user?.username,
-      userID: user.userID
+      userId: user.userId
     }
-    // console.log('payload: ', payload)
+     console.log('payload: ', payload)
     jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then(token => {
       res.status(200).send({
         username: user?.username,
         accessToken: token,
-        userID: user.userID,
+        userId: user.userId,
         loggedIn: true
       })
     })
@@ -67,20 +67,20 @@ exports.signup = async (req, res) => {
       lastname: lname,
       email: email,
       password: bcrypt.hashSync(req.body.password, 8),
-      userID: crypto.randomUUID()
+      userId: crypto.randomUUID()
     });
     user.save().then(() => {
       const payload = {
         id: user._id,
         // username: user.username,
-        userID: user.userID
+        userId: user.userId
       }
       jwtSign(payload, JWT_SECRET, { expiresIn: "7d"}).then(token => {
         res.send({
           status: 'User was registered successfully!',
           // username: username,
           accessToken: token,
-          userID: user.userID,
+          userId: user.userId,
           loggedIn: true,
         })
       })
@@ -95,23 +95,23 @@ exports.signup = async (req, res) => {
 }
 
 exports.addUsername = async (req, res) => {
-  const { userID, username } = req.body;
+  const { userId, username } = req.body;
   console.log('req.body: ', req.body)
   const isUsernameFound = await User.findOne({ username: username })
   // if username is null, username is available
   if(isUsernameFound === null) {
-    const user = await User.findOneAndUpdate({ userID: userID }, { $set: { username: username }})
+    const user = await User.findOneAndUpdate({ userId: userId }, { $set: { username: username }})
     const payload = {
       id: user._id,
       username: username,
-      userID: userID
+      userId: userId
     }
     // console.log('payload: ', payload)
     jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then(token => {
       res.status(200).send({
         username: username,
         accessToken: token,
-        userID: userID,
+        userId: userId,
         loggedIn: true
       })
     })
@@ -127,8 +127,8 @@ exports.sendResetLink = async (req, res) => {
   // findOne returns an obj
   const recordFound = await User.findOne({ [keyType]: value })
   console.log('recordFound: ', recordFound)
-  const { userID, email } = recordFound
-  const payload = { userID, email }
+  const { userId, email } = recordFound
+  const payload = { userId, email }
   sendMail(payload)
   const status = recordFound !== null ? 'success' : 'failed'
   res.status(200).send({ status })
@@ -136,7 +136,7 @@ exports.sendResetLink = async (req, res) => {
 
 exports.passwordReset = async (req, res) => {
   const { userId, password } = req.body
-  const result = await User.findOneAndUpdate({ userID: userId }, { $set: { password: bcrypt.hashSync(password, 8), }});
+  const result = await User.findOneAndUpdate({ userId: userId }, { $set: { password: bcrypt.hashSync(password, 8), }});
   // console.log('result: ;', result)
   res.status(200).send({ status: 'success' })
 }

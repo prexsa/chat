@@ -14,7 +14,7 @@ function Main() {
   const [messages, setMessages] = useState([]);
   const [channel, setChannel] = useState({
     username: '',
-    userID: '',
+    userId: '',
     connected: '',
     unreadCount: '',
     lastestMessage: ''

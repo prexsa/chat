@@ -10,6 +10,7 @@ const { corsConfig } = require('./session');
 const {
   authorizeUser,
   addFriend,
+  createGroup,
   initializeUser,
   dm,
   // removeRoomId,
@@ -46,13 +47,14 @@ io.on('connection', async (socket) => {
   socket.on('dm', message => dm(socket, message))
   // socket.on('room_msgs', (roomId, cb) => getRoomMessages(socket, roomId, cb))
   socket.on("add_friend", (name, cb) => addFriend(socket, name, cb))
+  socket.on('create_group', (name, cb) => createGroup(socket, name, cb))
   socket.on('clear_unread_count', ({ roomId }) => clearUnreadCount(socket, roomId ))
   socket.on('handle_room_selected', ({ channelId }) => handleRoomSelected(socket, channelId))
   socket.on('remove_channel', ({ user, channel }) => disconnectUserRelationship(socket, user, channel))
   socket.on('upload_file', (fileObj, cb) => uploadFile(socket, fileObj, cb))
-  socket.on('feedback_typing', ({userID, showFeedback}) => {
-    console.log('userID: ', userID)
-    socket.to(userID).emit('typing_feedback', showFeedback)
+  socket.on('feedback_typing', ({userId, showFeedback}) => {
+    console.log('userId: ', userId)
+    socket.to(userId).emit('typing_feedback', showFeedback)
     /*io.to(to).emit('typingResp', {toggleState, to})
     // socket.broadcast.emit('typingResp', toggleState);*/
   })
