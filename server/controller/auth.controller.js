@@ -40,7 +40,7 @@ exports.login = (req, res) => {
       username: user?.username,
       userId: user.userId
     }
-     console.log('payload: ', payload)
+     // console.log('payload: ', payload)
     jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then(token => {
       res.status(200).send({
         username: user?.username,

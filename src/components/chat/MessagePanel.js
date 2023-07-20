@@ -3,7 +3,8 @@ import { FaUserCircle, FaTimes } from 'react-icons/fa';
 import Chatbox from './Chatbox';
 import { useUserContext } from '../../userContext';
 import { MessagesContext, FriendContext, SocketContext } from './Chat';
-import VerticallyCenteredModal from '../VerticallyCenteredModal'
+import VerticallyCenteredModal from '../VerticallyCenteredModal';
+import AddToGroup from './AddToGroup';
 
 function MessagePanel() {
   const bottomRef = useRef(null);
@@ -83,6 +84,10 @@ function MessagePanel() {
     setChannel({ userId: "" })
   }
 
+  const handleAddToGroup = () => {
+
+  }
+
   return (
     <>
       {
@@ -101,6 +106,7 @@ function MessagePanel() {
             activeindex={imageIndex}
           />
           <header>
+            <AddToGroup addToGroup={handleAddToGroup} />
             <FaUserCircle className="channel-img" />
             <h2>{channel.username}</h2>
             <div className="message-chanel-actions">

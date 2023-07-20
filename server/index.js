@@ -17,6 +17,9 @@ const {
   clearUnreadCount,
   handleRoomSelected,
   uploadFile, 
+  getGroupMembers,
+  addToGroup,
+  removeUserFromGroup,
   disconnectUserRelationship,
   // getRoomMessages,
   onDisconnect
@@ -52,6 +55,9 @@ io.on('connection', async (socket) => {
   socket.on('handle_room_selected', ({ channelId }) => handleRoomSelected(socket, channelId))
   socket.on('remove_channel', ({ user, channel }) => disconnectUserRelationship(socket, user, channel))
   socket.on('upload_file', (fileObj, cb) => uploadFile(socket, fileObj, cb))
+  socket.on('get_group_members', ({roomId}, cb) => getGroupMembers(roomId, cb))
+  socket.on('remove_member_from_group', ({ roomId, userId }, cb) => removeUserFromGroup(roomId, userId, cb))
+  socket.on('add_members', ({ roomId, members}, cb) => addToGroup(roomId, members, cb))
   socket.on('feedback_typing', ({userId, showFeedback}) => {
     console.log('userId: ', userId)
     socket.to(userId).emit('typing_feedback', showFeedback)

@@ -30,6 +30,7 @@ function AddFriend() {
 
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
+  
   return (
     <div>
       <Button onClick={handleShow} size="sm">

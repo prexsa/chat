@@ -56,8 +56,9 @@ const getRooms = async (socket) => {
 
 const notifyFriends = async (socket) => {
   const { rooms } = await getRooms(socket);
-  if(rooms.length > 0) {
-    socket.to(rooms).emit("connected", "true", socket.user.userId)
+  const friendRooms = await rooms.map(room => room.userId);
+  if(friendRooms.length > 0) {
+    socket.to(friendRooms).emit("connected", "true", socket.user.userId)
   }
   socket.emit("friends", rooms)
 }
@@ -205,15 +206,37 @@ module.exports.createGroup = async (socket, title, cb) => {
   )
 
   const added = await redisClient.sadd(`rooms:${socket.user.userId}`, groupId)
-
+  const addToMembers = await redisClient.sadd(`grpmembers:${randomId}`)
   console.log({ created, added })
   cb({ roomId: groupId, title: title.name })
 }
 
-module.exports.deleteGroup = async (socket, groupId, cb) => {
-
+module.exports.removeUserFromGroup = async (roomId, userId, cb) => {
+  const removed = await redisClient.srem(`grpmembers:${roomId}`, userId)
+  cb({ resp: removed })
 }
 
+module.exports.getGroupMembers = async (roomId, cb) => {
+  // console.log('getGroupMembers: ', roomId)
+  const members = await redisClient.smembers(`grpmembers:${roomId}`)
+  const membersDetails = await Promise.all(
+    members.map(async userId => {
+      return await redisClient.hgetall(`userid:${userId}`)
+    })
+  )
+  cb({ members: membersDetails })
+  console.log('membersDetails: ', membersDetails)
+}
+
+module.exports.addToGroup = async (roomId, members, cb) => {
+  console.log('addToGroup: ', { roomId, members })
+  const asyncRes = await Promise.all(
+    members.map(member => {
+      return redisClient.sadd(`grpmembers:${roomId}`, member.userId)
+    })
+  )
+  console.log('concatMembers: ', asyncRes)
+}
 
 module.exports.clearUnreadCount = async (socket, roomId) => {
   // console.log("clearUnreadCount ", { userID: socket.user.userID, roomId })
@@ -356,25 +379,14 @@ const deleteStoredFile = (fileName) => {
 module.exports.onDisconnect = async socket => {
   console.log('onDisconnect: ')
   await redisClient.hset(
-    `userid:${socket.user.username}`,
-    "connected",
-    false
-  )
-
-  await redisClient.hset(
     `userid:${socket.user.userId}`,
     "connected",
     false
   )
 
-  const friendList = await redisClient.lrange(`friends:${socket.user.username}`, 0, -1);
-  const friendRooms = await parseFriendList(friendList).then(friends => {
-    // console.log('friends: ', friends)
-    return friends.map(friend => friend.userId)
-  })
-  // console.log('friendList: ', friendList)
-  // console.log('friendRooms: ', friendRooms)
-  socket.to(friendRooms).emit("connected", false, socket.user.username);
+  const { rooms } = await getRooms(socket);
+  const friendRooms = await rooms.map(room => room.userId);
+  socket.to(friendRooms).emit("connected", false, socket.user.userId);
 }
 
 /*const removeFromFriendList = async (username, friendname, friendId) => {
@@ -388,24 +400,6 @@ module.exports.onDisconnect = async socket => {
 const removeRoomIdPairing = async (userId, roomId) => {
   // console.log('remove: ', { userId, roomId })
   await redisClient.srem(`rooms:${userId}`, roomId)
-}
-
-const parseFriendList = async (friendList) => {
-  const newFriendList = [];
-  for(let friend of friendList) {
-    const parseFriend = friend.split('.');
-    const friendConnectionStatus = await redisClient.hget(
-      `userid:${parseFriend[0]}`,
-      "connected"
-    )
-    // console.log('friendConnected: ', friendConnected)
-    newFriendList.push({
-      username: parseFriend[0],
-      userId: parseFriend[1],
-      connected: friendConnectionStatus
-    })
-  }
-  return newFriendList;
 }
 
 const incrementUnreadCount = async (roomId, userId) => {

@@ -11,7 +11,10 @@ function ChannelList() {
   const onChannelSelect = (channelObj, index) => {
     // console.log('channel: ', channelObj)
     setActiveIndex(index)
-    setChannel(channelObj)
+    setChannel({
+      ...channelObj, 
+      username: channelObj?.username || channelObj?.title
+    })
     if(channelObj.userId === "" && index === null) return;
     // get messages for channel
     setFriendList(prevFriends => {

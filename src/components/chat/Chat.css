@@ -459,3 +459,10 @@ main footer #submit:hover {
 .hidden-txt {
   visibility: hidden;
 }
+.modal-body-children {
+  margin: 10px 0 20px;
+}
+.modal-body-children h5 {
+  font-size: 18px;
+  font-weight: 500;
+}
