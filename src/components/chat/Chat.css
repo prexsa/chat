@@ -307,6 +307,8 @@ main header h3 {
   border-top: 2px solid #eaeef2;
   border-bottom: 2px solid #eaeef2;
   border-radius: 5px;
+  height: 88vh;
+  position: relative;
 }
 .chat li {
   padding: 10px;
@@ -317,6 +319,11 @@ main header h3 {
 }
 .chat > .you {
   flex-direction: row-reverse;
+}
+.feedback-typing {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
 }
 .icon-message-container {
   display: flex;

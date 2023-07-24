@@ -46,6 +46,7 @@ function AddToGroup() {
     console.log('handleOnSubmit; ', data)
     socket.connect()
     socket.emit('add_members', { roomId: channel.roomId, members: data.multiselect })
+    setMembers([...members, data.multiselect])
     resetValues();
   }
 

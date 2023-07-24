@@ -211,7 +211,7 @@ module.exports.createGroup = async (socket, title, cb) => {
   cb({ roomId: groupId, title: title.name })
 }
 
-module.exports.removeUserFromGroup = async (roomId, userId, cb) => {
+module.exports.removeUserFromGroup = async (socket, roomId, userId, cb) => {
   const removed = await redisClient.srem(`grpmembers:${roomId}`, userId)
   cb({ resp: removed })
 }
@@ -228,11 +228,23 @@ module.exports.getGroupMembers = async (roomId, cb) => {
   console.log('membersDetails: ', membersDetails)
 }
 
-module.exports.addToGroup = async (roomId, members, cb) => {
+const getGroupTitle = async (roomId) => {
+  return Promise.resolve({ title: await redisClient.hget(`group:${roomId}`, 'title')})
+}
+
+module.exports.addToGroup = async (socket, roomId, members, cb) => {
   console.log('addToGroup: ', { roomId, members })
+  const { title } = await getGroupTitle(roomId)
   const asyncRes = await Promise.all(
-    members.map(member => {
-      return redisClient.sadd(`grpmembers:${roomId}`, member.userId)
+    members.map(async member => {
+      const integerResp = await redisClient.sadd(`grpmembers:${roomId}`, member.userId);
+      // add roomId to member's rooms set
+      const updateRoomSet = await redisClient.sadd(`rooms:${member.userId}`, `group:${roomId}`)
+      socket.to(member.userId).emit('new_friend', {
+        roomId,
+        title
+      })
+      return member;
     })
   )
   console.log('concatMembers: ', asyncRes)
@@ -250,10 +262,15 @@ module.exports.dm = async (socket, msg) => {
   const username = socket.user.username
   const { count } = await incrementUnreadCount(msg.to, socket.user.userId)
   // emit to the user that is receiving the current count
-  socket.to(msg.to).emit('unread-count', { userId: socket.user.userId, count})
-  // updateFriendsList(socket)
-  const { roomId } = await getRoomId(socket.user.userId, msg.to)
-
+  socket.to(msg.to).emit('unread-count', { userId: socket.user.userId, count })
+  // check whether isGroup
+  let roomIdStr = ''
+  if(msg.isGroup) {
+    roomIdStr = msg.to
+  } else {
+    const { roomId } = await getRoomId(socket.user.userId, msg.to)
+    roomIdStr = roomId.id
+  }
   // messages are stored in sorted set
   const unixDateTime = Date.now()
   const message = {
@@ -263,8 +280,15 @@ module.exports.dm = async (socket, msg) => {
     date: unixDateTime
   }
   // save message
-  await redisClient.zadd(`messages:${roomId.id}`, unixDateTime, JSON.stringify(message))
-  socket.to(msg.to).emit("dm", msg)
+  await redisClient.zadd(`messages:${roomIdStr}`, unixDateTime, JSON.stringify(message))
+  if(msg.isGroup) {
+    const members = await redisClient.smembers(`grpmembers:${msg.to}`)
+    socket.to(members).emit("dm", msg);
+  } else {
+    socket.to(msg.to).emit("dm", msg);
+  }
+
+  // 
 }
 // https://developer.redis.com/howtos/chatapp/
 // https://redis.io/docs/data-types/sorted-sets/
@@ -284,18 +308,42 @@ module.exports.disconnectUserRelationship = async (socket, user, channel) => {
   // socket.to(friend.userid).emit('new_friend', self)
 }
 
-module.exports.handleRoomSelected = async (socket, channelId) => {
+const addIdentityToGroupMsgUserId = async (messages) => {
+  
+  const asyncRes = await Promise.all(
+    messages.map(async message => {
+      console.log('message; ', message.from)
+      const resp = await redisClient.hget(`userid:${message.from}`, 'username')
+      console.log('message.from: ', resp)
+      return message;
+    })
+  )
+  return Promise.resolve({ groupMessage: asyncRes })
+}
+
+module.exports.handleRoomSelected = async (socket, channelId, isGroup) => {
   // reset unread count
   const userId = socket.user.userId
   const { count } = await resetUnreadCount(userId, channelId)
   // emit to yourself
   socket.emit('unread-count', { userId: channelId , count })
   // get messageId 
-  const { roomId } = await getRoomId(userId, channelId)
+  let roomIdStr = ''
+  if(isGroup) {
+    roomIdStr = channelId
+  } else {
+    const { roomId } = await getRoomId(userId, channelId)
+    roomIdStr = roomId.id
+  }
   // console.log('handleRoomSelected: ', roomId)
   // get room message and emit back
   // zrevrange returns an array[]
-  const messages = await redisClient.zrange(`messages:${roomId.id}`, 0 , -1)
+  let messages = await redisClient.zrange(`messages:${roomIdStr}`, 0 , -1)
+  // console.log('messages: ', messages)
+  if(isGroup) {
+   const { groupMessage } = await addIdentityToGroupMsgUserId(messages);
+   // console.log('groupMessage: ', groupMessage)
+  }
   // console.log('messages; ', messages)
   const parsedJson = messages.map(message => JSON.parse(message))
   // console.log('parsedJson: ', parsedJson )

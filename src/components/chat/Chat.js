@@ -17,7 +17,8 @@ function Main() {
     userId: '',
     connected: '',
     unreadCount: '',
-    lastestMessage: ''
+    lastestMessage: '',
+    isGroup: false,
   });
   const [username, setUsername] = useState('');
   const [feedback, setFeedback] = useState(false);
@@ -45,7 +46,7 @@ function Main() {
           <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
             <Sidebar />
             <main>
-              <MessagePanel />
+              <MessagePanel isGroup={channel.isGroup} />
             </main>
           </MessagesContext.Provider>
         </div>

@@ -59,7 +59,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
     })
 
     socket.on('dm', msg => {
-      // console.log('ms: ', msg)
+      console.log('ms: ', msg)
       // console.log('dm channel: ', channelRef.current)
       if(channelRef.current.userId === msg.from) {
         socket.emit('clear_unread_count', { roomId: msg.from })
@@ -70,18 +70,32 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
         // console.log('channel: ', channelRef)
         return [...prevFriends].map(friend => {
           // if channel is active
-          if(msg.from === friend.userId) {
-            friend.latestMessage = msg.content
+          if(msg.isGroup) {
+            if(friend.roomId === msg.to) {
+              friend.latestMessage = msg.content
+            }
+          } else {
+            if(msg.from === friend.userId) {
+              friend.latestMessage = msg.content
+            }
           }
           return friend;
         })
       })
-
+// console.log('channelRef: ', channelRef)
       // if incoming messages matches active channel, add messages to message array
-      if(msg.from === channelRef.current.userId) {
-        setMessages(prevMsg => {
-          return [...prevMsg, msg]
-        })
+      if(msg.isGroup) {
+        if(msg.to === channelRef.current.roomId) {
+          setMessages(prevMsg => {
+            return [...prevMsg, msg]
+          })
+        }
+      } else {
+        if(msg.from === channelRef.current.userId) {
+          setMessages(prevMsg => {
+            return [...prevMsg, msg]
+          })
+        }
       }
     })
 

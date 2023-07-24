@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { SocketContext, MessagesContext } from './Chat';
 // https://refine.dev/blog/how-to-multipart-file-upload-with-react-hook-form/#create-express-server
 // https://www.commoninja.com/blog/handling-multiple-uploads-react-hook-form#Creating-the-Functions-for-Image-Preview-and-Handling-Form-Submission
-function Chatbox({ userId, from, picture, handleSetPicture }) {
-  // console.log('userID: ', userID)
+function Chatbox({ userId, from, isGroup, picture, handleSetPicture }) {
+  // console.log('userID: ', userId)
   const { socket } = useContext(SocketContext);
   const { setMessages } = useContext(MessagesContext);
   const { register, handleSubmit, reset, resetField, formState } = useForm();
@@ -20,7 +20,8 @@ function Chatbox({ userId, from, picture, handleSetPicture }) {
       to: userId,
       from: from,
       fileName: file.name,
-      file: file
+      file: file,
+      isGroup
     }
     // console.log('fileObj: ', file)
     socket.emit('upload_file', fileObj, (resp) => {
@@ -44,7 +45,8 @@ function Chatbox({ userId, from, picture, handleSetPicture }) {
     const message = {
       to: userId,
       from: from,
-      content: data.message
+      content: data.message,
+      isGroup
     }
     // onMessageSend(message);
     // console.log('message: ', message)

@@ -6,11 +6,11 @@ import { MessagesContext, FriendContext, SocketContext } from './Chat';
 import VerticallyCenteredModal from '../VerticallyCenteredModal';
 import AddToGroup from './AddToGroup';
 
-function MessagePanel() {
+function MessagePanel({ isGroup }) {
   const bottomRef = useRef(null);
   const { user } = useUserContext();
   const { messages, feedback } = useContext(MessagesContext);
-  const { channel, setFriendList, setChannel } = useContext(FriendContext);
+  const { channel, friendList, setFriendList, setChannel } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
   const [picture, setPicture] = useState(null)
   const [showModal, setShowModal] = useState(false)
@@ -32,7 +32,7 @@ function MessagePanel() {
     console.log('handleClearPicture; ')
     setPicture(null)
   }*/
-
+// console.log('channel: ', channel)
   const extractAllImagesFromMessages = async (selectedImgSrc) => {
     const images = await messages.filter(message => (message.hasOwnProperty('isImage') === true));
     let index = 0;
@@ -84,8 +84,9 @@ function MessagePanel() {
     setChannel({ userId: "" })
   }
 
-  const handleAddToGroup = () => {
-
+  const mapUserIdToName = userId => {
+    const friend = friendList.filter(friend => friend.userId === userId)
+    return friend[0].username
   }
 
   return (
@@ -106,7 +107,7 @@ function MessagePanel() {
             activeindex={imageIndex}
           />
           <header>
-            <AddToGroup addToGroup={handleAddToGroup} />
+            <AddToGroup />
             <FaUserCircle className="channel-img" />
             <h2>{channel.username}</h2>
             <div className="message-chanel-actions">
@@ -149,7 +150,10 @@ function MessagePanel() {
                       </div>
                       <div>
                         {
-                          (isYou) ? null : <div className="chat-username-txt">{channel.username}</div>
+                          (isYou) ? 
+                          null 
+                          : 
+                          <div className="chat-username-txt">{isGroup ? mapUserIdToName(message.from) : channel.username}</div>
                         }
                       </div>
                     </li>
@@ -162,11 +166,19 @@ function MessagePanel() {
                   <img className="file-upload-image" src={picture && picture} alt="" />
                 </div>
               </li>
-              <li ref={bottomRef}>{feedback ? `${user.username} is typing...` : ''}</li>
+              <li ref={bottomRef} className="feedback-typing">
+                {feedback ? `typing...` : ''}
+              </li>
             </ul>
           </div>
           <footer>
-            <Chatbox userId={channel.userId} from={user.userId} picture={picture} handleSetPicture={setPicture} />
+            <Chatbox 
+              userId={channel?.userId || channel?.roomId} 
+              from={user.userId} 
+              isGroup={channel?.isGroup}
+              picture={picture} 
+              handleSetPicture={setPicture} 
+            />
           </footer>
         </div>
       }

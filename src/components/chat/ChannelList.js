@@ -13,7 +13,9 @@ function ChannelList() {
     setActiveIndex(index)
     setChannel({
       ...channelObj, 
-      username: channelObj?.username || channelObj?.title
+      username: channelObj?.username || channelObj?.title,
+      isGroup: channelObj.hasOwnProperty('roomId'),
+      // checks whether channel is a group, group has 'roomId' instead of 'userId'
     })
     if(channelObj.userId === "" && index === null) return;
     // get messages for channel
@@ -25,7 +27,10 @@ function ChannelList() {
           // console.log('friend: ', friend)
           socket.connect();
           // socket.emit('clear_unread_count', { roomId: channelObj.userID })
-          socket.emit('handle_room_selected', { channelId: channelObj.userId })
+          socket.emit('handle_room_selected', { 
+            channelId: channelObj?.userId || channelObj?.roomId, 
+            isGroup: channelObj.hasOwnProperty('roomId'),
+          })
         }
         return friend;
       })
