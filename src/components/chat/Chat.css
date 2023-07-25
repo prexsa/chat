@@ -304,8 +304,8 @@ main header h3 {
   margin: 0;
   list-style-type: none;
   /*box-shadow: inset 0 0 10px 0px lightgrey;*/
-  border-top: 2px solid #eaeef2;
-  border-bottom: 2px solid #eaeef2;
+  /*border-top: 2px solid #eaeef2;
+  border-bottom: 2px solid #eaeef2;*/
   border-radius: 5px;
   height: 88vh;
   position: relative;
@@ -386,6 +386,7 @@ main header h3 {
 main footer {
   /*height: 50px;*/
   padding: 10px 5px;
+  border-top: 2px solid #eaeef2;
   /*box-shadow: inset 0 0 10px 0px lightgrey;*/
 }
 .chatbox-container {

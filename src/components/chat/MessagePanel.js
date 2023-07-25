@@ -160,15 +160,15 @@ function MessagePanel({ isGroup }) {
                   )
                 })
               }
-              <li ref={bottomRef}></li>
-              <li ref={bottomRef} className="you">
+              <li className="you">
                 <div className=" icon-message-container flex-direction-row">
                   <img className="file-upload-image" src={picture && picture} alt="" />
                 </div>
               </li>
-              <li ref={bottomRef} className="feedback-typing">
+              <li className="feedback-typing">
                 {feedback ? `typing...` : ''}
               </li>
+              <li ref={bottomRef}></li>
             </ul>
           </div>
           <footer>
