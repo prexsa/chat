@@ -194,6 +194,47 @@ module.exports.addFriend = async (socket, name, cb) => {
   cb({ done: true, newFriend })
 }
 
+
+module.exports.clearUnreadCount = async (socket, roomId) => {
+  // console.log("clearUnreadCount ", { userID: socket.user.userID, roomId })
+  resetUnreadCount(socket.user.userId, roomId)
+}
+
+module.exports.dm = async (socket, msg) => {
+  console.log('msg: ', msg)
+  // check if the user is online
+  msg.from = socket.user.userId;
+  const username = socket.user.username
+  const { count } = await incrementUnreadCount(msg.to, socket.user.userId)
+  // emit to the user that is receiving the current count
+  socket.to(msg.to).emit('unread-count', { userId: socket.user.userId, count })
+  // check whether isGroup
+  let roomIdStr = ''
+  if(msg.isGroup) {
+    roomIdStr = msg.to
+  } else {
+    const { roomId } = await getRoomId(socket.user.userId, msg.to)
+    roomIdStr = roomId.id
+  }
+  // messages are stored in sorted set
+  const unixDateTime = Date.now()
+  const message = {
+    to: msg.to,
+    from: msg.from,
+    content: msg.content,
+    date: unixDateTime
+  }
+  // save message
+  await redisClient.zadd(`messages:${roomIdStr}`, unixDateTime, JSON.stringify(message))
+  if(msg.isGroup) {
+    const members = await redisClient.smembers(`grpmembers:${msg.to}`)
+    socket.to(members).emit("dm", msg);
+  } else {
+    socket.to(msg.to).emit("dm", msg);
+  }
+
+  // 
+}
 module.exports.createGroup = async (socket, title, cb) => {
   const randomId = crypto.randomUUID();
   const groupId = `group:${randomId}`;
@@ -252,53 +293,18 @@ module.exports.addToGroup = async (socket, roomId, members, cb) => {
   )
   console.log('concatMembers: ', asyncRes)
 }
-
-module.exports.clearUnreadCount = async (socket, roomId) => {
-  // console.log("clearUnreadCount ", { userID: socket.user.userID, roomId })
-  resetUnreadCount(socket.user.userId, roomId)
-}
-
-module.exports.dm = async (socket, msg) => {
-  console.log('msg: ', msg)
-  // check if the user is online
-  msg.from = socket.user.userId;
-  const username = socket.user.username
-  const { count } = await incrementUnreadCount(msg.to, socket.user.userId)
-  // emit to the user that is receiving the current count
-  socket.to(msg.to).emit('unread-count', { userId: socket.user.userId, count })
-  // check whether isGroup
-  let roomIdStr = ''
-  if(msg.isGroup) {
-    roomIdStr = msg.to
-  } else {
-    const { roomId } = await getRoomId(socket.user.userId, msg.to)
-    roomIdStr = roomId.id
-  }
-  // messages are stored in sorted set
-  const unixDateTime = Date.now()
-  const message = {
-    to: msg.to,
-    from: msg.from,
-    content: msg.content,
-    date: unixDateTime
-  }
-  // save message
-  await redisClient.zadd(`messages:${roomIdStr}`, unixDateTime, JSON.stringify(message))
-  if(msg.isGroup) {
-    const members = await redisClient.smembers(`grpmembers:${msg.to}`)
-    socket.to(members).emit("dm", msg);
-  } else {
-    socket.to(msg.to).emit("dm", msg);
-  }
-
-  // 
-}
 // https://developer.redis.com/howtos/chatapp/
 // https://redis.io/docs/data-types/sorted-sets/
 
-module.exports.leaveGroup = async (socket, user, channel, cb) => {
-  const { userId, username } = user;
-  const { channelId, channelname } = channel;
+module.exports.leaveGroup = async (socket, userId, channelId, cb) => {
+  console.log({ userId, channelId })
+  const removeFromGroupList = await redisClient.srem(`grpmembers:${channelId}`, userId)
+  const removeFromUserList = await redisClient.srem(`rooms:${userId}`, `group:${channelId}`)
+  // get remaining userId and emit to users the removed member
+  const members = await redisClient.smembers(`grpmembers:${channelId}`)
+  socket.to(members).emit('exit_group_chat', { roomId: channelId , userId })
+  console.log('leaveGroup')
+  cb({ resp: { channelId }})
 }
 
 module.exports.disconnectUserRelationship = async (socket, user, channel, isGroup) => {
@@ -312,7 +318,7 @@ module.exports.disconnectUserRelationship = async (socket, user, channel, isGrou
     const removeFromUserList = await redisClient.srem(`rooms:${userId}`, `group:${channelId}`)
     // get remaining userId and emit to users the removed member
     const members = await redisClient.smembers(`grpmembers:${channelId}`)
-    socket.to(members).emit('remove_from_chat', { roomId: channelId , userId, isGroup })
+    socket.to(members).emit('exit_group_chat', { roomId: channelId , userId })
   } else {
     // removeFromFriendList(username, channelname, channelId)
     // removeFromFriendList(channelname, username, userId)

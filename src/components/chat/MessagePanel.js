@@ -52,18 +52,17 @@ function MessagePanel({ isGroup }) {
   }
 
   const handleLeaveGroup = () => {
+    console.log('channel: ', channel)
+    console.log('user: ', user)
     socket.emit('leave_group', {
-      user: {
         userId: user.userId,
-        username: user.username 
-      }, 
-      channel: {
-        channelId: channel?.userId || channel?.roomId,
-        channelname: channel.username
-      },
-      
+        channelId: channel?.roomId,
     }, ({ resp }) => {
-      console.log('resp: ', resp)
+      const { channelId } = resp
+      setFriendList(prevFriends => {
+        return [...prevFriends].filter((friend) => friend.roomId !== channelId)
+      })
+      // console.log('resp: ', resp)
     })
   }
 
@@ -123,9 +122,13 @@ function MessagePanel({ isGroup }) {
             <div className="message-chanel-actions">
               {/*<MoreVertIcon />*/}
               <div className="leave-icon-container">
+              {
+                // remove option for owner to leave their own group
+                channel?.owner && channel?.owner === user.userId ? null :
                 <span data-text="Leave chat" className="tooltip-text bottom left">
                   <ExitToAppIcon className="leave-icon" onClick={handleLeaveGroup} />
                 </span>
+              }
                 <span data-text="Delete" className="tooltip-text bottom left">
                   <CloseIcon className="leave-icon" onClick={handleRemoveChannel} />
                 </span>

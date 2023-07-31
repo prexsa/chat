@@ -26,6 +26,16 @@ function AddToGroup() {
     }, 2000)
   }, [respErr]);
 
+  useEffect(() => {
+    socket.on('exit_group_chat', ({ roomId, userId }) => {
+      // console.log('exit_group_chat: ', { roomId, userId })
+      setMembers(prevMembers => {
+        return [...prevMembers].filter(member => member.userId !== userId)
+      })
+    })
+    return () => socket.off('exit_group_chat')
+  }, [socket])
+
   const populateGroupMembers = (roomId) => {
     // console.log('roomId: ', roomId)
     // console.log('channel: ', channel)
@@ -58,7 +68,7 @@ function AddToGroup() {
   }
 
   const resetValues = () =>  {
-    // By calling the belowe method will reset the selected values programatically
+    // By calling the below method will reset the selected values programatically
     multiselectRef.current.resetSelectedValues();
   }
 
@@ -66,9 +76,9 @@ function AddToGroup() {
     // console.log('onSelectedOptionsChange: ', data)
     setMembers(members.filter((member, idx) => idx !== index))
     socket.connect()
-    socket.emit('remove_member_from_group', { roomId: channel.roomId, userId: data.userId }, ({ resp }) => {
-      // console.log('resp: ', resp)
-    })
+    socket.emit('remove_member_from_group', { roomId: channel.roomId, userId: data.userId }, ({ resp }) =>{ 
+        // console.log('resp: ', resp) 
+      })
   }
 
   useEffect(() => {
@@ -94,7 +104,7 @@ function AddToGroup() {
     const filter4AvailableMembers = friends.filter((obj) => {
       return !members.find(obj2 => obj2.userId === obj.userId)
     })
-    console.log('filter4AvailableMembers: ;', filter4AvailableMembers)
+    // console.log('filter4AvailableMembers: ;', filter4AvailableMembers)
     // console.log('friends: ', friends)
     setFriends(filter4AvailableMembers)
   }, [friendList, members])
