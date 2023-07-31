@@ -4,6 +4,9 @@ import { FaPlus, FaUserPlus } from 'react-icons/fa';
 import { Button, Modal, ListGroup } from 'react-bootstrap';
 import Multiselect from 'multiselect-react-dropdown';
 import { FriendContext, SocketContext } from './Chat';
+import RemoveIcon from '@mui/icons-material/Remove';
+import CloseIcon from '@mui/icons-material/Close';
+import GroupsIcon from '@mui/icons-material/Groups';
 // https://github.com/srigar/multiselect-react-dropdown
 // https://10xn41w767.codesandbox.io/
 function AddToGroup() {
@@ -25,6 +28,7 @@ function AddToGroup() {
 
   const populateGroupMembers = (roomId) => {
     // console.log('roomId: ', roomId)
+    // console.log('channel: ', channel)
     socket.connect()
     socket.emit('get_group_members', {roomId}, ({ members }) => {
       // console.log('get_group_members ', members)
@@ -32,7 +36,8 @@ function AddToGroup() {
         return {
           name: member.username,
           id: index,
-          userId: member.userId
+          userId: member.userId,
+          owner: channel.owner === member.userId ? true : false
         }
       })
       
@@ -46,7 +51,9 @@ function AddToGroup() {
     console.log('handleOnSubmit; ', data)
     socket.connect()
     socket.emit('add_members', { roomId: channel.roomId, members: data.multiselect })
-    setMembers([...members, data.multiselect])
+    const membersLen = members.length;
+    const changeIndex = data.multiselect.map((user, index) => ({ id: membersLen + 1 + index }))
+    setMembers([...members, ...data.multiselect])
     resetValues();
   }
 
@@ -87,17 +94,17 @@ function AddToGroup() {
     const filter4AvailableMembers = friends.filter((obj) => {
       return !members.find(obj2 => obj2.userId === obj.userId)
     })
-    // console.log('filter4AvailableMembers: ;', filter4AvailableMembers)
+    console.log('filter4AvailableMembers: ;', filter4AvailableMembers)
     // console.log('friends: ', friends)
     setFriends(filter4AvailableMembers)
-  }, [friendList])
+  }, [friendList, members])
 
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
   return (
     <div>
       <Button onClick={handleShow} size="sm">
-        <div className="btn-icon-txt"><FaUserPlus /></div>
+        <div className="btn-icon-txt"><GroupsIcon  /></div>
       </Button>
       <Modal 
         show={show} 
@@ -114,8 +121,22 @@ function AddToGroup() {
             {
               members.length && members.map((member, index) => {
                 return (
-                  <ListGroup.Item key={index} action onClick={() => handleRemoveListItem(member, index)}>
-                    {member.name}
+                  <ListGroup.Item key={index} action >
+                    <div className="addToGroup-list-item">
+                      {member.name}
+                      {
+                        // if owner, disable remove icon
+                        !member.owner ? 
+                        <div>
+                          <RemoveIcon 
+                            className="leave-icon" 
+                            onClick={() => handleRemoveListItem(member, index)} 
+                          />
+                        </div>
+                        :
+                        null
+                      }
+                    </div>
                   </ListGroup.Item>
                 )
               })

@@ -19,6 +19,7 @@ const {
   uploadFile, 
   getGroupMembers,
   addToGroup,
+  leaveGroup,
   removeUserFromGroup,
   disconnectUserRelationship,
   // getRoomMessages,
@@ -53,9 +54,10 @@ io.on('connection', async (socket) => {
   socket.on('create_group', (name, cb) => createGroup(socket, name, cb))
   socket.on('clear_unread_count', ({ roomId }) => clearUnreadCount(socket, roomId ))
   socket.on('handle_room_selected', ({ channelId, isGroup }) => handleRoomSelected(socket, channelId, isGroup))
-  socket.on('remove_channel', ({ user, channel }) => disconnectUserRelationship(socket, user, channel))
+  socket.on('remove_channel', ({ user, channel, isGroup }) => disconnectUserRelationship(socket, user, channel, isGroup))
   socket.on('upload_file', (fileObj, cb) => uploadFile(socket, fileObj, cb))
   socket.on('get_group_members', ({roomId}, cb) => getGroupMembers(roomId, cb))
+  socket.on('leave_group', ({ roomId, userId }, cb) => leaveGroup(socket, roomId, userId, cb))
   socket.on('remove_member_from_group', ({ roomId, userId }, cb) => removeUserFromGroup(socket, roomId, userId, cb))
   socket.on('add_members', ({ roomId, members}, cb) => addToGroup(socket, roomId, members, cb))
   socket.on('feedback_typing', ({userId, showFeedback}) => {

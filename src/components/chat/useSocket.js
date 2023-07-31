@@ -42,7 +42,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       })
     })
 
-    socket.on('remove_from_chat', ({ roomId, usernameToRemove}) => {
+    socket.on('remove_from_chat', ({ roomId, usernameToRemove, isGroup }) => {
       // console.log('remove_from_chat: ', { roomId, usernameToRemove })
       setFriendList(prevFriends => {
         // console.log('prevFriends: ', prevFriends)

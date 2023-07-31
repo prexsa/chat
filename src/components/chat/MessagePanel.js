@@ -1,10 +1,13 @@
 import { useContext, useRef, useEffect, useState } from 'react';
-import { FaUserCircle, FaTimes } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
 import Chatbox from './Chatbox';
 import { useUserContext } from '../../userContext';
 import { MessagesContext, FriendContext, SocketContext } from './Chat';
 import VerticallyCenteredModal from '../VerticallyCenteredModal';
 import AddToGroup from './AddToGroup';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import CloseIcon from '@mui/icons-material/Close';
 
 function MessagePanel({ isGroup }) {
   const bottomRef = useRef(null);
@@ -27,11 +30,6 @@ function MessagePanel({ isGroup }) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({block: 'end', inline: 'nearest'});
   }, [channel])
-
-  /*const handleClearPicture = () => {
-    console.log('handleClearPicture; ')
-    setPicture(null)
-  }*/
 // console.log('channel: ', channel)
   const extractAllImagesFromMessages = async (selectedImgSrc) => {
     const images = await messages.filter(message => (message.hasOwnProperty('isImage') === true));
@@ -51,6 +49,22 @@ function MessagePanel({ isGroup }) {
     setShowModal(true)
     // setImages([imgSrc])
     extractAllImagesFromMessages(imgSrc)
+  }
+
+  const handleLeaveGroup = () => {
+    socket.emit('leave_group', {
+      user: {
+        userId: user.userId,
+        username: user.username 
+      }, 
+      channel: {
+        channelId: channel?.userId || channel?.roomId,
+        channelname: channel.username
+      },
+      
+    }, ({ resp }) => {
+      console.log('resp: ', resp)
+    })
   }
 
   const handleRemoveChannel = () => {
@@ -77,18 +91,14 @@ function MessagePanel({ isGroup }) {
         username: user.username 
       }, 
       channel: {
-        channelId: channel.userId,
+        channelId: channel?.userId || channel?.roomId,
         channelname: channel.username
-      }
+      },
+      isGroup
     })
     setChannel({ userId: "" })
   }
-
-  const mapUserIdToName = userId => {
-    const friend = friendList.filter(friend => friend.userId === userId)
-    return friend[0].username
-  }
-
+  
   return (
     <>
       {
@@ -111,9 +121,13 @@ function MessagePanel({ isGroup }) {
             <FaUserCircle className="channel-img" />
             <h2>{channel.username}</h2>
             <div className="message-chanel-actions">
+              {/*<MoreVertIcon />*/}
               <div className="leave-icon-container">
                 <span data-text="Leave chat" className="tooltip-text bottom left">
-                  <FaTimes className="leave-icon" onClick={handleRemoveChannel} />
+                  <ExitToAppIcon className="leave-icon" onClick={handleLeaveGroup} />
+                </span>
+                <span data-text="Delete" className="tooltip-text bottom left">
+                  <CloseIcon className="leave-icon" onClick={handleRemoveChannel} />
                 </span>
               </div>
             </div>
@@ -153,7 +167,7 @@ function MessagePanel({ isGroup }) {
                           (isYou) ? 
                           null 
                           : 
-                          <div className="chat-username-txt">{isGroup ? mapUserIdToName(message.from) : channel.username}</div>
+                          <div className="chat-username-txt">{isGroup ? message.username : channel.username}</div>
                         }
                       </div>
                     </li>

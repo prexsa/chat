@@ -202,7 +202,9 @@ module.exports.createGroup = async (socket, title, cb) => {
     "roomId",
     randomId,
     "title",
-    title.name
+    title.name,
+    "owner",
+    socket.user.userId
   )
 
   const added = await redisClient.sadd(`rooms:${socket.user.userId}`, groupId)
@@ -225,7 +227,7 @@ module.exports.getGroupMembers = async (roomId, cb) => {
     })
   )
   cb({ members: membersDetails })
-  console.log('membersDetails: ', membersDetails)
+  // console.log('membersDetails: ', membersDetails)
 }
 
 const getGroupTitle = async (roomId) => {
@@ -234,6 +236,7 @@ const getGroupTitle = async (roomId) => {
 
 module.exports.addToGroup = async (socket, roomId, members, cb) => {
   console.log('addToGroup: ', { roomId, members })
+  
   const { title } = await getGroupTitle(roomId)
   const asyncRes = await Promise.all(
     members.map(async member => {
@@ -293,32 +296,48 @@ module.exports.dm = async (socket, msg) => {
 // https://developer.redis.com/howtos/chatapp/
 // https://redis.io/docs/data-types/sorted-sets/
 
-module.exports.disconnectUserRelationship = async (socket, user, channel) => {
-  const { userId, username } = user
-  const { channelId, channelname } = channel
+module.exports.leaveGroup = async (socket, user, channel, cb) => {
+  const { userId, username } = user;
+  const { channelId, channelname } = channel;
+}
+
+module.exports.disconnectUserRelationship = async (socket, user, channel, isGroup) => {
+  const { userId, username } = user;
+  const { channelId, channelname } = channel;
   console.log("disconnectUserRelationship ", { user, channel })
-  // removeFromFriendList(username, channelname, channelId)
-  // removeFromFriendList(channelname, username, userId)
-  // get roomId 
-  const { roomId } = await getRoomId(userId, channelId)
-  removeRoomIdPairing(userId, roomId.id)
-  removeRoomIdPairing(channelId, roomId.id)
-  // remove yourself off their friends list
-  socket.to(channelId).emit('remove_from_chat', { roomId: userId, usernameToRemove: username })
-  // socket.to(friend.userid).emit('new_friend', self)
+  // check whether channelId is private or group
+  // return;
+  if(isGroup) {
+    const removeFromGroupList = await redisClient.srem(`grpmembers:${channelId}`, userId)
+    const removeFromUserList = await redisClient.srem(`rooms:${userId}`, `group:${channelId}`)
+    // get remaining userId and emit to users the removed member
+    const members = await redisClient.smembers(`grpmembers:${channelId}`)
+    socket.to(members).emit('remove_from_chat', { roomId: channelId , userId, isGroup })
+  } else {
+    // removeFromFriendList(username, channelname, channelId)
+    // removeFromFriendList(channelname, username, userId)
+    // get roomId 
+    const { roomId } = await getRoomId(userId, channelId)
+    removeRoomIdPairing(userId, roomId.id)
+    removeRoomIdPairing(channelId, roomId.id)
+    // remove yourself off their friends list
+    socket.to(channelId).emit('remove_from_chat', { roomId: userId, usernameToRemove: username, isGroup })
+    // socket.to(friend.userid).emit('new_friend', self)
+  }
 }
 
 const addIdentityToGroupMsgUserId = async (messages) => {
-  
+  const parsedJson = messages.map(message => JSON.parse(message))
   const asyncRes = await Promise.all(
-    messages.map(async message => {
-      console.log('message; ', message.from)
+    parsedJson.map(async message => {
+      // console.log('message; ', message.from)
       const resp = await redisClient.hget(`userid:${message.from}`, 'username')
-      console.log('message.from: ', resp)
+      // console.log('message.from: ', resp)
+      message.username = resp
       return message;
     })
   )
-  return Promise.resolve({ groupMessage: asyncRes })
+  return Promise.resolve({ mapMsgToUsername: asyncRes })
 }
 
 module.exports.handleRoomSelected = async (socket, channelId, isGroup) => {
@@ -338,16 +357,19 @@ module.exports.handleRoomSelected = async (socket, channelId, isGroup) => {
   // console.log('handleRoomSelected: ', roomId)
   // get room message and emit back
   // zrevrange returns an array[]
-  let messages = await redisClient.zrange(`messages:${roomIdStr}`, 0 , -1)
+  const messages = await redisClient.zrange(`messages:${roomIdStr}`, 0 , -1)
   // console.log('messages: ', messages)
+  let parsedMessages = [];
   if(isGroup) {
-   const { groupMessage } = await addIdentityToGroupMsgUserId(messages);
-   // console.log('groupMessage: ', groupMessage)
+    const { mapMsgToUsername } = await addIdentityToGroupMsgUserId(messages);
+    // console.log('groupMessage: ', groupMessage)
+    parsedMessages = mapMsgToUsername;
+  } else {
+    // console.log('messages; ', messages)
+    parsedMessages = messages.map(message => JSON.parse(message))
   }
-  // console.log('messages; ', messages)
-  const parsedJson = messages.map(message => JSON.parse(message))
   // console.log('parsedJson: ', parsedJson )
-  socket.emit('room_msgs', parsedJson)
+  socket.emit('room_msgs', parsedMessages)
 }
 // https://www.reddit.com/r/reactjs/comments/w22mag/how_to_handle_sending_images_and_videos_in_a_chat/
 // https://stackskills.com/courses/181862/lectures/2751724

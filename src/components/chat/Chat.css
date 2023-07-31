@@ -474,3 +474,8 @@ main footer #submit:hover {
   font-size: 18px;
   font-weight: 500;
 }
+/* Add-To-Group */
+.addToGroup-list-item {
+  display: flex;
+  justify-content: space-between;
+}
