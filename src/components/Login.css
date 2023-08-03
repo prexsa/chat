@@ -106,7 +106,7 @@
   position: relative;
   width: 100%;
 }
-input[type="text"], input[type="password"] {
+.text-input input[type="text"], .text-input input[type="password"] {
   width: 100%;
   box-sizing: border-box;
   padding: 5px 10px;

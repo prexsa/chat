@@ -37,7 +37,7 @@ function Main() {
     setSocket(() => socketConn(accessToken));
   }, [accessToken]);
 // console.log('socket: ', socket)
-  useSocket(setFriendList, setMessages, setUsername, channel, setFeedback, socket);
+  useSocket(setFriendList, setMessages, setUsername, channel, setChannel, setFeedback, socket);
 
   return (
     <FriendContext.Provider value={{ friendList, setFriendList, channel, setChannel, username }}>

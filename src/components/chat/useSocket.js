@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback, socket) => {
+const useSocket = (setFriendList, setMessages, setUsername, channel, setChannel, setFeedback, socket) => {
   // const { channel } = useContext(FriendContext);
   // console.log('channel: ', channel)
   // console.log('socket: ', socket)
@@ -99,6 +99,25 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       }
     })
 
+    socket.on('update_group_name', ({ roomId, updatedTitle }) => {
+      // update channel title, if active
+      if(channelRef.current.roomId === roomId) {
+        setChannel(prevState => ({
+          ...prevState,
+          title: updatedTitle
+        }))
+      }
+      setFriendList(prevFriends => {
+        return [...prevFriends].map(friend => {
+          // console.log('update_group_name: ', friend)
+          if(friend.roomId === roomId) {
+            friend.title = updatedTitle;
+          }
+          return friend
+        })
+      })
+    })
+
     socket.on('unread-count', ({ userId, count }) => {
       // console.log('unread-count: ', { userId, count })
       setFriendList(prevFriends => {
@@ -139,6 +158,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setFeedback
       socket.off('msg');
       socket.off('remove_from_chat')
       socket.off('unread-count')
+      socket.off('update_group_name')
     }
   }, [setFriendList, setMessages, setUsername, socket, setFeedback, channelRef])
 

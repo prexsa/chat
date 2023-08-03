@@ -8,6 +8,7 @@ import AddToGroup from './AddToGroup';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import CloseIcon from '@mui/icons-material/Close';
+import TitleForm from './TitleForm';
 
 function MessagePanel({ isGroup }) {
   const bottomRef = useRef(null);
@@ -15,12 +16,14 @@ function MessagePanel({ isGroup }) {
   const { messages, feedback } = useContext(MessagesContext);
   const { channel, friendList, setFriendList, setChannel } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
-  const [picture, setPicture] = useState(null)
-  const [showModal, setShowModal] = useState(false)
-  const [images, setImages] = useState([])
-  const [imageIndex, setImageIndex] = useState(0)
+  const [picture, setPicture] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [images, setImages] = useState([]);
+  const [imageIndex, setImageIndex] = useState(0);
+  const [toggleExpand, setToggleExpand] = useState(false);
 // console.log('messages; ', messages)
 // console.log('user; ', user)
+  // console.log('channel; ', channel)
   useEffect(() => {
     // console.log('picture: ', picture)
     // bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
@@ -29,7 +32,7 @@ function MessagePanel({ isGroup }) {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({block: 'end', inline: 'nearest'});
-  }, [channel])
+  }, [])
 // console.log('channel: ', channel)
   const extractAllImagesFromMessages = async (selectedImgSrc) => {
     const images = await messages.filter(message => (message.hasOwnProperty('isImage') === true));
@@ -101,7 +104,7 @@ function MessagePanel({ isGroup }) {
   return (
     <>
       {
-        channel.userId === "" ?
+        channel.userId === "" || channel.roomId === "" ?
         <div className="message-panel-container">
           <h2>Choose a conversation</h2>
           <h3>Click on an existing chat or click "New Chat" to create a new conversation</h3>
@@ -115,10 +118,14 @@ function MessagePanel({ isGroup }) {
             images={images}
             activeindex={imageIndex}
           />
-          <header>
+          <header className={`${toggleExpand ? "message-panel-header expand" : 'message-panel-header'}`}>
             <AddToGroup />
             <FaUserCircle className="channel-img" />
-            <h2>{channel.username}</h2>
+            {/*<h2>{channel.username}</h2>*/}
+            <TitleForm 
+              toggleExpand={toggleExpand}
+              setToggleExpand={setToggleExpand}
+            />
             <div className="message-chanel-actions">
               {/*<MoreVertIcon />*/}
               <div className="leave-icon-container">

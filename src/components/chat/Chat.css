@@ -196,12 +196,12 @@ aside li:active {
   vertical-align: top;
 }*/
 main .message-panel-container {
-  padding: 20px;
+  padding: 15px;
   height: inherit;
 }
-main header {
-  height: 40px;
-  padding: 10px;
+.message-panel-header {
+  height: 50px;
+  padding: 5px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -209,6 +209,20 @@ main header {
   border-bottom: 2px solid #eaeef2;
   border-radius: 5px;
   margin-bottom: 2px;
+  transition: height 0.3s linear;
+}
+.message-panel-header.expand {
+  height: 150px;
+  align-items: flex-start;
+}
+.title-form-btn-container {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-start;
+  column-gap: 10px;
+}
+.title-form-input-container {
+  width: 70%
 }
 main header > .channel-img {
   font-size: 30px;

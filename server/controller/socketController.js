@@ -235,6 +235,15 @@ module.exports.dm = async (socket, msg) => {
 
   // 
 }
+
+module.exports.changeGroupTitle = async (socket, channelId, title, cb) => {
+  if(title === '' || channelId === '') return;
+  const resp = await redisClient.hset(`group:${channelId}`, 'title', title)
+  const members = await redisClient.smembers(`grpmembers:${channelId}`)
+  socket.to(members).emit('update_group_name', { roomId: channelId, updatedTitle: title })
+  cb({ resp })
+}
+
 module.exports.createGroup = async (socket, title, cb) => {
   const randomId = crypto.randomUUID();
   const groupId = `group:${randomId}`;

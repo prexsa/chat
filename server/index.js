@@ -17,6 +17,7 @@ const {
   clearUnreadCount,
   handleRoomSelected,
   uploadFile, 
+  changeGroupTitle,
   getGroupMembers,
   addToGroup,
   leaveGroup,
@@ -56,6 +57,7 @@ io.on('connection', async (socket) => {
   socket.on('handle_room_selected', ({ channelId, isGroup }) => handleRoomSelected(socket, channelId, isGroup))
   socket.on('remove_channel', ({ user, channel, isGroup }) => disconnectUserRelationship(socket, user, channel, isGroup))
   socket.on('upload_file', (fileObj, cb) => uploadFile(socket, fileObj, cb))
+  socket.on('change_group_title', ({ channelId, title}, cb) => changeGroupTitle(socket, channelId, title, cb))
   socket.on('get_group_members', ({roomId}, cb) => getGroupMembers(roomId, cb))
   socket.on('leave_group', ({ userId, channelId }, cb) => leaveGroup(socket, userId, channelId, cb))
   socket.on('remove_member_from_group', ({ roomId, userId }, cb) => removeUserFromGroup(socket, roomId, userId, cb))
