@@ -14,7 +14,7 @@ function MessagePanel({ isGroup }) {
   const bottomRef = useRef(null);
   const { user } = useUserContext();
   const { messages, feedback } = useContext(MessagesContext);
-  const { channel, friendList, setFriendList, setChannel } = useContext(FriendContext);
+  const { channel, setFriendList, setChannel } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
   const [picture, setPicture] = useState(null);
   const [showModal, setShowModal] = useState(false);

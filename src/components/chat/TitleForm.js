@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import TextField from '@mui/material/TextField';
 import { SocketContext, FriendContext } from './Chat';
@@ -6,10 +6,9 @@ import { SocketContext, FriendContext } from './Chat';
 export const TitleForm = ({ toggleExpand, setToggleExpand }) => {
   const { socket } = useContext(SocketContext);
   const { channel, setFriendList, setChannel } = useContext(FriendContext);
-  const { register, handleSubmit, reset, setValue, getValues } = useForm({
+  const { register, handleSubmit, setValue, getValues } = useForm({
     mode: 'onChange'
   });
-  const [title, setTitle] = useState(channel.title)
 // console.log('channel: ', channel)
   const onSubmit = async (data) => {
     // setName(data.name)
@@ -41,7 +40,7 @@ export const TitleForm = ({ toggleExpand, setToggleExpand }) => {
     if(value !== channel.title) {
       setValue('name', channel.title)
     }
-  },[channel])
+  },[channel, getValues, setValue])
 
   if(channel.isGroup === false) {
     return <h2>{channel.title}</h2>

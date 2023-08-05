@@ -24,15 +24,20 @@ exports.verifyToken = (req, res) => {
 
 exports.login = (req, res) => {
   // console.log('app: body: ', req.body)
-  const { inputValue, password = "testing", keyType } = req.body;
-  User.findOne({ [keyType]: inputValue }).then((user) => {
-    if(!user) return res.status(200).send({ loggedIn: false, status: "User not found" });
+  const { username, password = "testing", keyType } = req.body;
+  User.findOne({ [keyType]: username }).then((user) => {
+    if(!user) return res.status(200).send({ 
+      isSuccessful: false, 
+      message: "User not found",
+      errorType: 'user',
+    });
     const passwordIsValid = bcrypt.compareSync(password, user.password);
     if(!passwordIsValid) {
       return res.status(200).send({
         accessToken: null,
-        status: 'Invalid password!',
-        loggedIn: false,
+        message: 'Invalid password!',
+        isSuccessful: false,
+        errorType: 'password'
       });
     }
     const payload = {
@@ -46,7 +51,7 @@ exports.login = (req, res) => {
         username: user?.username,
         accessToken: token,
         userId: user.userId,
-        loggedIn: true
+        isSuccessful: true
       })
     })
   }).catch(err => {

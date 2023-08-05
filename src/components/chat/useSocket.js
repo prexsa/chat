@@ -160,7 +160,7 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setChannel,
       socket.off('unread-count')
       socket.off('update_group_name')
     }
-  }, [setFriendList, setMessages, setUsername, socket, setFeedback, channelRef])
+  }, [setFriendList, setMessages, setUsername, socket, setFeedback, channelRef, setChannel])
 
   /*useEffect(() => {
     // console.log('channel: ', channel)

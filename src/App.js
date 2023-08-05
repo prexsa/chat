@@ -24,7 +24,7 @@ function App() {
           <Route path="/register" element={<SignupRFH />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/pw-reset" element={<PwReset />} />
-          <Route path="/select-username" element={<Username />} />
+          <Route path="/create-username" element={<Username />} />
           <Route element={<PrivateRoutes />}>
             <Route path="/chat" element={<Chat />} />
           </Route>
