@@ -86,15 +86,19 @@ exports.signup = async (req, res) => {
           // username: username,
           accessToken: token,
           userId: user.userId,
-          loggedIn: true,
+          isSuccessful: true,
         })
       })
     }).catch((err) => {
       console.log('signup error: ', err)
-      res.status(500).send({ status: err, loggedIn: false });
+      res.status(500).send({ status: err, isSuccessful: false });
     })
   } else {
-    res.status(200).send({ loggedIn: false, status: "That email is in use"})
+    res.status(200).send({ 
+      isSuccessful: false, 
+      message: "This is email is already taken.",
+      errorType: 'email'
+    })
     return;
   }
 }
@@ -117,31 +121,38 @@ exports.addUsername = async (req, res) => {
         username: username,
         accessToken: token,
         userId: userId,
-        loggedIn: true
+        isSuccessful: true
       })
     })
   } else {
-    res.status(200).send({ loggedIn: false, status: 'Username is taken'})
+    res.status(200).send({ isSuccessful: false, message: 'Username is taken'})
   }
 }
-
 
 exports.sendResetLink = async (req, res) => {
   const { keyType, value } = req.body;
   console.log('req.body: ', req.body)
   // findOne returns an obj
-  const recordFound = await User.findOne({ [keyType]: value })
-  console.log('recordFound: ', recordFound)
-  const { userId, email } = recordFound
+  const hasRecord = await User.findOne({ [keyType]: value })
+  console.log('hasRecord: ', hasRecord)
+  if(hasRecord === null) {
+    res.status(200).send({
+      isSuccessful: false,
+      message: 'User does not exist in our system.'
+    })
+    return;
+  }
+  const { userId, email } = hasRecord;
   const payload = { userId, email }
   sendMail(payload)
-  const status = recordFound !== null ? 'success' : 'failed'
-  res.status(200).send({ status })
+  res.status(200).send({ isSuccessful: true, message: 'An email has been sent to reset your password.' })
 }
 
 exports.passwordReset = async (req, res) => {
   const { userId, password } = req.body
+  // console.log(req.body)
+  if(userId === null) return;
   const result = await User.findOneAndUpdate({ userId: userId }, { $set: { password: bcrypt.hashSync(password, 8), }});
   // console.log('result: ;', result)
-  res.status(200).send({ status: 'success' })
+  res.status(200).send({ isSuccessful: true })
 }

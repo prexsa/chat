@@ -26,7 +26,7 @@ const expireTimeThirtyMins = () => {
 
 
 module.exports.sendMail = (values) => {
-  const { userID, email } = values;
+  const { userId, email } = values;
   const name = "Prexsa";
   const expireTime = expireTimeThirtyMins()
   const mail = {

@@ -3,9 +3,9 @@ import { Routes, Route } from "react-router-dom";
 // import Signup from './components/Signup'
 import LoginRFH from './components/Login.RFH';
 import SignupRFH from './components/Signup.RFH'
-import ForgotPassword from './components/ForgotPassword'
-import PwReset from './components/PasswordReset'
-import Username from './components/Username'
+import ForgotPasswordRFH from './components/ForgotPassword.RFH'
+import PwResetRFH from './components/PasswordReset.RFH'
+import UsernameRFH from './components/Username.RFH'
 import Chat from './components/chat/Chat';
 import PageNotFound from './components/PageNotFound';
 import PrivateRoutes from './components/PrivateRoutes';
@@ -22,9 +22,9 @@ function App() {
           <Route path="/" element={<LoginRFH />} />
           {/*<Route path="/loading" element={<Loading />} />*/}
           <Route path="/register" element={<SignupRFH />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/pw-reset" element={<PwReset />} />
-          <Route path="/create-username" element={<Username />} />
+          <Route path="/forgot-password" element={<ForgotPasswordRFH />} />
+          <Route path="/pw-reset" element={<PwResetRFH />} />
+          <Route path="/create-username" element={<UsernameRFH />} />
           <Route element={<PrivateRoutes />}>
             <Route path="/chat" element={<Chat />} />
           </Route>

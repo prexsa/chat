@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { useUserContext } from '../userContext';
 import { 
   Box, 
-  TextField, 
   Button, 
   InputAdornment, 
   OutlinedInput, 
@@ -15,6 +14,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Auth from '../services/Auth';
+import NoAuthLayout from './NoAuth.layout';
 // import './Login.css';
 
 const Login = () => {
@@ -72,7 +72,7 @@ const Login = () => {
   }
 
   const onFocusHandler = e => {
-    console.log('onFocusHandler: ', e.target.name)
+    // console.log('onFocusHandler: ', e.target.name)
     // reset the error indicators when user is focused
     if(e.target.name === 'username') {
       setUsrNameError({ hasError: false, msg: '' })
@@ -83,121 +83,75 @@ const Login = () => {
   }
 
   return (
-    <>
+    <NoAuthLayout heading={"Login"} subheading={"Login with your username or email"}>
       <Box
-        sx={{
-          margin: 'auto',
-          padding: '25px 35px',
-          height: 'fit-content',
-          width: '400px',
-          position: 'fixed',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: '#ffffff',
-          borderRadius: '3px',
-          boxShadow: 'rgb(0 0 0 / 10%) 0px 0px 10px',
-          boxSizing: 'border-box',
-          border: '1px solid #d3d3d3',
-        }}
+        component="form"
+        noValidate
+        autoComplete="off"
+        onSubmit={handleSubmit(handleOnSubmit, onErrors)}
       >
-        <Box 
-          sx={{ 
-            color: 'text.primary', 
-            fontSize: 34, 
-            fontWeight: 'medium',
-            margin: '10px 0 0'
-          }}
-        >
-          Login
-        </Box>
-        <Box sx={{ color: '#696969'}}>
-          Login with your username or email
-        </Box>
-        <Box
-          component="form"
-          noValidate
-          autoComplete="off"
-          onSubmit={handleSubmit(handleOnSubmit, onErrors)}
-        >
-          {/*<Box sx={{ margin: '10px 0'}}>
-            <TextField
-              variant="outlined"
-              label="Username or email"
+        <Box sx={{ margin: '20px 0'}}>
+          <FormControl 
+            variant="outlined" 
+            fullWidth 
+            error={usrNameError.hasError}
+            name="username"
+            onFocus={onFocusHandler}
+          >
+            <InputLabel htmlFor="outlined-adornment-password" sx={{ top: '-7px' }}>Username or email</InputLabel>
+            <OutlinedInput
               type="text"
-              fullWidth
               size="small"
-              sx={{ margin: '15px 0' }}
-              helperText={usrNameError.hasError ? usrNameError.msg : ''}
-              error={usrNameError.hasError}
-              // onFocus={onFocusHandler}
+              label="Username or email"
               {...register('username', { required: true })}
             />
-          </Box>*/}
-          <Box sx={{ margin: '20px 0'}}>
-            <FormControl 
-              variant="outlined" 
-              fullWidth 
-              error={usrNameError.hasError}
-              name="username"
-              onFocus={onFocusHandler}
-            >
-              <InputLabel htmlFor="outlined-adornment-password" sx={{ top: '-7px' }}>Username or email</InputLabel>
-              <OutlinedInput
-                type={show ? "text" : "password"}
-                size="small"
-                label="Username or email"
-                {...register('username', { required: true })}
-              />
-              <FormHelperText id="component-error-text">{usrNameError.hasError ? usrNameError.msg : ''}</FormHelperText>
-            </FormControl>
-          </Box>
-          <Box sx={{ margin: '20px 0'}}>
-            <FormControl 
-              variant="outlined" 
-              fullWidth 
-              error={passwordError.hasError}
-              name="password"
-              onFocus={onFocusHandler}
-            >
-              <InputLabel htmlFor="outlined-adornment-password" sx={{ top: '-7px' }}>Password</InputLabel>
-              <OutlinedInput
-                type={show ? "text" : "password"}
-                size="small"
-                label="Password"
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleShow}
-                      edge="end"
-                    >
-                      {show ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                {...register('password', { required: true })}
-              />
-              <FormHelperText id="component-error-text">{passwordError.hasError ? passwordError.msg : ''}</FormHelperText>
-            </FormControl>
-          </Box>
-          <Box sx={{ marginTop: '20px' }}>
-            <Button variant="contained" type="submit" fullWidth>Login</Button>
-          </Box>
-          <Box sx={{ marginTop: '15px' }}>
-            <Link to="/forgot-password">Forgot password?</Link>
-          </Box>
-          <Box
-            sx={{
-              fontSize: '14px',
-              marginTop: '15px'
-            }}
+            <FormHelperText id="component-error-text">{usrNameError.hasError ? usrNameError.msg : ''}</FormHelperText>
+          </FormControl>
+        </Box>
+        <Box sx={{ margin: '20px 0'}}>
+          <FormControl 
+            variant="outlined" 
+            fullWidth 
+            error={passwordError.hasError}
+            name="password"
+            onFocus={onFocusHandler}
           >
-          Don't have an account? <Link to="/register">Sign up here</Link>
-          </Box>
+            <InputLabel htmlFor="outlined-adornment-password" sx={{ top: '-7px' }}>Password</InputLabel>
+            <OutlinedInput
+              type={show ? "text" : "password"}
+              size="small"
+              label="Password"
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleShow}
+                    edge="end"
+                  >
+                    {show ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              {...register('password', { required: true })}
+            />
+            <FormHelperText id="component-error-text">{passwordError.hasError ? passwordError.msg : ''}</FormHelperText>
+          </FormControl>
+        </Box>
+        <Box sx={{ marginTop: '20px' }}>
+          <Button variant="contained" type="submit" fullWidth>Login</Button>
+        </Box>
+        <Box sx={{ marginTop: '15px' }}>
+          <Link to="/forgot-password">Forgot password?</Link>
+        </Box>
+        <Box
+          sx={{
+            fontSize: '14px',
+            marginTop: '15px'
+          }}
+        >
+        Don't have an account? <Link to="/register">Sign up here</Link>
         </Box>
       </Box>
-    </>
+    </NoAuthLayout>
   )
 }
 
@@ -206,7 +160,8 @@ export default Login;
 // https://dribbble.com/shots/14223554-chat-Login-screen
 // https://dribbble.com/shots/14396669-Chat-app-Login
 
-/*<div className="centered-cntr">
+/*
+<div className="centered-cntr">
     <h3>Log in</h3>
     {error ? (
       <div className="text-danger">{error}</div>
@@ -246,5 +201,21 @@ export default Login;
     <div className="link-container">
       Don't have an account? <Link to="/register">Sign up here</Link>
     </div>
-
-  </div>*/
+  </div>
+*/
+/*
+<Box sx={{ margin: '10px 0'}}>
+  <TextField
+    variant="outlined"
+    label="Username or email"
+    type="text"
+    fullWidth
+    size="small"
+    sx={{ margin: '15px 0' }}
+    helperText={usrNameError.hasError ? usrNameError.msg : ''}
+    error={usrNameError.hasError}
+    // onFocus={onFocusHandler}
+    {...register('username', { required: true })}
+  />
+</Box>
+*/
