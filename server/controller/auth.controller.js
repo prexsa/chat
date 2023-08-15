@@ -105,7 +105,7 @@ exports.signup = async (req, res) => {
 
 exports.addUsername = async (req, res) => {
   const { userId, username } = req.body;
-  console.log('req.body: ', req.body)
+  // console.log('req.body: ', req.body)
   const isUsernameFound = await User.findOne({ username: username })
   // if username is null, username is available
   if(isUsernameFound === null) {
@@ -127,6 +127,48 @@ exports.addUsername = async (req, res) => {
   } else {
     res.status(200).send({ isSuccessful: false, message: 'Username is taken'})
   }
+}
+
+exports.getUserProfile = async (req, res) => {
+  const { userId } = req.body;
+  // console.log('userId: ', userId)
+  const user = await User.findOne({ userId: userId }, { username: 1, password: 1, firstname: 1, lastname: 1, email: 1 });
+  const profile = {
+    username: user?.username, 
+    password: user?.password, 
+    firstname: user?.firstname, 
+    lastname: user?.lastname, 
+    email: user?.email
+  }
+  // console.log('profile: ', profile)
+  res.status(200).send({ ...profile })
+}
+
+exports.updateUserProfile = async (req, res) => {
+  const { userId } = req.body;
+  // console.log('updateUserProfile: ', )
+  const user = await User.findOneAndUpdate({ userId: userId }, { $set: { ...req.body }});
+  // console.log('user: ', user)
+  // if user changes their username, re-issue a new token because the username is part of the JWT payload
+  if(Object.keys(req.body).includes('username')) {
+    // create a new payload
+    const payload = {
+      id: user._id,
+      username: req.body.username,
+      userId: userId
+    }
+    // console.log('payload: ', payload)
+    jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then(token => {
+      res.status(200).send({
+        username: req.body.username,
+        accessToken: token,
+        userId: userId,
+        isSuccessful: true,
+      })
+    })
+    return;
+  }
+  res.status(200).send({ isSuccessful: true });
 }
 
 exports.sendResetLink = async (req, res) => {

@@ -45,7 +45,7 @@ const Username = () => {
   }
 
   useEffect(() => {
-    // console.log('state; ', state)
+    console.log('state; ', state)
     if(state.user.accessToken === '') {
       navigate("/");
     }

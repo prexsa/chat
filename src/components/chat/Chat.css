@@ -7,6 +7,13 @@
   overflow: hidden;
   box-shadow: inset 0px 0px 20px 1px rgb(250, 251, 252);
 }
+.username {
+  padding: 5px 10px;
+}
+.username:hover {
+  cursor: pointer;
+  background-color: lightsteelblue;
+}
 aside {
   width: 260px;
   padding: 0 10px;

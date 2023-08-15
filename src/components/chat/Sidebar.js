@@ -5,16 +5,17 @@ import Logout from '../Logout';
 import ChannelList from './ChannelList';
 import { useUserContext } from '../../userContext';
 
-function Sidebar() {
+const Sidebar = ({ showDrawer, setShowDrawer }) => {
   const { user } = useUserContext();
   // const user = JSON.parse(localStorage.getItem('user'))
   // console.log('user ;', user)
+
   return (
     <aside>
       <Logout />
       <header className="sidebar-header">
         <FaUserCircle className="faUserCircle-img" />
-        <div>{user?.username}</div>
+        <div className="username" onClick={() => setShowDrawer(!showDrawer)}>{user?.username}</div>
       </header>
       <div className="search-cntr">
         <FaSearch className="faSearch-img" />

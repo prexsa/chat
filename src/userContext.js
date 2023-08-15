@@ -22,7 +22,6 @@ const UserProvider = ({ children }) => {
     }).then(response => {
       // console.log('response: ', response.data)
       const data = response.data;
-      // console.log('data: ', data)
       setUser(data)
       navigate('/chat')
     }).catch(err => {

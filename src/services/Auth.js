@@ -38,13 +38,28 @@ const updatePassword = async (values) =>{
   })
 }
 
+const getUserProfile = async (userId) => {
+  // console.log('userId: ', userId)
+  return await axios.post(`${SERVER_ENDPOINT}/api/auth/get-profile`, { userId }, {
+    withCredentials: true
+  })
+}
+
+const updateUserProfile = async (values) => {
+  return await axios.post(`${SERVER_ENDPOINT}/api/auth/update-profile`, values, {
+    withCredentials: true
+  })
+}
+
 
 const AuthServices = {
   login,
   signup,
   addUsername,
   userExist,
-  updatePassword
+  updatePassword,
+  getUserProfile,
+  updateUserProfile
 }
 
 export default AuthServices;

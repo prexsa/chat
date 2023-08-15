@@ -35,6 +35,7 @@ const Login = () => {
     const resp = await Auth.login(values)
     // console.log('resp: ', resp)
     const { data } = resp;
+    // console.log('data: ', data)
     if(data.isSuccessful) {
       // console.log("fdjslkf;j: ", response.data.hasOwnProperty("username"))
       if(data.hasOwnProperty("username")) {
