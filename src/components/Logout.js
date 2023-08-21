@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { useNavigate } from "react-router-dom";
+import { Box, Button } from '@mui/material';
 // import socket from '../socket';
 import { SocketContext } from './chat/Chat';
 
@@ -20,7 +21,16 @@ function Logout() {
     // window.location.reload();
   }
 
-  return <button className="logout-btn" onClick={() => handleLogout()}>logout</button>
+  return <Button 
+    // className="logout-btn" 
+    variant="contained"
+    onClick={() => handleLogout()}
+    disableElevation
+    fullWidth
+    sx={{ backgroundColor: 'grey', borderRadius: '0' }}
+    >
+      logout
+    </Button>
 }
 
 export default Logout;
