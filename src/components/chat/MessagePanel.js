@@ -189,7 +189,7 @@ function MessagePanel({ isGroup }) {
                   <img className="file-upload-image" src={picture && picture} alt="" />
                 </div>
               </li>
-              <li className="feedback-typing">
+              <li ref={bottomRef} className="feedback-typing">
                 {feedback ? `typing...` : ''}
               </li>
               <li ref={bottomRef}></li>

@@ -317,7 +317,7 @@ main header h3 {
 }
 .message-box-container {
   /*height: calc(100% - 200px);*/
-  height: calc(100% - 100px);
+  height: calc(100% - 120px);
   overflow-y: auto;
 }
 .chat {
@@ -412,6 +412,7 @@ main footer {
 }
 .chatbox-container {
   display: flex;
+  flex-direction: column;
 }
 .textarea-form {
   width: 100%;
