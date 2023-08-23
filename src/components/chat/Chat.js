@@ -56,12 +56,7 @@ const Main = () => {
             <main>
             {
               showDrawer ?
-              <Box sx={{
-                textAlign: 'Left',
-                marginLeft: '50px',
-                padding: '50px',
-                border: '1px solid grey'
-              }}>
+              <Box sx={{ textAlign: 'Left', padding: '50px' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
                   Profile 
                   <IconButton sx={{ marginLeft: '5px' }} color="primary" onClick={editToggleHandler}>

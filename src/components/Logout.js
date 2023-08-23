@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Box, Button } from '@mui/material';
+import { Button } from '@mui/material';
 // import socket from '../socket';
 import { SocketContext } from './chat/Chat';
 

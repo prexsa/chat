@@ -1,22 +1,32 @@
 import { useState, useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaPlus, FaUsers } from 'react-icons/fa';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import { FriendContext, SocketContext } from './Chat';
+import GroupIcon from '@mui/icons-material/Group';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import { 
+  Box, 
+  Button, 
+  OutlinedInput, 
+  InputLabel, 
+  FormControl, 
+  FormHelperText,
+} from '@mui/material';
 
 function CreateGroup({ friends }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
   const { setFriendList } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
-  const [respErr, setRespErr] = useState("");
+  const [showResp, setShowResp] = useState("");
   const [show, setShow] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
-      setRespErr('')
+      setShowResp('');
     }, 2000)
-  }, [respErr]);
+  }, [showResp]);
 
   const handleOnSubmit = data => {
     // console.log('data: ', data)
@@ -24,43 +34,62 @@ function CreateGroup({ friends }) {
     socket.connect();
     socket.emit('create_group', data, (resp) => {
       console.log('resp: ', resp)
+      reset({ name: '' })
+      setShow(false);
       setFriendList(prev => {
         return [resp, ...prev]
       })
     })
   }
 
-  const handleShow = () => setShow(true);
+  const handleClickOpen = () => setShow(true);
   const handleClose = () => setShow(false);
+
+  const onErrors = errors => console.error(errors)
   
   return (
     <div>
-      <Button onClick={handleShow} size="sm">
-        <div className="btn-icon-txt"><FaUsers /></div>
+      <Button size="small" onClick={handleClickOpen} startIcon={<GroupIcon />}>
+        Create group
       </Button>
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>New group</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form onSubmit={handleSubmit(handleOnSubmit)}>
-            <h4 className="add-friend-header-txt">Group Name</h4>
-            <div className="form-field">
-              <input name="name" autoFocus {...register('name', {required: "Name is required."})} />
-              {errors?.name && errors?.name.message ? (
-                <div className="text-danger">{errors?.name.message}</div>
-              ) : null}
-            </div>
-            {
-              respErr === '' ?
-                <div className="hidden-txt">hidden</div>
-              :
-                <div className="text-danger">{respErr}</div>
-            }
-            <Button type="submit" size="sm">Create</Button>
-          </form>
-        </Modal.Body>
-      </Modal>
+      <Dialog open={show} onClose={handleClose}>
+        <DialogTitle>Create group</DialogTitle>
+        <DialogContent>
+          <Box sx={{ color: 'red' }}>{showResp}</Box>
+          <Box
+            component="form"
+            noValidate
+            autoComplete="off"
+            onSubmit={handleSubmit(handleOnSubmit, onErrors)}
+          >
+            <Box sx={{ margin: '20px 0', width: '400px'}}>
+              <FormControl 
+                variant="outlined" 
+                fullWidth 
+                // error={usrNameError.hasError}
+                name="name"
+                // onFocus={onFocusHandler}
+              >
+                <InputLabel htmlFor="outlined-adornment-password" sx={{ top: '-7px' }}>Add a title</InputLabel>
+                <OutlinedInput
+                  type="text"
+                  size="small"
+                  label="Username or email"
+                  {...register('name', { required: true })}
+                />
+                <FormHelperText id="component-error-text">{errors?.name ? errors?.name.message : ''}</FormHelperText>
+              </FormControl>
+            </Box>
+            <Box sx={{ marginTop: '20px' }}>
+              <Button variant="contained" type="submit" fullWidth>Create</Button>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          {/*<Button onClick={handleClose}>Subscribe</Button>*/}
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }

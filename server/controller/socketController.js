@@ -256,9 +256,8 @@ module.exports.createGroup = async (socket, title, cb) => {
     "owner",
     socket.user.userId
   )
-
   const added = await redisClient.sadd(`rooms:${socket.user.userId}`, groupId)
-  const addToMembers = await redisClient.sadd(`grpmembers:${randomId}`)
+  // const addToMembers = await redisClient.sadd(`grpmembers:${randomId}`)
   console.log({ created, added })
   cb({ roomId: groupId, title: title.name })
 }
