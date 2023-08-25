@@ -1,104 +1,131 @@
-import { useState, useContext, useEffect, useRef } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { FaPlus, FaUserPlus } from 'react-icons/fa';
-import { Button, Modal, ListGroup } from 'react-bootstrap';
-import Multiselect from 'multiselect-react-dropdown';
+import { useState, useContext, useEffect, useCallback } from 'react';
+import { useForm } from 'react-hook-form';
 import { FriendContext, SocketContext } from './Chat';
-import RemoveIcon from '@mui/icons-material/Remove';
-import CloseIcon from '@mui/icons-material/Close';
-import GroupsIcon from '@mui/icons-material/Groups';
-// https://github.com/srigar/multiselect-react-dropdown
-// https://10xn41w767.codesandbox.io/
-function AddToGroup() {
-  const multiselectRef = useRef();
-  const { register, handleSubmit, reset, formState: { errors }, control } = useForm();
-  const { channel, friendList, setFriendList } = useContext(FriendContext);
-  const { socket } = useContext(SocketContext);
-  const [respErr, setRespErr] = useState("");
-  const [show, setShow] = useState(false);
-  const [selected, setSelected] = useState([]);
-  const [friends, setFriends] = useState([]);
-  const [members, setMembers] = useState([]);
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import { 
+  Box, 
+  Button,
+  IconButton, 
+  OutlinedInput, 
+  InputLabel, 
+  FormControl, 
+  FormHelperText 
+} from '@mui/material';
 
+import List from '../List';
+
+function AddToGroup() {
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const { channel, setFriendList } = useContext(FriendContext);
+  const { socket } = useContext(SocketContext);
+  const [showResp, setShowResp] = useState("");
+  const [show, setShow] = useState(false);
+  // const [selected, setSelected] = useState([]);
+  // const [friends, setFriends] = useState([]);
+  const [groupAdmin, setGroupAdmin] = useState({ userId: '', username: '' })
+  const [members, setMembers] = useState([]);
+// console.log({ groupDetails })
   useEffect(() => {
     setTimeout(() => {
-      setRespErr('')
+      setShowResp('')
     }, 2000)
-  }, [respErr]);
+  }, [showResp]);
 
   useEffect(() => {
     socket.on('exit_group_chat', ({ roomId, userId }) => {
       // console.log('exit_group_chat: ', { roomId, userId })
-      setMembers(prevMembers => {
-        return [...prevMembers].filter(member => member.userId !== userId)
+      // remove group chat from user's channel list
+      setFriendList(prevFriends => {
+        return [...prevFriends].filter(friend => friend?.roomId === roomId)
       })
+      /*setMembers(prevMembers => {
+        return [...prevMembers].filter(member => member.userId !== userId)
+      })*/
     })
     return () => socket.off('exit_group_chat')
-  }, [socket])
+  }, [socket, setFriendList])
 
-  const populateGroupMembers = (roomId) => {
-    // console.log('roomId: ', roomId)
-    // console.log('channel: ', channel)
-    socket.connect()
-    socket.emit('get_group_members', {roomId}, ({ members }) => {
-      // console.log('get_group_members ', members)
-      const format4Selected = members.map((member, index) => {
-        return {
-          name: member.username,
-          id: index,
-          userId: member.userId,
-          owner: channel.owner === member.userId ? true : false
-        }
+  const populateGroupMembers = useCallback((roomId) => {
+      // console.log('roomId: ', roomId)
+      // console.log('channel: ', channel)
+      socket.connect()
+      socket.emit('get_group_members', {roomId}, ({ members }) => {
+        // console.log('get_group_members ', members)
+        const format4Selected = members.map((member, index) => {
+          return {
+            username: member.username,
+            id: index,
+            userId: member.userId,
+            owner: channel.owner === member.userId ? true : false
+          }
+        })
+        
+        // console.log('members: ', format4Selected)
+        // setSelected(format4Selected)
+        setMembers(format4Selected)
       })
-      
-      // console.log('members: ', format4Selected)
-      // setSelected(format4Selected)
-      setMembers(format4Selected)
-    })
-  }
+    }, [channel, socket])
 
   const handleOnSubmit = (data) => {
     console.log('handleOnSubmit; ', data)
     socket.connect()
-    socket.emit('add_members', { roomId: channel.roomId, members: data.multiselect })
-    const membersLen = members.length;
-    const changeIndex = data.multiselect.map((user, index) => ({ id: membersLen + 1 + index }))
-    setMembers([...members, ...data.multiselect])
-    resetValues();
+    socket.emit('add_members', { roomId: channel.roomId, name: data.name }, (resp) => {
+      console.log('resp: ', resp)
+      if(resp.isFound) {
+        const member = { username: resp.username, userId: resp.userId }
+        setMembers(prev => [...prev, member ])
+      }
+    })
+    // const membersLen = members.length;
+    // const changeIndex = data.multiselect.map((user, index) => ({ id: membersLen + 1 + index }))
+    // setMembers([...members, ...data])
+    reset({ name: '' })
+    // resetValues();
   }
 
-  const resetValues = () =>  {
-    // By calling the below method will reset the selected values programatically
-    multiselectRef.current.resetSelectedValues();
-  }
-
-  const handleRemoveListItem = (data, index) => {
-    // console.log('onSelectedOptionsChange: ', data)
+  const handleRemoveMember = (userId, index) => {
+    console.log({ userId, index })
     setMembers(members.filter((member, idx) => idx !== index))
     socket.connect()
-    socket.emit('remove_member_from_group', { roomId: channel.roomId, userId: data.userId }, ({ resp }) =>{ 
-        // console.log('resp: ', resp) 
+    socket.emit('leave_group', { roomId: channel.roomId, userId }, ({ resp }) =>{ 
+        console.log('resp: ', resp) 
       })
   }
+
+  useEffect(() => {
+    console.log('channel: ', channel)
+    socket.connect();
+    socket.emit('get_group_admin_info', { ownerId: channel.owner }, ({ username }) => {
+      // console.log('username: ', username)
+      setGroupAdmin({ userId: channel.owner, username });
+    })
+    return () => socket.off('get_group_admin_info');
+  }, [channel, socket])
+
+// console.log('calling')
 
   useEffect(() => {
     // console.log('channel: ', channel)
     if(show) {
       populateGroupMembers(channel.roomId)
     }
-  }, [show])
-
+  }, [show, populateGroupMembers, channel])
+/*
   useEffect(() => {
     // console.log('friendList: ', friendList)
     const friends = friendList
-    .filter(friend => friend.hasOwnProperty('username'))
-    .map((friend, index) => {
-      return {
-        name: friend.username,
-        id: index,
-        userId: friend.userId
-      }
-    })
+      .filter(friend => friend.hasOwnProperty('username'))
+      .map((friend, index) => {
+        return {
+          name: friend.username,
+          id: index,
+          userId: friend.userId
+        }
+      })
 
     // filter data that is unique in friends list 
     const filter4AvailableMembers = friends.filter((obj) => {
@@ -108,15 +135,68 @@ function AddToGroup() {
     // console.log('friends: ', friends)
     setFriends(filter4AvailableMembers)
   }, [friendList, members])
-
+*/
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
+
+  const onErrors = errors => console.error(errors)
+
   return (
     <div>
-      <Button onClick={handleShow} size="sm">
-        <div className="btn-icon-txt"><GroupsIcon  /></div>
-      </Button>
-      <Modal 
+      <IconButton onClick={handleShow} size="sm">
+        <GroupAddIcon  />
+      </IconButton>
+
+      <Dialog open={show} onClose={handleClose}>
+        <DialogTitle>Add members</DialogTitle>
+        <DialogContent>
+          <Box sx={{ color: 'red' }}>{showResp}</Box>
+          <Box
+            component="form"
+            noValidate
+            autoComplete="off"
+            onSubmit={handleSubmit(handleOnSubmit, onErrors)}
+          >
+            <Box sx={{ margin: '20px 0', width: '400px'}}>
+              <FormControl 
+                variant="outlined" 
+                fullWidth 
+                // error={usrNameError.hasError}
+                name="name"
+                // onFocus={onFocusHandler}
+              >
+                <InputLabel htmlFor="outlined-adornment-password" sx={{ top: '-7px' }}>Username or email</InputLabel>
+                <OutlinedInput
+                  type="text"
+                  size="small"
+                  label="Username or email"
+                  {...register('name', { required: true })}
+                />
+                <FormHelperText id="component-error-text">{errors?.name ? errors?.name.message : ''}</FormHelperText>
+              </FormControl>
+            </Box>
+            <Box sx={{ marginTop: '20px' }}>
+              <Button variant="contained" type="submit" fullWidth>Add</Button>
+            </Box>
+          </Box>
+          <Box sx={{ marginTop: '25px', borderTop: '1px solid lightgrey', borderRadius: '3px', padding: '10px 5px' }}>
+            <h4>Members</h4>
+            <List members={members} onClickDelete={handleRemoveMember} groupAdmin={groupAdmin} />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          {/*<Button onClick={handleClose}>Subscribe</Button>*/}
+        </DialogActions>
+      </Dialog>
+
+
+    </div>
+  )
+}
+
+export default AddToGroup;
+      /*<Modal 
         show={show} 
         onHide={handleClose}
         backdrop={'static'} // disable onHide when backdrop is clicked
@@ -181,9 +261,4 @@ function AddToGroup() {
             
           </div>
         </Modal.Body>
-      </Modal>
-    </div>
-  )
-}
-
-export default AddToGroup;
+      </Modal>*/

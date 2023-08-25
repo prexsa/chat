@@ -262,10 +262,12 @@ module.exports.createGroup = async (socket, title, cb) => {
   cb({ roomId: groupId, title: title.name })
 }
 
-module.exports.removeUserFromGroup = async (socket, roomId, userId, cb) => {
-  const removed = await redisClient.srem(`grpmembers:${roomId}`, userId)
-  cb({ resp: removed })
+module.exports.getGroupAdminInfo = async (ownerId, cb) => {
+  const user = await redisClient.hgetall(`userid:${ownerId}`)
+  console.log('user: ', user)
+  cb(user);
 }
+
 
 module.exports.getGroupMembers = async (roomId, cb) => {
   // console.log('getGroupMembers: ', roomId)
@@ -283,26 +285,38 @@ const getGroupTitle = async (roomId) => {
   return Promise.resolve({ title: await redisClient.hget(`group:${roomId}`, 'title')})
 }
 
-module.exports.addToGroup = async (socket, roomId, members, cb) => {
-  console.log('addToGroup: ', { roomId, members })
-  
-  const { title } = await getGroupTitle(roomId)
-  const asyncRes = await Promise.all(
-    members.map(async member => {
-      const integerResp = await redisClient.sadd(`grpmembers:${roomId}`, member.userId);
-      // add roomId to member's rooms set
-      const updateRoomSet = await redisClient.sadd(`rooms:${member.userId}`, `group:${roomId}`)
-      socket.to(member.userId).emit('new_friend', {
-        roomId,
-        title
-      })
-      return member;
-    })
-  )
-  console.log('concatMembers: ', asyncRes)
+module.exports.addToGroup = async (socket, roomId, name, cb) => {
+  console.log('addToGroup: ', { roomId, name });
+  // locate user by name or email
+  const { userId } = await lookUpByUsername(name);
+  // console.log('userId; ', userId)
+  if(userId === '') {
+    cb({ isFound: false, msg: "User does not exist."});
+    return;
+  }
+  // add user to group set
+  // update user records
+  const { title } = await getGroupTitle(roomId);
+  const integerResp = await redisClient.sadd(`grpmembers:${roomId}`, userId);
+  // add roomId to member's rooms set
+  const updateRoomSet = await redisClient.sadd(`rooms:${userId}`, `group:${roomId}`)
+  socket.to(userId).emit('new_friend', {
+    roomId,
+    title
+  })
+  cb({ isFound: true, username: name, userId })
 }
 // https://developer.redis.com/howtos/chatapp/
 // https://redis.io/docs/data-types/sorted-sets/
+/*module.exports.removeUserFromGroup = async (socket, roomId, userId, cb) => {
+  const removedFromGroupList = await redisClient.srem(`grpmembers:${roomId}`, userId)
+  // remove roomid from user's list
+  const removedFromUsersList = await redisClient.srem(`rooms:${userId}`, roomId)
+  console.log('removedFromUsersList ', removedFromUsersList)
+  // emit to user
+  socket.to(userId).emit('exit_group_chat', { roomId })
+  cb({ isUserRemoved: true })
+}*/
 
 module.exports.leaveGroup = async (socket, userId, channelId, cb) => {
   console.log({ userId, channelId })

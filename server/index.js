@@ -18,10 +18,11 @@ const {
   handleRoomSelected,
   uploadFile, 
   changeGroupTitle,
+  getGroupAdminInfo,
   getGroupMembers,
   addToGroup,
   leaveGroup,
-  removeUserFromGroup,
+  // removeUserFromGroup,
   disconnectUserRelationship,
   // getRoomMessages,
   onDisconnect
@@ -52,16 +53,17 @@ io.on('connection', async (socket) => {
   socket.on('dm', message => dm(socket, message))
   // socket.on('room_msgs', (roomId, cb) => getRoomMessages(socket, roomId, cb))
   socket.on("add_friend", (name, cb) => addFriend(socket, name, cb))
-  socket.on('create_group', (name, cb) => createGroup(socket, name, cb))
   socket.on('clear_unread_count', ({ roomId }) => clearUnreadCount(socket, roomId ))
   socket.on('handle_room_selected', ({ channelId, isGroup }) => handleRoomSelected(socket, channelId, isGroup))
   socket.on('remove_channel', ({ user, channel, isGroup }) => disconnectUserRelationship(socket, user, channel, isGroup))
   socket.on('upload_file', (fileObj, cb) => uploadFile(socket, fileObj, cb))
+  socket.on('create_group', (name, cb) => createGroup(socket, name, cb))
   socket.on('change_group_title', ({ channelId, title}, cb) => changeGroupTitle(socket, channelId, title, cb))
+  socket.on('get_group_admin_info', ({ ownerId }, cb) => getGroupAdminInfo(ownerId, cb))
   socket.on('get_group_members', ({roomId}, cb) => getGroupMembers(roomId, cb))
   socket.on('leave_group', ({ userId, channelId }, cb) => leaveGroup(socket, userId, channelId, cb))
-  socket.on('remove_member_from_group', ({ roomId, userId }, cb) => removeUserFromGroup(socket, roomId, userId, cb))
-  socket.on('add_members', ({ roomId, members}, cb) => addToGroup(socket, roomId, members, cb))
+  // socket.on('remove_member_from_group', ({ roomId, userId }, cb) => removeUserFromGroup(socket, roomId, userId, cb))
+  socket.on('add_members', ({ roomId, name }, cb) => addToGroup(socket, roomId, name, cb))
   socket.on('feedback_typing', ({userId, showFeedback}) => {
     console.log('userId: ', userId)
     socket.to(userId).emit('typing_feedback', showFeedback)

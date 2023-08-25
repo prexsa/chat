@@ -121,7 +121,6 @@ function MessagePanel({ isGroup }) {
           <header className={`${toggleExpand ? "message-panel-header expand" : 'message-panel-header'}`}>
             <AddToGroup />
             <FaUserCircle className="channel-img" />
-            {/*<h2>{channel.username}</h2>*/}
             <TitleForm 
               toggleExpand={toggleExpand}
               setToggleExpand={setToggleExpand}
