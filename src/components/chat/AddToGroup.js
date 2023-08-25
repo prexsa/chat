@@ -40,7 +40,7 @@ function AddToGroup() {
       // console.log('exit_group_chat: ', { roomId, userId })
       // remove group chat from user's channel list
       setFriendList(prevFriends => {
-        return [...prevFriends].filter(friend => friend?.roomId === roomId)
+        return [...prevFriends].filter(friend => friend?.roomId !== roomId)
       })
       /*setMembers(prevMembers => {
         return [...prevMembers].filter(member => member.userId !== userId)
@@ -91,7 +91,7 @@ function AddToGroup() {
     console.log({ userId, index })
     setMembers(members.filter((member, idx) => idx !== index))
     socket.connect()
-    socket.emit('leave_group', { roomId: channel.roomId, userId }, ({ resp }) =>{ 
+    socket.emit('leave_group', { channelId: channel.roomId, userId }, ({ resp }) =>{ 
         console.log('resp: ', resp) 
       })
   }
