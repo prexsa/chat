@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MessagePanel from './MessagePanel';
 import Sidebar from './Sidebar';
 import Profile from '../Profile.RFH';
@@ -57,7 +58,10 @@ const Main = () => {
             {
               showDrawer ?
               <Box sx={{ textAlign: 'Left', padding: '50px' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                <Button aria-label="back" size="small" color="primary" startIcon={<ArrowBackIcon />} onClick={() => setShowDrawer(false)}>
+                  Back
+                </Button>
+                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', marginTop: '25px' }}>
                   Profile 
                   <IconButton sx={{ marginLeft: '5px' }} color="primary" onClick={editToggleHandler}>
                     <EditIcon sx={{ fontSize: '14px' }} />

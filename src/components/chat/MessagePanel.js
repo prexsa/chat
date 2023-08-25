@@ -5,7 +5,6 @@ import { useUserContext } from '../../userContext';
 import { MessagesContext, FriendContext, SocketContext } from './Chat';
 import VerticallyCenteredModal from '../VerticallyCenteredModal';
 import AddToGroup from './AddToGroup';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import CloseIcon from '@mui/icons-material/Close';
 import TitleForm from './TitleForm';
@@ -70,8 +69,8 @@ function MessagePanel({ isGroup }) {
   }
 
   const handleRemoveChannel = () => {
-    console.log('channel: ', channel)
-    console.log('user: ', user)
+    // console.log('channel: ', channel)
+    // console.log('user: ', user)
     // if(channel.userID === '') return
     // remove channel from your friend's list
     setFriendList(prevFriends => {

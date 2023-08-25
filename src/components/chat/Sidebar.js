@@ -1,11 +1,10 @@
-import { FaUserCircle } from 'react-icons/fa';
 import AddFriendRFH from './AddFriend.RFH';
 import CreateGroup from './CreateGroup';
 import Logout from '../Logout';
 import ChannelList from './ChannelList';
 import { useUserContext } from '../../userContext';
-// import AutocompleteSearch from './AutocompleteSearch';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const Sidebar = ({ showDrawer, setShowDrawer }) => {
   const { user } = useUserContext();
@@ -16,14 +15,9 @@ const Sidebar = ({ showDrawer, setShowDrawer }) => {
     <aside>
       <Logout />
       <header className="sidebar-header">
-        <FaUserCircle className="faUserCircle-img" />
+        <AccountCircleIcon />
         <div className="username" onClick={() => setShowDrawer(!showDrawer)}>{user?.username}</div>
       </header>
-      {/*<div className="search-cntr">
-        <FaSearch className="faSearch-img" />
-        <input className="search-input" placeholder='Search friends' />
-        <AutocompleteSearch />
-      </div>*/}
       <Box sx={{ margin: '10px', padding: '5px', textAlign: 'left' }}>
         <AddFriendRFH />
         <CreateGroup />

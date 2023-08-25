@@ -28,13 +28,15 @@ module.exports.authorizeUser = (socket, next) => {
 const getRooms = async (socket) => {
   // get rooms
   const rooms = await redisClient.smembers(`rooms:${socket.user.userId}`)
-  // console.log('rooms: ', rooms)
+  // console.log('getRooms: ', rooms)
   const roomList = await Promise.all(
     rooms.map(async room => {
       const parsed = room.split(':');
       let details;
       if(parsed[0] === 'group') {
         details = await redisClient.hgetall(`${room}`);
+        // isGroup flag is used to identify whether room is group or not
+        details["isGroup"] = true;
       } else {
         const socketUserId = socket.user.userId;
         // check parsed str for roomUserId
@@ -44,7 +46,9 @@ const getRooms = async (socket) => {
         } else {
           userId = parsed[0]
         }
-        details = await redisClient.hgetall(`userid:${userId}`)
+        details = await redisClient.hgetall(`userid:${userId}`);
+        // isGroup flag is used to identify whether room is group or not
+        details["isGroup"] = false;
       }
 // console.log('details: ', details)
       return details
@@ -72,13 +76,24 @@ const populateRooms = async (socket) => {
   */
   const asyncRes = await Promise.all(
     rooms.map(async room => {
-      const _roomId = room.userId
-      const { roomId } = await getRoomId(socket.user.userId, _roomId)
-      room.unreadCount = await redisClient.hget(`unreadCount:${socket.user.userId}`, _roomId)
+      // check isGroup flag
+        // if isGroup, roomId is roomId
+        // else, roomId is userId
+      const tempId = room.isGroup ? room.roomId : room.userId;
+      let roomUniqId = '';
+      if(room.isGroup) {
+        roomUniqId = room.roomId;
+        room.unreadCount = await redisClient.hget(`unreadCount:${socket.user.userId}`, roomUniqId)
+      } else {
+        const { roomId } = await getRoomId(socket.user.userId, room.userId)
+        roomUniqId = roomId.id;
+        room.unreadCount = await redisClient.hget(`unreadCount:${socket.user.userId}`, room.userId)
+      }
+
       // room.unreadCount = await redisClient.hget(`unreadCount:${roomId.id}`, "count")
       // console.log('friend.unreadCount ', { userID: socket.user.userID, friend })
       // zrevrange returns an []
-      const messages = await redisClient.zrevrange(`messages:${roomId.id}`, 0, -1)
+      const messages = await redisClient.zrevrange(`messages:${roomUniqId}`, 0, -1)
       if(messages.length <= 0) {
         room.latestMessage = ""
       } else {
@@ -319,13 +334,13 @@ module.exports.addToGroup = async (socket, roomId, name, cb) => {
 }*/
 
 module.exports.leaveGroup = async (socket, userId, channelId, cb) => {
-  console.log({ userId, channelId })
+  // console.log({ userId, channelId })
   const removeFromGroupList = await redisClient.srem(`grpmembers:${channelId}`, userId)
   const removeFromUserList = await redisClient.srem(`rooms:${userId}`, `group:${channelId}`)
   // get remaining userId and emit to users the removed member
   const members = await redisClient.smembers(`grpmembers:${channelId}`)
   socket.to(members).emit('exit_group_chat', { roomId: channelId , userId })
-  console.log('leaveGroup')
+  // console.log('leaveGroup')
   cb({ resp: { channelId }})
 }
 

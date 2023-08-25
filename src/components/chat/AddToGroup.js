@@ -2,18 +2,18 @@ import { useState, useContext, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { FriendContext, SocketContext } from './Chat';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import { 
   Box, 
   Button,
   IconButton, 
-  OutlinedInput, 
   InputLabel, 
   FormControl, 
-  FormHelperText 
+  FormHelperText,
+  OutlinedInput, 
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle
 } from '@mui/material';
 
 import List from '../List';
@@ -24,8 +24,6 @@ function AddToGroup() {
   const { socket } = useContext(SocketContext);
   const [showResp, setShowResp] = useState("");
   const [show, setShow] = useState(false);
-  // const [selected, setSelected] = useState([]);
-  // const [friends, setFriends] = useState([]);
   const [groupAdmin, setGroupAdmin] = useState({ userId: '', username: '' })
   const [members, setMembers] = useState([]);
 // console.log({ groupDetails })
@@ -97,7 +95,7 @@ function AddToGroup() {
   }
 
   useEffect(() => {
-    console.log('channel: ', channel)
+    // console.log('channel: ', channel)
     socket.connect();
     socket.emit('get_group_admin_info', { ownerId: channel.owner }, ({ username }) => {
       // console.log('username: ', username)
@@ -114,28 +112,7 @@ function AddToGroup() {
       populateGroupMembers(channel.roomId)
     }
   }, [show, populateGroupMembers, channel])
-/*
-  useEffect(() => {
-    // console.log('friendList: ', friendList)
-    const friends = friendList
-      .filter(friend => friend.hasOwnProperty('username'))
-      .map((friend, index) => {
-        return {
-          name: friend.username,
-          id: index,
-          userId: friend.userId
-        }
-      })
 
-    // filter data that is unique in friends list 
-    const filter4AvailableMembers = friends.filter((obj) => {
-      return !members.find(obj2 => obj2.userId === obj.userId)
-    })
-    // console.log('filter4AvailableMembers: ;', filter4AvailableMembers)
-    // console.log('friends: ', friends)
-    setFriends(filter4AvailableMembers)
-  }, [friendList, members])
-*/
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
 
