@@ -1,13 +1,13 @@
 import { useContext, useRef, useEffect, useState } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
-import Chatbox from './Chatbox';
 import { useUserContext } from '../../userContext';
 import { MessagesContext, FriendContext, SocketContext } from './Chat';
 import VerticallyCenteredModal from '../VerticallyCenteredModal';
+import Chatbox from './Chatbox';
 import AddToGroup from './AddToGroup';
+import TitleForm from './TitleForm';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import CloseIcon from '@mui/icons-material/Close';
-import TitleForm from './TitleForm';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 function MessagePanel({ isGroup }) {
   const bottomRef = useRef(null);
@@ -56,6 +56,15 @@ function MessagePanel({ isGroup }) {
   const handleLeaveGroup = () => {
     console.log('channel: ', channel)
     console.log('user: ', user)
+    /*
+      if userId belongs to owner, block
+    */
+
+    if(channel.owner === user.userId) {
+      console.log('matched')
+      return;
+    }
+
     socket.emit('leave_group', {
         userId: user.userId,
         channelId: channel?.roomId,
@@ -119,7 +128,7 @@ function MessagePanel({ isGroup }) {
           />
           <header className={`${toggleExpand ? "message-panel-header expand" : 'message-panel-header'}`}>
             <AddToGroup />
-            <FaUserCircle className="channel-img" />
+            <AccountCircleIcon className="channel-img" />
             <TitleForm 
               toggleExpand={toggleExpand}
               setToggleExpand={setToggleExpand}
@@ -129,7 +138,7 @@ function MessagePanel({ isGroup }) {
               <div className="leave-icon-container">
               {
                 // remove option for owner to leave their own group
-                channel?.owner && channel?.owner === user.userId ? null :
+                channel.isGroup &&
                 <span data-text="Leave chat" className="tooltip-text bottom left">
                   <ExitToAppIcon className="leave-icon" onClick={handleLeaveGroup} />
                 </span>
@@ -153,7 +162,7 @@ function MessagePanel({ isGroup }) {
                       className={`${isYou ? 'you' : ''}`}
                     >
                       <div className={`icon-message-container ${isYou ? "flex-direction-row-reverse" : "flex-direction-row"}`}>
-                        <FaUserCircle />
+                        <AccountCircleIcon />
                         <div className="message-container">
                           <div>
                           {

@@ -12,8 +12,6 @@ export const TitleForm = ({ toggleExpand, setToggleExpand }) => {
 // console.log('channel: ', channel)
   const onSubmit = async (data) => {
     // setName(data.name)
-    /*console.log('data: ', data.name)
-    return;*/
     socket.emit('change_group_title', { channelId: channel.roomId, title: data.name }, ({ resp }) => {
       // console.log('resp: ', resp )
       // console.log('channelId: ', channelId)
@@ -42,8 +40,9 @@ export const TitleForm = ({ toggleExpand, setToggleExpand }) => {
     }
   },[channel, getValues, setValue])
 
+  // return header only if it is not a group
   if(channel.isGroup === false) {
-    return <h2>{channel.title}</h2>
+    return <h2>{channel.username}</h2>
   }
 
   return (
@@ -58,7 +57,7 @@ export const TitleForm = ({ toggleExpand, setToggleExpand }) => {
               size="small"
               fullWidth
               autoComplete="off"
-              {...register('name', { value: channel.title })}
+              {...register('name', { value: channel?.title })}
             />
             <div className="title-form-btn-container">
               <input type="submit" />
@@ -68,7 +67,7 @@ export const TitleForm = ({ toggleExpand, setToggleExpand }) => {
           {/*name && <div>Submitted: {name}</div>*/}
         </div>
         :
-        <h2 onClick={() => setToggleExpand(!toggleExpand)}>{channel.title}</h2>
+        <h2 onClick={() => setToggleExpand(!toggleExpand)}>{channel?.title}</h2>
       }
     </>
   )
