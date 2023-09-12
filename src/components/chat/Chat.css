@@ -230,7 +230,7 @@ main .message-panel-container {
   column-gap: 10px;
 }
 .title-form-input-container {
-  width: 70%
+  width: 70%;
 }
 main header > .channel-img {
   font-size: 30px;
@@ -244,11 +244,11 @@ main header h3 {
   font-weight: normal;
   color: #7e818a;
 }
-.message-chanel-actions {
+/*.message-chanel-actions {
   margin-left: auto;
-}
+}*/
 .leave-icon {
-  transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   color: #7e818a;
   border-radius: 50%;
   padding: 2px;
@@ -264,6 +264,7 @@ main header h3 {
   border-radius: 50%;
   padding: 1px;
 }
+/* No longer using tooltip classes */
 .tooltip-text {
   position: relative;
 }
@@ -313,9 +314,11 @@ main header h3 {
   border-color: transparent transparent #7e818a transparent;
   display: none;
 }
-.tooltip-text:hover:before, .tooltip-text:hover:after {
+.tooltip-text:hover:before,
+.tooltip-text:hover:after {
   display: block;
 }
+/* tooltip classes end */
 .message-box-container {
   /*height: calc(100% - 200px);*/
   height: calc(100% - 120px);
@@ -370,7 +373,8 @@ main header h3 {
   font-weight: 500;
   font-size: 13px;
 }
-.chat h2, .chat h3 {
+.chat h2,
+.chat h3 {
   display: inline-block;
   font-size: 13px;
   font-weight: normal;

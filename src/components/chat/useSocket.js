@@ -1,6 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
-const useSocket = (setFriendList, setMessages, setUsername, channel, setChannel, setFeedback, socket) => {
+const useSocket = (
+  setFriendList,
+  setMessages,
+  setUsername,
+  channel,
+  setChannel,
+  setFeedback,
+  socket,
+) => {
   // const { channel } = useContext(FriendContext);
   // console.log('channel: ', channel)
   // console.log('socket: ', socket)
@@ -8,159 +16,169 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setChannel,
   channelRef.current = channel;
   useEffect(() => {
     socket.connect();
-    if(socket.connected) {
+    if (socket.connected) {
       // socket will not reconnect after disconnect or logoff
       // if socket.connect === true, close and open connection
       socket.close();
       socket.open();
     }
     // console.log('connect', () => console.log('connect to socket server'))
-    socket.on('current_user', username => {
+    socket.on("current_user", (username) => {
       // console.log('usename: ', username)
-      setUsername(username)
-    })
-    socket.on('friends', friendList => {
+      setUsername(username);
+    });
+    socket.on("friends", (friendList) => {
       // console.log('friendList: ', friendList)
       setFriendList(friendList);
-    })
+    });
 
-    socket.on('connected', (status, userId) => {
-      setFriendList(prevFriends => {
+    socket.on("connected", (status, userId) => {
+      setFriendList((prevFriends) => {
         return [...prevFriends].map((friend) => {
-          if(friend.userId === userId) {
-            friend.connected = status
+          if (friend.userId === userId) {
+            friend.connected = status;
           }
           return friend;
-        })
-      })
-    })
+        });
+      });
+    });
 
-    socket.on('new_friend', newFriend => {
+    socket.on("new_friend", (newFriend) => {
       // console.log('new_friend: ', newFriend)
-      setFriendList(prevFriends => {
-        return [newFriend, ...prevFriends]
-      })
-    })
+      setFriendList((prevFriends) => {
+        return [newFriend, ...prevFriends];
+      });
+    });
 
-    socket.on('remove_from_chat', ({ roomId, usernameToRemove, isGroup }) => {
+    socket.on("remove_from_chat", ({ roomId, usernameToRemove, isGroup }) => {
       // console.log('remove_from_chat: ', { roomId, usernameToRemove })
-      setFriendList(prevFriends => {
+      setFriendList((prevFriends) => {
         // console.log('prevFriends: ', prevFriends)
-        if(prevFriends === undefined) return
+        if (prevFriends === undefined) return;
         let index = null;
-        for(const [key, { userId, username }] of [...prevFriends].entries()) {
-          if(userId === roomId && username === usernameToRemove) {
-            index = key
+        for (const [key, { userId, username }] of [...prevFriends].entries()) {
+          if (userId === roomId && username === usernameToRemove) {
+            index = key;
           }
         }
-        const updatedFriendsList = prevFriends.slice(0, index).concat(prevFriends.slice(index + 1))
-        return updatedFriendsList
-      })
-    })
+        const updatedFriendsList = prevFriends
+          .slice(0, index)
+          .concat(prevFriends.slice(index + 1));
+        return updatedFriendsList;
+      });
+    });
 
-    socket.on('dm', msg => {
+    socket.on("dm", (msg) => {
       // console.log('ms: ', msg)
       // console.log('dm channel: ', channelRef.current)
-      if(channelRef.current.userId === msg.from) {
-        socket.emit('clear_unread_count', { roomId: msg.from })
+      if (channelRef.current.userId === msg.from) {
+        socket.emit("clear_unread_count", { roomId: msg.from });
       }
       // socket.emit('handle_room_selected', { channelId: channelObj.userID })
-      setFriendList(prevFriends => {
+      setFriendList((prevFriends) => {
         // console.log('prevFriends: ', prevFriends)
         // console.log('channel: ', channelRef)
-        return [...prevFriends].map(friend => {
+        return [...prevFriends].map((friend) => {
           // if channel is active
-          if(msg.isGroup) {
-            if(friend.roomId === msg.to) {
-              friend.latestMessage = msg.content
+          if (msg.isGroup) {
+            if (friend.roomId === msg.to) {
+              friend.latestMessage = msg.content;
             }
           } else {
-            if(msg.from === friend.userId) {
-              friend.latestMessage = msg.content
+            if (msg.from === friend.userId) {
+              friend.latestMessage = msg.content;
             }
           }
           return friend;
-        })
-      })
-// console.log('channelRef: ', channelRef)
+        });
+      });
+      // console.log('channelRef: ', channelRef)
       // if incoming messages matches active channel, add messages to message array
-      if(msg.isGroup) {
-        if(msg.to === channelRef.current.roomId) {
-          setMessages(prevMsg => {
-            return [...prevMsg, msg]
-          })
+      if (msg.isGroup) {
+        if (msg.to === channelRef.current.roomId) {
+          setMessages((prevMsg) => {
+            return [...prevMsg, msg];
+          });
         }
       } else {
-        if(msg.from === channelRef.current.userId) {
-          setMessages(prevMsg => {
-            return [...prevMsg, msg]
-          })
+        if (msg.from === channelRef.current.userId) {
+          setMessages((prevMsg) => {
+            return [...prevMsg, msg];
+          });
         }
       }
-    })
+    });
 
-    socket.on('update_group_name', ({ roomId, updatedTitle }) => {
+    socket.on("update_group_name", ({ roomId, updatedTitle }) => {
       // update channel title, if active
-      if(channelRef.current.roomId === roomId) {
-        setChannel(prevState => ({
+      if (channelRef.current.roomId === roomId) {
+        setChannel((prevState) => ({
           ...prevState,
-          title: updatedTitle
-        }))
+          title: updatedTitle,
+        }));
       }
-      setFriendList(prevFriends => {
-        return [...prevFriends].map(friend => {
+      setFriendList((prevFriends) => {
+        return [...prevFriends].map((friend) => {
           // console.log('update_group_name: ', friend)
-          if(friend.roomId === roomId) {
+          if (friend.roomId === roomId) {
             friend.title = updatedTitle;
           }
-          return friend
-        })
-      })
-    })
+          return friend;
+        });
+      });
+    });
 
-    socket.on('unread-count', ({ userId, count }) => {
+    socket.on("unread-count", ({ userId, count }) => {
       // console.log('unread-count: ', { userId, count })
-      setFriendList(prevFriends => {
-        return [...prevFriends].map(friend => {
-          if(friend.userId === userId) {
-            friend.unreadCount = count
+      setFriendList((prevFriends) => {
+        return [...prevFriends].map((friend) => {
+          if (friend.userId === userId) {
+            friend.unreadCount = count;
           }
-          return friend
-        })
-      })
-    })
+          return friend;
+        });
+      });
+    });
 
-    socket.on('all_messages', msgs => {
+    socket.on("all_messages", (msgs) => {
       // console.log('all_messages: ', msgs)
-      setMessages(msgs)
-    })
+      setMessages(msgs);
+    });
 
-    socket.on('room_msgs', msgs => {
+    socket.on("room_msgs", (msgs) => {
       // console.log('msgs: ', msgs)
-      setMessages(msgs)
-    })
+      setMessages(msgs);
+    });
 
-    socket.on('typing_feedback', feedbackToggle => {
+    socket.on("typing_feedback", (feedbackToggle) => {
       // console.log('typing_feedback: ', feedbackToggle)
-      setFeedback(feedbackToggle)
-    })
+      setFeedback(feedbackToggle);
+    });
 
-    socket.on('connection_error', () => {
-      console.log('socket connection error')
-    })
+    socket.on("connection_error", () => {
+      console.log("socket connection error");
+    });
 
     return () => {
       socket.off("current_user");
-      socket.off('friends');
-      socket.off('connected');
-      socket.off('new_friend');
-      socket.off('dm');
-      socket.off('msg');
-      socket.off('remove_from_chat')
-      socket.off('unread-count')
-      socket.off('update_group_name')
-    }
-  }, [setFriendList, setMessages, setUsername, socket, setFeedback, channelRef, setChannel])
+      socket.off("friends");
+      socket.off("connected");
+      socket.off("new_friend");
+      socket.off("dm");
+      socket.off("msg");
+      socket.off("remove_from_chat");
+      socket.off("unread-count");
+      socket.off("update_group_name");
+    };
+  }, [
+    setFriendList,
+    setMessages,
+    setUsername,
+    socket,
+    setFeedback,
+    channelRef,
+    setChannel,
+  ]);
 
   /*useEffect(() => {
     // console.log('channel: ', channel)
@@ -172,6 +190,6 @@ const useSocket = (setFriendList, setMessages, setUsername, channel, setChannel,
       })
     }
   }, [channel])*/
-}
+};
 
 export default useSocket;

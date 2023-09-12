@@ -9,7 +9,7 @@ function Loading() {
       <div className="shadow"></div>
       <span>Loading</span>
     </div>
-  )
+  );
 }
 
 export default Loading;

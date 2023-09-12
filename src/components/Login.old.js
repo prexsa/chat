@@ -1,15 +1,23 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import './Login.css';
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
-  const { register, handleSubmit, watch, formState: { errors }} = useForm();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
   // const [inputVal, setInputVal] = useState('');
   // const [credentials, setCredentials] = useState({ username: '', password: '' })
-  const [responseErrors, setResponseErrors] = useState({ username: '', password: '' })
+  const [responseErrors, setResponseErrors] = useState({
+    username: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   /*const [normal, setNormal] = useState('');
   const [debounced, setDebounced] = useState('');
@@ -21,62 +29,71 @@ function Login() {
     /*setNormal(val)
     debounceHandler(val)
     throttleHandler(val)*/
-    /*setCredentials({...credentials, [e.target.name]: e.target.value})
+  /*setCredentials({...credentials, [e.target.name]: e.target.value})
   }*/
 
   const onSubmit = async (data) => {
     // e.preventDefault();
     // const response = await axios.post('http://localhost:9000/api/login', {username: inputVal})
     try {
-      const response = await axios.post('http://localhost:9000/api/auth/login', data, {
-        headers: {
-          'Content-Type': 'application/json'
+      const response = await axios.post(
+        "http://localhost:9000/api/auth/login",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
         },
-        withCredentials: true
-      })
+      );
       // console.log('response: ', response)
-      localStorage.setItem("accessToken", response.data.accessToken)
-      navigate('/chat', { state: { username: response.data.username }})
-    } catch(err) {
-      if(err) {
+      localStorage.setItem("accessToken", response.data.accessToken);
+      navigate("/chat", { state: { username: response.data.username } });
+    } catch (err) {
+      if (err) {
         // console.log('err response: ', err.response.data)
-        setResponseErrors({...responseErrors, password: err.response.data.message })
+        setResponseErrors({
+          ...responseErrors,
+          password: err.response.data.message,
+        });
       }
     }
-  }
+  };
 
   const onSubmitUsername = (data) => {
-    console.log(data)
-    navigate('/chat', { state: { username: data.username, password: 'testing' }})
-  }
+    console.log(data);
+    navigate("/chat", {
+      state: { username: data.username, password: "testing" },
+    });
+  };
 
   const handleClear = async (e) => {
     e.preventDefault();
-    const response = await axios.get('http://localhost:9000/api/clear')
-    console.log('response: ', response.data)
-  }
+    const response = await axios.get("http://localhost:9000/api/clear");
+    console.log("response: ", response.data);
+  };
 
   const handleGetAllUsers = async (e) => {
     e.preventDefault();
-    const response = await axios.get('http://localhost:9000/api/get-users')
+    const response = await axios.get("http://localhost:9000/api/get-users");
     // console.log('response: ', response.data.users)
-  }
+  };
 
   const handleRedis = async () => {
-    axios.post('http://localhost:9000/api/redis')
-  }
+    axios.post("http://localhost:9000/api/redis");
+  };
 
   const handleRedisGet = async () => {
-    axios.get('http://localhost:9000/api/redis-get')
-  }
+    axios.get("http://localhost:9000/api/redis-get");
+  };
 
   const handleShowPassword = () => {
-    setShowPassword(!showPassword)
-  }
+    setShowPassword(!showPassword);
+  };
 
   const deleteMongodbMsgCollection = () => {
-    axios.get('http://localhost:9000/api/mongdb-collection-clear')
-  }
+    axios.get("http://localhost:9000/api/mongdb-collection-clear");
+  };
 
   return (
     <div className="logon-container">
@@ -91,10 +108,12 @@ function Login() {
             id="username"
             // onChange={handleOnChange}
             {...register("username", {
-              required: "required"
+              required: "required",
             })}
           />
-          {errors.username && <span role="alert">{errors.username.message}</span>}
+          {errors.username && (
+            <span role="alert">{errors.username.message}</span>
+          )}
         </div>
         {/*<div className="form-field">
           <label htmlFor="username">Password</label>
@@ -124,15 +143,17 @@ function Login() {
       <br />
       <Link to="/register">register</Link>
     </div>
-  )
+  );
 }
 
 export default Login;
-{/*<div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+{
+  /*<div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
   <p>normal: {normal}</p>
   <p>debounce: {debounced}</p>
   <p>throttle: {throttled}</p>
-</div>*/}
+</div>*/
+}
 
 /*  const debounce = (cb, delay = 1000) => {
     let timeout;

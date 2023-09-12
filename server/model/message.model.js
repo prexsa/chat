@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const MessageSchema = new mongoose.Schema({
   createdAt: {
@@ -15,8 +15,8 @@ const MessageSchema = new mongoose.Schema({
   },
   from: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const Message = mongoose.model("Message", MessageSchema);

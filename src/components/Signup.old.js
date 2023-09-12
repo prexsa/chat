@@ -1,22 +1,30 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import './Login.css';
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import "./Login.css";
 
 function Signup() {
   const navigate = useNavigate();
-  const { register, handleSubmit, watch, formState: { errors }} = useForm();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
   // const [user, setUser] = useState({ email: "", username: "", password: "" });
 
   const onSubmit = async (data) => {
     // e.preventDefault();
-    console.log('data: ', data)
-    const response = await axios.post('http://localhost:9000/api/auth/signup', data)
-    console.log('response: ', response)
-    localStorage.setItem("accessToken", response.data.accessToken)
-    navigate('/chat', { state: { username: response.data.username }})
-  }
+    console.log("data: ", data);
+    const response = await axios.post(
+      "http://localhost:9000/api/auth/signup",
+      data,
+    );
+    console.log("response: ", response);
+    localStorage.setItem("accessToken", response.data.accessToken);
+    navigate("/chat", { state: { username: response.data.username } });
+  };
 
   /*const handleOnChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -24,9 +32,9 @@ function Signup() {
 
   const handleEmailCheck = async (e) => {
     const value = e.target.value;
-    console.log('value: ', value)
+    console.log("value: ", value);
     // const response = await axios.post()
-  }
+  };
 
   return (
     <div className="logon-container">
@@ -43,8 +51,8 @@ function Signup() {
               required: "required",
               pattern: {
                 value: /\S+@\S+\.\S+/,
-                message: "Entered value does not match email format"
-              }
+                message: "Entered value does not match email format",
+              },
             })}
           />
           {errors.email && <span role="alert">{errors.email.message}</span>}
@@ -55,10 +63,12 @@ function Signup() {
             type="text"
             id="username"
             {...register("username", {
-              required: "required"
+              required: "required",
             })}
           />
-          {errors.username && <span role="alert">{errors.username.message}</span>}
+          {errors.username && (
+            <span role="alert">{errors.username.message}</span>
+          )}
         </div>
         <div className="form-field">
           <label htmlFor="password">Password</label>
@@ -69,16 +79,18 @@ function Signup() {
               required: "required",
               minLength: {
                 value: 5,
-                message: "Min length is 5"
-              }
+                message: "Min length is 5",
+              },
             })}
           />
-          {errors.password && <span role="alert">{errors.password.message}</span>}
+          {errors.password && (
+            <span role="alert">{errors.password.message}</span>
+          )}
         </div>
         <button type="submit">Register</button>
       </form>
     </div>
-  )
+  );
 }
 
 export default Signup;

@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
-import { useUserContext } from '../../userContext';
-import socket from '../../socket';
-
+import React, { useContext, useState, useEffect, useRef } from "react";
+import { useUserContext } from "../../userContext";
+import socket from "../../socket";
 
 /*
   NOT IN USE
@@ -21,75 +20,75 @@ const SocketProvider = ({ children }) => {
   // const [feedback, setFeedback] = useState(false);
 
   useEffect(() => {
-    console.log('SC friendList: ', friendList);
-    console.log('SC channel: ', channel)
-  },[friendList, channel])
+    console.log("SC friendList: ", friendList);
+    console.log("SC channel: ", channel);
+  }, [friendList, channel]);
 
   useEffect(() => {
     socket.connect();
-    socket.on('current_user', username => {
+    socket.on("current_user", (username) => {
       //console.log('usename: ', username)
-      setUsername(username)
-    })
-    socket.on('friends', friendList => {
-      console.log('friendList: ', friendList)
+      setUsername(username);
+    });
+    socket.on("friends", (friendList) => {
+      console.log("friendList: ", friendList);
       setFriendList(friendList);
-    })
+    });
 
-    socket.on('connected', (status, username) => {
-      console.log('connected')
-      setFriendList(prevFriends => {
+    socket.on("connected", (status, username) => {
+      console.log("connected");
+      setFriendList((prevFriends) => {
         return [...prevFriends].map((friend) => {
-          if(friend.username === username) {
-            friend.connected = status
+          if (friend.username === username) {
+            friend.connected = status;
           }
           return friend;
-        })
-      })
-    })
+        });
+      });
+    });
 
-    socket.on('new_friend', newFriend => {
+    socket.on("new_friend", (newFriend) => {
       // console.log('new_friend: ', newFriend)
-      setFriendList(prevFriends => {
-        return [newFriend, ...prevFriends]
-      })
-    })
+      setFriendList((prevFriends) => {
+        return [newFriend, ...prevFriends];
+      });
+    });
 
-    socket.on('dm', msg => {
-      setMessages(prevMsg => {
-        return [...prevMsg, msg]
-      })
-    })
+    socket.on("dm", (msg) => {
+      setMessages((prevMsg) => {
+        return [...prevMsg, msg];
+      });
+    });
 
-    socket.on('msg', msgs => {
-      setMessages(msgs)
-    })
+    socket.on("msg", (msgs) => {
+      setMessages(msgs);
+    });
 
     return () => {
       socket.off("current_user");
-      socket.off('friends');
-      socket.off('connected');
-      socket.off('new_friend');
-      socket.off('dm');
-      socket.off('msg')
-    }
-  }, [setFriendList, setMessages, setChannel])
+      socket.off("friends");
+      socket.off("connected");
+      socket.off("new_friend");
+      socket.off("dm");
+      socket.off("msg");
+    };
+  }, [setFriendList, setMessages, setChannel]);
 
   useEffect(() => {
-    console.log('channel: ', channel)
-    if(channel !== null) {
+    console.log("channel: ", channel);
+    if (channel !== null) {
       socket.connect();
       // console.log('ehl')
-      socket.emit('room_msgs', channel.userID, ({ msgs }) => {
-        console.log('cb: ', msgs)
-        setMessages(msgs)
-      })
+      socket.emit("room_msgs", channel.userID, ({ msgs }) => {
+        console.log("cb: ", msgs);
+        setMessages(msgs);
+      });
     }
-  }, [channel])
+  }, [channel]);
 
-  socket.on('connect_error', (err) => {
+  socket.on("connect_error", (err) => {
     // console.log('connection err: ', err)
-  })
+  });
 
   /*const loginSocket = (username) => {
     setUsername(username)
@@ -116,22 +115,22 @@ const SocketProvider = ({ children }) => {
   }*/
 
   const clearTypingIndicator = (channel) => {
-    socket.emit('typing', {toggleState: false, to: channel.id})
-  }
+    socket.emit("typing", { toggleState: false, to: channel.id });
+  };
 
   const sendTypingIndicator = (channel) => {
     // console.log('channel; ', channel)
-    socket.emit('typing', {toggleState: true, to: channel.id})
-  }
+    socket.emit("typing", { toggleState: true, to: channel.id });
+  };
 
-  const handleTypingIndicator = () =>  {
+  const handleTypingIndicator = () => {
     sendTypingIndicator(channel);
-    setTimeout(() => clearTypingIndicator(channel), 2000)
-  }
+    setTimeout(() => clearTypingIndicator(channel), 2000);
+  };
 
   const logoff = () => {
     socket.disconnect();
-  }
+  };
 
   return (
     <SocketContext.Provider
@@ -148,14 +147,15 @@ const SocketProvider = ({ children }) => {
         logoff,
         // friendList,
         // setFriendList
-      }}>
+      }}
+    >
       {children}
     </SocketContext.Provider>
-  )
-}
+  );
+};
 
 export const useSocketContext = () => {
   return useContext(SocketContext);
-}
+};
 
-export { SocketContext, SocketProvider }
+export { SocketContext, SocketProvider };

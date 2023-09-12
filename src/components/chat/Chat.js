@@ -1,83 +1,151 @@
-import { createContext, useState, useEffect } from 'react';
-import { Box, IconButton, Button } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import MessagePanel from './MessagePanel';
-import Sidebar from './Sidebar';
-import Profile from '../Profile.RFH';
-import './Chat.css';
-import socketConn from '../../socket';
-import useSocket from './useSocket';
-export const FriendContext = createContext();
-export const MessagesContext = createContext();
-export const SocketContext = createContext();
+import { useContext, useState } from "react";
+import { useUserContext } from "../../userContext";
+import { FriendContext } from "./Main";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import VerticallyCenteredModal from "../VerticallyCenteredModal";
+import Chatbox from "./Chatbox";
+import AddToGroup from "./AddToGroup";
+import TitleForm from "./TitleForm";
+import MessagePanel from "./MessagePanel";
+import LeaveChat from "./LeaveChat";
 
-// console.log('socketConn: ', socketConn)
-// console.log('socket: ', socket)
-const Main = () => {
-  const [friendList, setFriendList] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [channel, setChannel] = useState({
-    username: '',
-    userId: '',
-    connected: '',
-    unreadCount: '',
-    lastestMessage: '',
-    isGroup: false,
-  });
-  const [username, setUsername] = useState('');
-  const [feedback, setFeedback] = useState(false);
-  const [showDrawer, setShowDrawer] = useState(false);
-  const [editProfile, setEditProfile] = useState(false);
+function Chat({ isGroup }) {
+  const { user } = useUserContext();
+  const { channel } = useContext(FriendContext);
+  const [picture, setPicture] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [images, setImages] = useState([]);
+  const [imageIndex, setImageIndex] = useState(0);
+  const [toggleExpand, setToggleExpand] = useState(false);
 
-  // const user = JSON.parse(localStorage.getItem('user'))
-  const accessToken = localStorage.getItem('accessToken');
+  // console.log('channel: ', channel)
+  const extractAllImagesFromMessages = async (selectedImgSrc, messages) => {
+    const images = await messages.filter(
+      (message) => message.hasOwnProperty("isImage") === true,
+    );
+    let index = 0;
+    for (let [key, value] of images.entries()) {
+      if (value.content === selectedImgSrc) {
+        index = key;
+        break;
+      }
+    }
+    setImages(images);
+    setImageIndex(index);
+  };
 
-  const [socket, setSocket] = useState(() => socketConn(accessToken));
-
-  useEffect(() => {
-    // console.log('friendList: ', friendList)
-    // console.log('chat: ', { channel })
-  }, [channel])
-
-  useEffect(() => {
-    setSocket(() => socketConn(accessToken));
-  }, [accessToken]);
-// console.log('socket: ', socket)
-  useSocket(setFriendList, setMessages, setUsername, channel, setChannel, setFeedback, socket);
-
-  const editToggleHandler = () => setEditProfile(!editProfile);
+  if (channel.userId === "" || channel.roomId === "") {
+    return (
+      <div className="message-panel-container">
+        <h2>Choose a conversation</h2>
+        <h3>
+          Click on an existing chat or click "New Chat" to create a new
+          conversation
+        </h3>
+      </div>
+    );
+  }
 
   return (
-    <FriendContext.Provider value={{ friendList, setFriendList, channel, setChannel, username }}>
-      <SocketContext.Provider value={{ socket }}>
-        <div className="chat-container">
-          <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
-            <Sidebar showDrawer={showDrawer} setShowDrawer={setShowDrawer} />
-            <main>
-            {
-              showDrawer ?
-              <Box sx={{ textAlign: 'Left', padding: '50px' }}>
-                <Button aria-label="back" size="small" color="primary" startIcon={<ArrowBackIcon />} onClick={() => setShowDrawer(false)}>
-                  Back
-                </Button>
-                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', marginTop: '25px' }}>
-                  Profile 
-                  <IconButton sx={{ marginLeft: '5px' }} color="primary" onClick={editToggleHandler}>
-                    <EditIcon sx={{ fontSize: '14px' }} />
-                  </IconButton>
-                </Box>
-                <Profile editProfile={editProfile} />
-              </Box>
-              :
-              <MessagePanel isGroup={channel.isGroup} />
-            }
-            </main>
-          </MessagesContext.Provider>
-        </div>
-      </SocketContext.Provider>
-    </FriendContext.Provider>
-  )
+    <div className="message-panel-container">
+      {/* The Modal */}
+      <VerticallyCenteredModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        images={images}
+        activeindex={imageIndex}
+      />
+      <header
+        className={`${
+          toggleExpand ? "message-panel-header expand" : "message-panel-header"
+        }`}
+      >
+        <LeaveChat isGroup={isGroup} />
+        <AddToGroup />
+        <AccountCircleIcon className="channel-img" />
+        <TitleForm
+          toggleExpand={toggleExpand}
+          setToggleExpand={setToggleExpand}
+        />
+      </header>
+      <div>
+        <p>Channel Info</p>
+        <p>id: {channel?.userId || channel?.roomId}</p>
+      </div>
+      <MessagePanel
+        user={user}
+        channel={channel}
+        picture={picture}
+        isGroup={isGroup}
+        setShowModal={setShowModal}
+        extractAllImagesFromMessages={extractAllImagesFromMessages}
+      />
+      <footer>
+        <Chatbox
+          userId={channel?.userId || channel?.roomId}
+          from={user.userId}
+          isGroup={channel?.isGroup}
+          picture={picture}
+          handleSetPicture={setPicture}
+        />
+      </footer>
+    </div>
+  );
 }
 
-export default Main;
+export default Chat;
+/*
+  <div className="message-box-container">
+    <ul className="chat">
+      {
+        messages.map((message, idx) => {
+          // console.log('message: ', message)
+          // check message if isImage key exist
+          const isYou = message.from === null || message.from === user.userId;
+          return (
+            <li
+              key={idx}
+              className={`${isYou ? 'you' : ''}`}
+            >
+              <div className={`icon-message-container ${isYou ? "flex-direction-row-reverse" : "flex-direction-row"}`}>
+                <AccountCircleIcon />
+                <div className="message-container">
+                  <div>
+                  {
+                    message.hasOwnProperty('isImage') ?
+                    <img 
+                      className="file-upload-image" 
+                      src={message.content} 
+                      alt="" 
+                      onClick={() => displayModal(message.content)} 
+                    />
+                    :            
+                    message.content
+                  }
+                  </div>
+                </div>
+              </div>
+              <div>
+                {
+                  (isYou) ? 
+                  null 
+                  : 
+                  <div className="chat-username-txt">{isGroup ? message.username : channel.username}</div>
+                }
+              </div>
+            </li>
+          )
+        })
+      }
+      <li className="you">
+        <div className=" icon-message-container flex-direction-row">
+          <img className="file-upload-image" src={picture && picture} alt="" />
+        </div>
+      </li>
+      <li ref={bottomRef} className="feedback-typing">
+        {feedback ? `typing...` : ''}
+      </li>
+      <li ref={bottomRef}></li>
+    </ul>
+  </div>
+*/

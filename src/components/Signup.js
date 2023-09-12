@@ -1,19 +1,18 @@
-import { useState } from 'react';
-import { Formik, Form } from 'formik';
+import { useState } from "react";
+import { Formik, Form } from "formik";
 import { useNavigate, Link } from "react-router-dom";
-import { FaArrowLeft } from 'react-icons/fa';
-import * as Yup from 'yup';
-import axios from 'axios';
-import { MyTextInput, MyTextInputPassword } from './TextInput';
-import './Login.css';
+import { FaArrowLeft } from "react-icons/fa";
+import * as Yup from "yup";
+import axios from "axios";
+import { MyTextInput, MyTextInputPassword } from "./TextInput";
+import "./Login.css";
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string()
-    .min(3, 'Too short!')
-    .max(50, 'Too long!')
-    .required('Required'),
-  password: Yup.string()
-    .required('Required')
+    .min(3, "Too short!")
+    .max(50, "Too long!")
+    .required("Required"),
+  password: Yup.string().required("Required"),
 });
 
 function Signup() {
@@ -28,34 +27,31 @@ function Signup() {
       <div>{error}</div>
       <Formik
         initialValues={{
-           username: '',
-           password: '',
-         }}
+          username: "",
+          password: "",
+        }}
         validationSchema={SignupSchema}
         onSubmit={async (values, actions) => {
-           // same shape as initial values
+          // same shape as initial values
           actions.resetForm();
           // console.log(values);
-          const response = await axios.post('http://localhost:9000/api/auth/signup', values)
-          console.log('response: ', response.data)
-          if(response.data.status) {
-            setError(response.data.status)
+          const response = await axios.post(
+            "http://localhost:9000/api/auth/signup",
+            values,
+          );
+          console.log("response: ", response.data);
+          if (response.data.status) {
+            setError(response.data.status);
           } else {
-            localStorage.setItem("accessToken", response.data.accessToken)
-            navigate('/chat')
+            localStorage.setItem("accessToken", response.data.accessToken);
+            navigate("/chat");
           }
-         }}
-        >
+        }}
+      >
         {({ errors, touched }) => (
-           <Form>
-            <MyTextInput
-              label="Username"
-              name="username"
-            />
-            <MyTextInputPassword
-              label="Password"
-              name="password"
-            />
+          <Form>
+            <MyTextInput label="Username" name="username" />
+            <MyTextInputPassword label="Password" name="password" />
             <button type="submit">Submit</button>
           </Form>
         )}
@@ -64,7 +60,7 @@ function Signup() {
         Already have an account? <Link to="/">Login</Link>
       </div>
     </div>
-  )
+  );
 }
 
 export default Signup;

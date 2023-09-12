@@ -5,7 +5,7 @@ function FileUpload() {
 
       {/*<FaPaperclip onClick={handleFileUpload} />*/}
     </form>
-  )
+  );
 }
 
-export default FileUpload
+export default FileUpload;
