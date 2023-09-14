@@ -26,8 +26,8 @@ exports.verifyToken = (req, res) => {
 
 exports.login = (req, res) => {
   // console.log('app: body: ', req.body)
-  const { username, password = "testing", keyType } = req.body;
-  User.findOne({ [keyType]: username })
+  const { email, password = "testing" } = req.body;
+  User.findOne({ email: email })
     .then((user) => {
       if (!user)
         return res.status(200).send({
@@ -204,12 +204,10 @@ exports.sendResetLink = async (req, res) => {
   const { userId, email } = hasRecord;
   const payload = { userId, email };
   sendMail(payload);
-  res
-    .status(200)
-    .send({
-      isSuccessful: true,
-      message: "An email has been sent to reset your password.",
-    });
+  res.status(200).send({
+    isSuccessful: true,
+    message: "An email has been sent to reset your password.",
+  });
 };
 
 exports.passwordReset = async (req, res) => {

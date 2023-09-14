@@ -24,7 +24,7 @@ const Login = () => {
   });
   const { setUser } = useUserContext();
   const [show, setShow] = useState(false);
-  const [usrNameError, setUsrNameError] = useState({
+  const [usrNameError, setEmailError] = useState({
     hasError: false,
     msg: "",
   });
@@ -36,10 +36,10 @@ const Login = () => {
   const handleOnSubmit = async (values) => {
     console.log("onSubmit", values);
     // check str if it's an email or a username
-    const emailFormat =
+    /*const emailFormat =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const keyType = emailFormat.test(values.username) ? "email" : "username";
-    values.keyType = keyType;
+    values.keyType = keyType;*/
     // console.log('values: ', values)
     const resp = await Auth.login(values);
     // console.log('resp: ', resp)
@@ -47,7 +47,7 @@ const Login = () => {
     // console.log('data: ', data)
     if (data.isSuccessful) {
       // console.log("fdjslkf;j: ", response.data.hasOwnProperty("username"))
-      if (data.hasOwnProperty("username")) {
+      if (data.hasOwnProperty("email")) {
         // console.log('response: ', response.data)
         localStorage.setItem("accessToken", data.accessToken);
         setUser({ ...data });
@@ -59,24 +59,24 @@ const Login = () => {
     } else {
       // setError(response.data.status)
       if (data.errorType === "user") {
-        setUsrNameError({ hasError: true, msg: data.message });
+        setEmailError({ hasError: true, msg: data.message });
       } else {
         setPasswordError({ hasError: true, msg: data.message });
       }
     }
-    reset({ username: "", password: "" });
+    reset({ email: "", password: "" });
   };
 
   const handleShow = () => setShow(!show);
 
   const onErrors = (errors) => {
-    const { password, username } = errors;
+    const { password, email } = errors;
     console.log("errors: ", errors);
     // transfering controls from RHF to material-ui for feedback errors
-    if (username) {
-      setUsrNameError({
+    if (email) {
+      setEmailError({
         hasError: true,
-        msg: "Username or email is required.",
+        msg: "Email is required.",
       });
     }
     if (password) {
@@ -87,8 +87,8 @@ const Login = () => {
   const onFocusHandler = (e) => {
     // console.log('onFocusHandler: ', e.target.name)
     // reset the error indicators when user is focused
-    if (e.target.name === "username") {
-      setUsrNameError({ hasError: false, msg: "" });
+    if (e.target.name === "email") {
+      setEmailError({ hasError: false, msg: "" });
     }
     if (e.target.name === "password") {
       setPasswordError({ hasError: false, msg: "" });
@@ -96,10 +96,7 @@ const Login = () => {
   };
 
   return (
-    <NoAuthLayout
-      heading={"Login"}
-      subheading={"Login with your username or email"}
-    >
+    <NoAuthLayout heading={"Login"} subheading={"Login with your email"}>
       <Box
         component="form"
         noValidate
@@ -111,7 +108,7 @@ const Login = () => {
             variant="outlined"
             fullWidth
             error={usrNameError.hasError}
-            name="username"
+            name="email"
             onFocus={onFocusHandler}
           >
             <InputLabel
@@ -123,8 +120,8 @@ const Login = () => {
             <OutlinedInput
               type="text"
               size="small"
-              label="Username or email"
-              {...register("username", { required: true })}
+              label="Email"
+              {...register("email", { required: true })}
             />
             <FormHelperText id="component-error-text">
               {usrNameError.hasError ? usrNameError.msg : ""}
