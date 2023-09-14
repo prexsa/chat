@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import List from "../List";
 
-function AddToGroup() {
+const AddToGroup = () => {
   const {
     register,
     handleSubmit,
@@ -55,11 +55,15 @@ function AddToGroup() {
   const populateGroupMembers = useCallback(
     (roomId) => {
       // console.log('roomId: ', roomId)
-      // console.log('channel: ', channel)
+      console.log("channel: ", channel);
       socket.connect();
       socket.emit("get_group_members", { roomId }, ({ members }) => {
         // console.log('get_group_members ', members)
-        const format4Selected = members.map((member, index) => {
+        const ownerId = channel.owner;
+        const parsedOutOwnerId = members.filter(
+          (member) => member.userId !== ownerId,
+        );
+        const format4Selected = parsedOutOwnerId.map((member, index) => {
           return {
             username: member.username,
             id: index,
@@ -68,7 +72,7 @@ function AddToGroup() {
           };
         });
 
-        // console.log('members: ', format4Selected)
+        console.log("members: ", format4Selected);
         // setSelected(format4Selected)
         setMembers(format4Selected);
       });
@@ -143,7 +147,6 @@ function AddToGroup() {
       <IconButton onClick={handleShow} size="sm">
         <GroupAddIcon />
       </IconButton>
-
       <Dialog open={show} onClose={handleClose}>
         <DialogTitle>Add members</DialogTitle>
         <IconButton
@@ -220,7 +223,7 @@ function AddToGroup() {
       </Dialog>
     </>
   );
-}
+};
 
 export default AddToGroup;
 /*<Modal 

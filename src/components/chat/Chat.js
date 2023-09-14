@@ -61,7 +61,7 @@ function Chat({ isGroup }) {
         }`}
       >
         <LeaveChat isGroup={isGroup} />
-        <AddToGroup />
+        { isGroup && <AddToGroup /> }
         <AccountCircleIcon className="channel-img" />
         <TitleForm
           toggleExpand={toggleExpand}
