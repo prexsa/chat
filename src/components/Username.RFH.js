@@ -48,8 +48,10 @@ const Username = () => {
   };
 
   useEffect(() => {
-    console.log("state; ", state);
-    if (state.user.accessToken === "") {
+    // check if accessToken exist, no need to parse it
+    const accessToken = localStorage.getItem("accessToken");
+    // console.log("state; ", accessToken);
+    if (accessToken === null) {
       navigate("/");
     }
   }, [state, navigate]);

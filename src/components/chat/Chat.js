@@ -61,17 +61,16 @@ function Chat({ isGroup }) {
         }`}
       >
         <LeaveChat isGroup={isGroup} />
-        { isGroup && <AddToGroup /> }
+        {isGroup && <AddToGroup />}
         <AccountCircleIcon className="channel-img" />
         <TitleForm
           toggleExpand={toggleExpand}
           setToggleExpand={setToggleExpand}
         />
+        <p style={{ marginLeft: "auto" }}>
+          id: {channel?.userId || channel?.roomId}
+        </p>
       </header>
-      <div>
-        <p>Channel Info</p>
-        <p>id: {channel?.userId || channel?.roomId}</p>
-      </div>
       <MessagePanel
         user={user}
         channel={channel}

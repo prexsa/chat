@@ -44,12 +44,12 @@ const Login = () => {
     const resp = await Auth.login(values);
     // console.log('resp: ', resp)
     const { data } = resp;
-    // console.log('data: ', data)
+    console.log("data: ", data);
     if (data.isSuccessful) {
       // console.log("fdjslkf;j: ", response.data.hasOwnProperty("username"))
+      localStorage.setItem("accessToken", data.accessToken);
       if (data.hasOwnProperty("email")) {
         // console.log('response: ', response.data)
-        localStorage.setItem("accessToken", data.accessToken);
         setUser({ ...data });
         navigate("/chat");
       } else {
