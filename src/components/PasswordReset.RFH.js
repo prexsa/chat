@@ -24,10 +24,10 @@ const PasswordReset = () => {
   const [isTimeExpired, setIsTimeExpired] = useState(false);
   const [isUpdateSuccessful, setIsUpdateSuccessful] = useState(false);
   const { register, handleSubmit, watch } = useForm({ mode: "onChange" });
-  const [passwordError, setPasswordError] = useState({
+  /*const [passwordError, setPasswordError] = useState({
     hasError: false,
     msg: "",
-  });
+  });*/
   const [dupError, setDupError] = useState({ hasError: false, msg: "" });
   const [show, setShow] = useState(false);
   const [showDup, setShowDup] = useState(false);
@@ -50,7 +50,7 @@ const PasswordReset = () => {
 
   useEffect(() => {
     // console.log('hel')
-    checkExpireTime(expireTime);
+    // checkExpireTime(expireTime);
   }, [expireTime, checkExpireTime]);
 
   const handleOnSubmit = async (values) => {
@@ -121,7 +121,7 @@ const PasswordReset = () => {
             <FormControl
               variant="outlined"
               fullWidth
-              error={passwordError.hasError}
+              // error={passwordError.hasError}
               name="password"
               // onFocus={onFocusHandler}
             >
@@ -144,9 +144,9 @@ const PasswordReset = () => {
                 }
                 {...register("password", { required: true })}
               />
-              <FormHelperText id="component-error-text">
+              {/*<FormHelperText id="component-error-text">
                 {passwordError.hasError ? passwordError.msg : ""}
-              </FormHelperText>
+              </FormHelperText>*/}
             </FormControl>
           </Box>
           <Box sx={{ margin: "20px 0" }}>
