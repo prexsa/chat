@@ -32,8 +32,8 @@ exports.login = (req, res) => {
       if (!user)
         return res.status(200).send({
           isSuccessful: false,
-          message: "User not found",
-          errorType: "user",
+          message: "Email not found",
+          errorType: "email",
         });
       const passwordIsValid = bcrypt.compareSync(password, user.password);
       if (!passwordIsValid) {

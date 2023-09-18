@@ -58,7 +58,7 @@ const Login = () => {
       }
     } else {
       // setError(response.data.status)
-      if (data.errorType === "user") {
+      if (data.errorType === "email") {
         setEmailError({ hasError: true, msg: data.message });
       } else {
         setPasswordError({ hasError: true, msg: data.message });
@@ -115,7 +115,7 @@ const Login = () => {
               htmlFor="outlined-adornment-password"
               sx={{ top: "-7px" }}
             >
-              Username or email
+              Email
             </InputLabel>
             <OutlinedInput
               type="text"
