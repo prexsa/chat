@@ -50,7 +50,7 @@ const PasswordReset = () => {
 
   useEffect(() => {
     // console.log('hel')
-    // checkExpireTime(expireTime);
+    checkExpireTime(expireTime);
   }, [expireTime, checkExpireTime]);
 
   const handleOnSubmit = async (values) => {
