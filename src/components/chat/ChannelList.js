@@ -50,7 +50,6 @@ function ChannelList() {
       <ul>
         {friendList &&
           friendList.map((friend, index) => {
-            // console.log(friend)
             // clear unreadCount if channel is active
             if (friend.userId === channel.userId) {
               friend.unreadCount = 0;

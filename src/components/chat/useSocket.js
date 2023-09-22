@@ -69,7 +69,7 @@ const useSocket = (
     });
 
     socket.on("dm", (msg) => {
-      // console.log('ms: ', msg)
+      // console.log("ms: ", msg);
       // console.log('dm channel: ', channelRef.current)
       if (channelRef.current.userId === msg.from) {
         socket.emit("clear_unread_count", { roomId: msg.from });

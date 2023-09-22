@@ -443,7 +443,8 @@ module.exports.handleRoomSelected = async (socket, channelId, isGroup) => {
 // https://www.reddit.com/r/reactjs/comments/w22mag/how_to_handle_sending_images_and_videos_in_a_chat/
 // https://stackskills.com/courses/181862/lectures/2751724
 module.exports.uploadFile = async (socket, fileObj, cb) => {
-  const { to: channelId, from: userId, fileName, file } = fileObj;
+  const { to: channelId, from: userId, fileName, file, isGroup } = fileObj;
+  console.log("fileObj: ", fileObj);
   // console.log('uploadFile: ', { fileName, file })
   // const userId = socket.user.userID
   const tmpFileDir = path.join(__dirname, "../tmp/upload");
@@ -465,9 +466,21 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
         deleteStoredFile(fileName);
         // destruct { url, public_id, secure_url, asset_id }
         const { url, public_id, secure_url, asset_id } = result;
+        // check if channel isGroup
+        let roomIds = "";
+        let messageRoomId = "";
+        if (isGroup) {
+          // get all members from group
+          const members = await redisClient.smembers(`grpmembers:${channelId}`);
+          console.log("members: ", members);
+          roomIds = members;
+          messageRoomId = channelId;
+        } else {
+          // get roomId
+          const { roomId } = await getRoomId(userId, channelId);
+          roomIds = messageRoomId = roomId.id;
+        }
         // save url to redis
-        // get roomId
-        const { roomId } = await getRoomId(userId, channelId);
         const unixDateTime = Date.now();
         const message = {
           to: channelId,
@@ -475,14 +488,16 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
           isImage: true,
           content: url,
           date: unixDateTime,
+          isGroup,
         };
         // save message
         await redisClient.zadd(
-          `messages:${roomId.id}`,
+          `messages:${messageRoomId}`,
           unixDateTime,
           JSON.stringify(message),
         );
-        socket.to(channelId).emit("dm", message);
+        // notify
+        socket.to(roomIds).emit("dm", message);
         cb({ message });
       })
       .catch((err) => console.log(err));
