@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useCallback } from "react";
 import { SocketContext, MessagesContext } from "./Main";
 import { IconButton } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -25,7 +25,7 @@ const FileUpload = ({ userId, from, isGroup, picture, handleSetPicture }) => {
       file: file,
       isGroup,
     };
-    console.log("fileObj: ", file);
+    // console.log("fileObj: ", file);
     // return;
     socket.emit("upload_file", fileObj, (resp) => {
       console.log("file upload cb: ", { resp });
@@ -39,7 +39,7 @@ const FileUpload = ({ userId, from, isGroup, picture, handleSetPicture }) => {
       // reset the file input field
       // resetField("file");
     });
-  }, []);
+  });
 
   /*useEffect(() => {
     console.log("handleFileUploa ", file);

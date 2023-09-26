@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const { writeFile, readFile, stat, unlink } = require("fs");
 const path = require("path");
 const { cloudinary } = require("../cloudinary");
+const axios = require("axios");
 
 module.exports.authorizeUser = (socket, next) => {
   // console.log('socket: ', socket.request.session)
@@ -409,6 +410,23 @@ const addIdentityToGroupMsgUserId = async (messages) => {
   return Promise.resolve({ mapMsgToUsername: asyncRes });
 };
 
+// add flag to img url
+const setFlagForMissingImgUrl = async (messages) => {
+  const asyncRes = await Promise.all(
+    messages.map(async (msg) => {
+      if (msg.hasOwnProperty("isImage")) {
+        const imgUrlWorks = await axios
+          .get(msg.content)
+          .then((resp) => true)
+          .catch(() => false);
+        msg.urlLinkWorks = imgUrlWorks ? true : false;
+      }
+      return msg;
+    }),
+  );
+  return Promise.resolve(asyncRes);
+};
+
 module.exports.handleRoomSelected = async (socket, channelId, isGroup) => {
   // reset unread count
   const userId = socket.user.userId;
@@ -437,14 +455,16 @@ module.exports.handleRoomSelected = async (socket, channelId, isGroup) => {
     // console.log('messages; ', messages)
     parsedMessages = messages.map((message) => JSON.parse(message));
   }
+  // console.log("parsedMessages :", parsedMessages);
+  const updatedMessages = await setFlagForMissingImgUrl(parsedMessages);
   // console.log('parsedJson: ', parsedJson )
-  socket.emit("room_msgs", parsedMessages);
+  socket.emit("room_msgs", updatedMessages);
 };
 // https://www.reddit.com/r/reactjs/comments/w22mag/how_to_handle_sending_images_and_videos_in_a_chat/
 // https://stackskills.com/courses/181862/lectures/2751724
 module.exports.uploadFile = async (socket, fileObj, cb) => {
   const { to: channelId, from: userId, fileName, file, isGroup } = fileObj;
-  console.log("fileObj: ", fileObj);
+  // console.log("fileObj: ", fileObj);
   // console.log('uploadFile: ', { fileName, file })
   // const userId = socket.user.userID
   const tmpFileDir = path.join(__dirname, "../tmp/upload");
@@ -461,7 +481,7 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
         faces: true,
       })
       .then(async (result) => {
-        console.log(result);
+        // console.log(result);
         // delete the stored images from tmp folder
         deleteStoredFile(fileName);
         // destruct { url, public_id, secure_url, asset_id }
@@ -472,7 +492,7 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
         if (isGroup) {
           // get all members from group
           const members = await redisClient.smembers(`grpmembers:${channelId}`);
-          console.log("members: ", members);
+          // console.log("members: ", members);
           roomIds = members;
           messageRoomId = channelId;
         } else {

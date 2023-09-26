@@ -1,6 +1,8 @@
 import { useContext, useEffect, useRef } from "react";
 import { MessagesContext } from "./Main";
+import { Box } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 
 const MessagePanel = ({
   user,
@@ -34,7 +36,7 @@ const MessagePanel = ({
     <div className="message-box-container">
       <ul className="chat">
         {messages.map((message, idx) => {
-          // console.log('message: ', message)
+          // console.log("message: ", message);
           // check message if isImage key exist
           const isYou = message.from === null || message.from === user.userId;
           return (
@@ -48,12 +50,21 @@ const MessagePanel = ({
                 <div className="message-container">
                   <div>
                     {message.hasOwnProperty("isImage") ? (
-                      <img
-                        className="file-upload-image"
-                        src={message.content}
-                        alt=""
-                        onClick={() => displayModal(message.content)}
-                      />
+                      message.urlLinkWorks ? (
+                        <img
+                          className="file-upload-image"
+                          src={message.content}
+                          alt=""
+                          onClick={() => displayModal(message.content)}
+                        />
+                      ) : (
+                        <>
+                          <ImageNotSupportedIcon />
+                          <Box sx={{ color: "#808080", fontSize: "10px" }}>
+                            Image not available
+                          </Box>
+                        </>
+                      )
                     ) : (
                       message.content
                     )}
