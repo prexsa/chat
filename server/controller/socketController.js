@@ -506,6 +506,7 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
           to: channelId,
           from: userId,
           isImage: true,
+          urlLinkWorks: true,
           content: url,
           date: unixDateTime,
           isGroup,

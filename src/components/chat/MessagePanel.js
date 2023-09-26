@@ -7,7 +7,7 @@ import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
 const MessagePanel = ({
   user,
   channel,
-  picture,
+  // picture,
   isGroup,
   setShowModal,
   extractAllImagesFromMessages,
@@ -19,7 +19,7 @@ const MessagePanel = ({
     // console.log('picture: ', picture)
     // bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
     bottomRef.current?.scrollIntoView(false);
-  }, [messages, feedback, picture]);
+  }, [messages, feedback]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end", inline: "nearest" });
@@ -81,7 +81,7 @@ const MessagePanel = ({
             </li>
           );
         })}
-        <li className="you">
+        {/*<li className="you">
           <div className=" icon-message-container flex-direction-row">
             <img
               className="file-upload-image"
@@ -89,7 +89,7 @@ const MessagePanel = ({
               alt=""
             />
           </div>
-        </li>
+        </li>*/}
         <li ref={bottomRef} className="feedback-typing">
           {feedback ? `typing...` : ""}
         </li>

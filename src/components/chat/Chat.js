@@ -12,7 +12,7 @@ import LeaveChat from "./LeaveChat";
 function Chat({ isGroup }) {
   const { user } = useUserContext();
   const { channel } = useContext(FriendContext);
-  const [picture, setPicture] = useState(null);
+  // const [picture, setPicture] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [images, setImages] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
@@ -67,14 +67,14 @@ function Chat({ isGroup }) {
           toggleExpand={toggleExpand}
           setToggleExpand={setToggleExpand}
         />
-        <p style={{ marginLeft: "auto" }}>
+        {/*<p style={{ marginLeft: "auto" }}>
           id: {channel?.userId || channel?.roomId}
-        </p>
+        </p>*/}
       </header>
       <MessagePanel
         user={user}
         channel={channel}
-        picture={picture}
+        // picture={picture}
         isGroup={isGroup}
         setShowModal={setShowModal}
         extractAllImagesFromMessages={extractAllImagesFromMessages}
@@ -84,8 +84,8 @@ function Chat({ isGroup }) {
           userId={channel?.userId || channel?.roomId}
           from={user.userId}
           isGroup={channel?.isGroup}
-          picture={picture}
-          handleSetPicture={setPicture}
+          // picture={picture}
+          // handleSetPicture={setPicture}
         />
       </footer>
     </div>

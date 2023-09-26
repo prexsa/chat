@@ -1,4 +1,4 @@
-import { useContext, useCallback } from "react";
+import { useContext } from "react";
 import { SocketContext, MessagesContext } from "./Main";
 import { IconButton } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -8,16 +8,12 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
   Might be a better idea load file via "http post" request instead
 */
 
-const FileUpload = ({ userId, from, isGroup, picture, handleSetPicture }) => {
+const FileUpload = ({ userId, from, isGroup, picture }) => {
   const { socket } = useContext(SocketContext);
   const { setMessages } = useContext(MessagesContext);
-  // const [file, setFile] = useState(null);
 
-  const handleFileUpload = useCallback((file) => {
-    // console.log('picture: ', picture)
-    console.log("file; ", file);
-    /*return;*/
-    // if (file === null) return;
+  const handleFileUpload = (file) => {
+    // console.log("file; ", file);
     const fileObj = {
       to: userId,
       from: from,
@@ -26,7 +22,6 @@ const FileUpload = ({ userId, from, isGroup, picture, handleSetPicture }) => {
       isGroup,
     };
     // console.log("fileObj: ", file);
-    // return;
     socket.emit("upload_file", fileObj, (resp) => {
       console.log("file upload cb: ", { resp });
       const { message } = resp;
@@ -34,17 +29,8 @@ const FileUpload = ({ userId, from, isGroup, picture, handleSetPicture }) => {
       setMessages((prevMsg) => {
         return [...prevMsg, message];
       });
-      // handleSetPicture(null);
-      // setFile(null);
-      // reset the file input field
-      // resetField("file");
     });
-  });
-
-  /*useEffect(() => {
-    console.log("handleFileUploa ", file);
-    handleFileUpload();
-  }, [picture, handleFileUpload]);*/
+  };
 
   const onChangeUpload = (e) => {
     console.log("e: ", e.target.files[0]);

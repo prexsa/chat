@@ -6,7 +6,7 @@ import SendIcon from "@mui/icons-material/Send";
 import FileUpload from "./FileUpload";
 // https://refine.dev/blog/how-to-multipart-file-upload-with-react-hook-form/#create-express-server
 // https://www.commoninja.com/blog/handling-multiple-uploads-react-hook-form#Creating-the-Functions-for-Image-Preview-and-Handling-Form-Submission
-function Chatbox({ userId, from, isGroup, picture, handleSetPicture }) {
+function Chatbox({ userId, from, isGroup, picture }) {
   // console.log('userID: ', userId)
   const { socket } = useContext(SocketContext);
   const { setMessages } = useContext(MessagesContext);
@@ -14,7 +14,7 @@ function Chatbox({ userId, from, isGroup, picture, handleSetPicture }) {
   const [feedbackToggle, setFeedbackToggle] = useState(false);
 
   const onSubmit = (data) => {
-    console.log("data: ", data);
+    // console.log("data: ", data);
     if (data.message.trim() === "") return;
     // console.log('message; ', message)
     const message = {
@@ -82,7 +82,6 @@ function Chatbox({ userId, from, isGroup, picture, handleSetPicture }) {
           from={from}
           isGroup={isGroup}
           picture={picture}
-          handleSetPicture={handleSetPicture}
         />
         <Box
           component="form"
