@@ -26,7 +26,9 @@ exports.verifyToken = (req, res) => {
 
 exports.login = (req, res) => {
   // console.log('app: body: ', req.body)
-  const { email, password = "testing" } = req.body;
+  // for dev
+  // const { email, password = "testing" } = req.body;
+  const { email, password } = req.body;
   User.findOne({ email: email })
     .then((user) => {
       if (!user)

@@ -113,8 +113,13 @@ const populateRooms = async (socket) => {
         let latestMessage = "";
         for (const message of messages) {
           const parsedJson = JSON.parse(message);
+          // console.log("parsedJson: ", parsedJson);
           if (latestMessage === "" && parsedJson.from !== socket.user.userId) {
             latestMessage = parsedJson.content;
+            // check if latest message is an image, if image, attached isImage
+            if (parsedJson.hasOwnProperty("isImage")) {
+              room.isImage = parsedJson.isImage;
+            }
             break;
           }
         }
@@ -127,7 +132,7 @@ const populateRooms = async (socket) => {
       return room;
     }),
   );
-  // console.log('asyncRes: ', asyncRes)
+  // console.log("asyncRes: ", asyncRes);
   socket.emit("friends", asyncRes);
 };
 

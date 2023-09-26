@@ -50,6 +50,7 @@ function ChannelList() {
       <ul>
         {friendList &&
           friendList.map((friend, index) => {
+            // console.log("friend: ", friend);
             // clear unreadCount if channel is active
             if (friend.userId === channel.userId) {
               friend.unreadCount = 0;
@@ -71,7 +72,11 @@ function ChannelList() {
                     <div className="header-item-time">10:30 PM</div>
                   </div>
                   <div className="message-alerts">
-                    <p className="snippet">{friend.latestMessage}</p>
+                    <p className="snippet">
+                      {friend.isImage
+                        ? '"image.^/jpg/png/"'
+                        : friend.latestMessage}
+                    </p>
                     <div className="newMessages">
                       {friend.unreadCount === "0" ||
                       friend.unreadCount === 0 ? (
