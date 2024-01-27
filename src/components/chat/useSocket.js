@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 const useSocket = (
   setFriendList,
@@ -23,16 +23,16 @@ const useSocket = (
       socket.open();
     }
     // console.log('connect', () => console.log('connect to socket server'))
-    socket.on("current_user", (username) => {
+    socket.on('current_user', (username) => {
       // console.log('usename: ', username)
       setUsername(username);
     });
-    socket.on("friends", (friendList) => {
+    socket.on('friends', (friendList) => {
       // console.log('friendList: ', friendList)
       setFriendList(friendList);
     });
 
-    socket.on("connected", (status, userId) => {
+    socket.on('connected', (status, userId) => {
       setFriendList((prevFriends) => {
         return [...prevFriends].map((friend) => {
           if (friend.userId === userId) {
@@ -43,14 +43,14 @@ const useSocket = (
       });
     });
 
-    socket.on("new_friend", (newFriend) => {
+    socket.on('new_friend', (newFriend) => {
       // console.log('new_friend: ', newFriend)
       setFriendList((prevFriends) => {
         return [newFriend, ...prevFriends];
       });
     });
 
-    socket.on("remove_from_chat", ({ roomId, usernameToRemove, isGroup }) => {
+    socket.on('remove_from_chat', ({ roomId, usernameToRemove }) => {
       // console.log('remove_from_chat: ', { roomId, usernameToRemove })
       setFriendList((prevFriends) => {
         // console.log('prevFriends: ', prevFriends)
@@ -68,11 +68,11 @@ const useSocket = (
       });
     });
 
-    socket.on("dm", (msg) => {
+    socket.on('dm', (msg) => {
       // console.log("ms: ", msg);
       // console.log('dm channel: ', channelRef.current)
       if (channelRef.current.userId === msg.from) {
-        socket.emit("clear_unread_count", { roomId: msg.from });
+        socket.emit('clear_unread_count', { roomId: msg.from });
       }
       // socket.emit('handle_room_selected', { channelId: channelObj.userID })
       setFriendList((prevFriends) => {
@@ -109,7 +109,7 @@ const useSocket = (
       }
     });
 
-    socket.on("update_group_name", ({ roomId, updatedTitle }) => {
+    socket.on('update_group_name', ({ roomId, updatedTitle }) => {
       // update channel title, if active
       if (channelRef.current.roomId === roomId) {
         setChannel((prevState) => ({
@@ -128,7 +128,7 @@ const useSocket = (
       });
     });
 
-    socket.on("unread-count", ({ userId, count }) => {
+    socket.on('unread-count', ({ userId, count }) => {
       // console.log('unread-count: ', { userId, count })
       setFriendList((prevFriends) => {
         return [...prevFriends].map((friend) => {
@@ -140,35 +140,35 @@ const useSocket = (
       });
     });
 
-    socket.on("all_messages", (msgs) => {
+    socket.on('all_messages', (msgs) => {
       // console.log('all_messages: ', msgs)
       setMessages(msgs);
     });
 
-    socket.on("room_msgs", (msgs) => {
+    socket.on('room_msgs', (msgs) => {
       // console.log('msgs: ', msgs)
       setMessages(msgs);
     });
 
-    socket.on("typing_feedback", (feedbackToggle) => {
+    socket.on('typing_feedback', (feedbackToggle) => {
       // console.log('typing_feedback: ', feedbackToggle)
       setFeedback(feedbackToggle);
     });
 
-    socket.on("connection_error", () => {
-      console.log("socket connection error");
+    socket.on('connection_error', () => {
+      console.log('socket connection error');
     });
 
     return () => {
-      socket.off("current_user");
-      socket.off("friends");
-      socket.off("connected");
-      socket.off("new_friend");
-      socket.off("dm");
-      socket.off("msg");
-      socket.off("remove_from_chat");
-      socket.off("unread-count");
-      socket.off("update_group_name");
+      socket.off('current_user');
+      socket.off('friends');
+      socket.off('connected');
+      socket.off('new_friend');
+      socket.off('dm');
+      socket.off('msg');
+      socket.off('remove_from_chat');
+      socket.off('unread-count');
+      socket.off('update_group_name');
     };
   }, [
     setFriendList,

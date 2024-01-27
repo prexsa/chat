@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect, useContext } from 'react';
+import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const UserContext = React.createContext();
 
 const UserProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState({
-    username: "",
-    userId: "",
+    username: '',
+    userId: '',
     loggedIn: null,
   });
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem('accessToken');
     // console.log('accessToken: ', accessToken)
     if (accessToken === null) return;
     axios
@@ -25,11 +26,11 @@ const UserProvider = ({ children }) => {
         // console.log('response: ', response.data)
         const data = response.data;
         setUser(data);
-        navigate("/chat");
+        navigate('/chat');
       })
-      .catch((err) => {
+      .catch(() => {
         // console.log('UserContext error: ', err.response.data)
-        localStorage.setItem("accessToken", null);
+        localStorage.setItem('accessToken', null);
         return;
       });
   }, [navigate]);
@@ -44,6 +45,10 @@ const UserProvider = ({ children }) => {
       {children}
     </UserContext.Provider>
   );
+};
+
+UserProvider.propTypes = {
+  children: PropTypes.element.isRequired,
 };
 
 export const useUserContext = () => {

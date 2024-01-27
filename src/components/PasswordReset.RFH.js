@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import React from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 // import { FaEyeSlash } from "react-icons/fa";
-import { useForm } from "react-hook-form";
-import Auth from "../services/Auth";
-import NoAuthLayout from "./NoAuth.layout";
+import { useForm } from 'react-hook-form';
+import Auth from '../services/Auth';
+import NoAuthLayout from './NoAuth.layout';
 import {
   Box,
   Button,
@@ -13,22 +14,22 @@ import {
   InputLabel,
   FormControl,
   FormHelperText,
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const PasswordReset = () => {
   const navigate = useNavigate();
   const [queryParameters] = useSearchParams();
-  const userId = queryParameters.get("userId");
-  const expireTime = queryParameters.get("expireTime");
+  const userId = queryParameters.get('userId');
+  const expireTime = queryParameters.get('expireTime');
   const [isTimeExpired, setIsTimeExpired] = useState(false);
   const [isUpdateSuccessful, setIsUpdateSuccessful] = useState(false);
-  const { register, handleSubmit, watch } = useForm({ mode: "onChange" });
+  const { register, handleSubmit, watch } = useForm({ mode: 'onChange' });
   /*const [passwordError, setPasswordError] = useState({
     hasError: false,
     msg: "",
   });*/
-  const [dupError, setDupError] = useState({ hasError: false, msg: "" });
+  const [dupError, setDupError] = useState({ hasError: false, msg: '' });
   const [show, setShow] = useState(false);
   const [showDup, setShowDup] = useState(false);
 
@@ -41,7 +42,7 @@ const PasswordReset = () => {
       if (currentTime > Number(time)) {
         setIsTimeExpired(true);
         setTimeout(() => {
-          navigate("/forgot-password");
+          navigate('/forgot-password');
         }, 4000);
       }
     },
@@ -63,7 +64,7 @@ const PasswordReset = () => {
       // reset({ password: '', duplicate: '' })
       setIsUpdateSuccessful(true);
       setTimeout(() => {
-        navigate("/");
+        navigate('/');
       }, 4000);
     }
   };
@@ -71,12 +72,12 @@ const PasswordReset = () => {
   const handleShow = () => setShow(!show);
   const handleShowDup = () => setShowDup(!showDup);
 
-  const onBlurHandler = (e) => {
+  const onBlurHandler = () => {
     // console.log('onBlurHandler: ', e.target.name)
-    if (watch("password") === watch("duplicate")) {
-      setDupError({ hasError: false, msg: "" });
+    if (watch('password') === watch('duplicate')) {
+      setDupError({ hasError: false, msg: '' });
     }
-    if (watch("password") !== watch("duplicate")) {
+    if (watch('password') !== watch('duplicate')) {
       setDupError({ hasError: true, msg: "Passwords don't match!" });
     }
   };
@@ -117,7 +118,7 @@ const PasswordReset = () => {
           autoComplete="off"
           onSubmit={handleSubmit(handleOnSubmit, onErrors)}
         >
-          <Box sx={{ margin: "20px 0" }}>
+          <Box sx={{ margin: '20px 0' }}>
             <FormControl
               variant="outlined"
               fullWidth
@@ -127,12 +128,12 @@ const PasswordReset = () => {
             >
               <InputLabel
                 htmlFor="outlined-adornment-password"
-                sx={{ top: "-7px" }}
+                sx={{ top: '-7px' }}
               >
                 Password
               </InputLabel>
               <OutlinedInput
-                type={show ? "text" : "password"}
+                type={show ? 'text' : 'password'}
                 size="small"
                 label="Password"
                 endAdornment={
@@ -142,14 +143,14 @@ const PasswordReset = () => {
                     </IconButton>
                   </InputAdornment>
                 }
-                {...register("password", { required: true })}
+                {...register('password', { required: true })}
               />
               {/*<FormHelperText id="component-error-text">
                 {passwordError.hasError ? passwordError.msg : ""}
               </FormHelperText>*/}
             </FormControl>
           </Box>
-          <Box sx={{ margin: "20px 0" }}>
+          <Box sx={{ margin: '20px 0' }}>
             <FormControl
               variant="outlined"
               fullWidth
@@ -160,12 +161,12 @@ const PasswordReset = () => {
             >
               <InputLabel
                 htmlFor="outlined-adornment-password"
-                sx={{ top: "-7px" }}
+                sx={{ top: '-7px' }}
               >
                 Re-enter Password
               </InputLabel>
               <OutlinedInput
-                type={showDup ? "text" : "password"}
+                type={showDup ? 'text' : 'password'}
                 size="small"
                 label="Re-enter Password"
                 endAdornment={
@@ -175,22 +176,22 @@ const PasswordReset = () => {
                     </IconButton>
                   </InputAdornment>
                 }
-                {...register("duplicate", { required: true })}
+                {...register('duplicate', { required: true })}
               />
               <FormHelperText id="component-error-text">
-                {dupError.hasError ? dupError.msg : ""}
+                {dupError.hasError ? dupError.msg : ''}
               </FormHelperText>
             </FormControl>
-            <Box sx={{ marginTop: "20px" }}>
+            <Box sx={{ marginTop: '20px' }}>
               <Button
                 variant="contained"
                 type="submit"
                 fullWidth
                 disabled={
                   !(
-                    watch("password") !== "" &&
-                    watch("duplicate") !== "" &&
-                    watch("password") === watch("duplicate")
+                    watch('password') !== '' &&
+                    watch('duplicate') !== '' &&
+                    watch('password') === watch('duplicate')
                   )
                 }
               >
@@ -200,8 +201,8 @@ const PasswordReset = () => {
           </Box>
           <Box
             sx={{
-              fontSize: "14px",
-              marginTop: "15px",
+              fontSize: '14px',
+              marginTop: '15px',
             }}
           >
             <Link to="/">Back to login</Link>

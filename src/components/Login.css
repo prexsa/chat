@@ -106,15 +106,15 @@
   position: relative;
   width: 100%;
 }
-.text-input input[type="text"],
-.text-input input[type="password"] {
+.text-input input[type='text'],
+.text-input input[type='password'] {
   width: 100%;
   box-sizing: border-box;
   padding: 5px 10px;
   font-size: 14px;
 }
-.password-cntr input[type="password"],
-.password-cntr input[type="text"] {
+.password-cntr input[type='password'],
+.password-cntr input[type='text'] {
   width: 100%;
   /*padding: 12px 36px 12px 12px;*/
   box-sizing: border-box;

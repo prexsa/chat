@@ -1,24 +1,25 @@
-import { useContext, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import TextField from "@mui/material/TextField";
-import { SocketContext, FriendContext } from "./Main";
+import React, { useContext, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useForm } from 'react-hook-form';
+import TextField from '@mui/material/TextField';
+import { SocketContext, FriendContext } from './Main';
 // title, isGroup, channelId,
-export const TitleForm = ({ toggleExpand, setToggleExpand }) => {
+const TitleForm = ({ toggleExpand, setToggleExpand }) => {
   const { socket } = useContext(SocketContext);
   const { channel, setFriendList, setChannel } = useContext(FriendContext);
   const { register, handleSubmit, setValue, getValues } = useForm({
-    mode: "onChange",
+    mode: 'onChange',
   });
   // console.log('channel: ', channel)
   const onSubmit = async (data) => {
     // setName(data.name)
     socket.emit(
-      "change_group_title",
+      'change_group_title',
       { channelId: channel.roomId, title: data.name },
-      ({ resp }) => {
+      () => {
         // console.log('resp: ', resp )
         // console.log('channelId: ', channelId)
-        setValue("name", data.name);
+        setValue('name', data.name);
         setChannel((prevState) => ({
           ...prevState,
           title: data.name,
@@ -38,9 +39,9 @@ export const TitleForm = ({ toggleExpand, setToggleExpand }) => {
   useEffect(() => {
     // console.log('value: ', getValues('name'))
     // update group title
-    const value = getValues("name");
+    const value = getValues('name');
     if (value !== channel.title) {
-      setValue("name", channel.title);
+      setValue('name', channel.title);
     }
   }, [channel, getValues, setValue]);
 
@@ -60,7 +61,7 @@ export const TitleForm = ({ toggleExpand, setToggleExpand }) => {
               size="small"
               fullWidth
               autoComplete="off"
-              {...register("name", { value: channel?.title })}
+              {...register('name', { value: channel?.title })}
             />
             <div className="title-form-btn-container">
               <input type="submit" />
@@ -77,6 +78,11 @@ export const TitleForm = ({ toggleExpand, setToggleExpand }) => {
       )}
     </>
   );
+};
+
+TitleForm.propTypes = {
+  toggleExpand: PropTypes.bool,
+  setToggleExpand: PropTypes.func,
 };
 
 export default TitleForm;

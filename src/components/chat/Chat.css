@@ -303,7 +303,7 @@ main header h3 {
   transform: translateY(90%);
 }
 .tooltip-text:after {
-  content: "";
+  content: '';
   position: absolute;
   left: 100%;
   margin-left: -20px;

@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import Auth from "../services/Auth";
-import NoAuthLayout from "./NoAuth.layout";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import Auth from '../services/Auth';
+import NoAuthLayout from './NoAuth.layout';
 import {
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
   InputLabel,
   FormControl,
   FormHelperText,
-} from "@mui/material";
+} from '@mui/material';
 
 /* Check if string is email */
 /*function isEmailValid(str) {
@@ -24,13 +24,13 @@ import {
 function ForgotPassword() {
   const navigate = useNavigate();
   const { register, watch, handleSubmit } = useForm();
-  const [emailError, setEmailError] = useState({ hasError: false, msg: "" });
-  const [success, setSuccess] = useState({ isSuccessful: false, msg: "" });
+  const [emailError, setEmailError] = useState({ hasError: false, msg: '' });
+  const [success, setSuccess] = useState({ isSuccessful: false, msg: '' });
 
   useEffect(() => {
-    const subscription = watch((value, { name, type }) => {
+    const subscription = watch((value) => {
       // console.log({ value, name, type })
-      if (value.username !== "") {
+      if (value.username !== '') {
         // setBtnDisabled(false)
       } else {
         // setBtnDisabled(true)
@@ -43,7 +43,7 @@ function ForgotPassword() {
     console.log({ values });
     // const value = values.username
     // const keyType =  isEmailValid(value) ? 'email' : 'username'
-    const keyType = "username";
+    const keyType = 'username';
     const value = values.email;
 
     const payload = {
@@ -66,14 +66,14 @@ function ForgotPassword() {
   const resetForm = () => {
     // setSuccess({ isSuccessful: false, msg: "" })
     setTimeout(() => {
-      navigate("/");
+      navigate('/');
     }, 5000);
   };
 
   const onErrors = (errors) => console.log({ errors });
 
-  const onFocusHandler = (e) => {
-    setEmailError({ hasError: false, msg: "" });
+  const onFocusHandler = () => {
+    setEmailError({ hasError: false, msg: '' });
   };
 
   if (success.isSuccessful) {
@@ -81,8 +81,8 @@ function ForgotPassword() {
       <NoAuthLayout heading="Success" subheading={success.msg}>
         <Box
           sx={{
-            fontSize: "14px",
-            marginTop: "15px",
+            fontSize: '14px',
+            marginTop: '15px',
           }}
         >
           <Link to="/">Back to login</Link>
@@ -102,7 +102,7 @@ function ForgotPassword() {
         autoComplete="off"
         onSubmit={handleSubmit(handleOnSubmit, onErrors)}
       >
-        <Box sx={{ margin: "20px 0" }}>
+        <Box sx={{ margin: '20px 0' }}>
           <FormControl
             variant="outlined"
             fullWidth
@@ -112,7 +112,7 @@ function ForgotPassword() {
           >
             <InputLabel
               htmlFor="outlined-adornment-password"
-              sx={{ top: "-7px" }}
+              sx={{ top: '-7px' }}
             >
               Enter your email...
             </InputLabel>
@@ -120,13 +120,13 @@ function ForgotPassword() {
               type="text"
               size="small"
               label="Enter your email..."
-              {...register("email", { required: true })}
+              {...register('email', { required: true })}
             />
             <FormHelperText id="component-error-text">
-              {emailError.hasError ? emailError.msg : ""}
+              {emailError.hasError ? emailError.msg : ''}
             </FormHelperText>
           </FormControl>
-          <Box sx={{ marginTop: "20px" }}>
+          <Box sx={{ marginTop: '20px' }}>
             <Button variant="contained" type="submit" fullWidth>
               Send link
             </Button>
@@ -134,8 +134,8 @@ function ForgotPassword() {
         </Box>
         <Box
           sx={{
-            fontSize: "14px",
-            marginTop: "15px",
+            fontSize: '14px',
+            marginTop: '15px',
           }}
         >
           <Link to="/">Back to login</Link>

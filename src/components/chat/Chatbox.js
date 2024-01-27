@@ -1,9 +1,10 @@
-import { useContext, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { SocketContext, MessagesContext } from "./Main";
-import { Box, Button, TextField, InputAdornment } from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
-import FileUpload from "./FileUpload";
+import React, { useContext, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { useForm } from 'react-hook-form';
+import { SocketContext, MessagesContext } from './Main';
+import { Box, Button, TextField, InputAdornment } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import FileUpload from './FileUpload';
 // https://refine.dev/blog/how-to-multipart-file-upload-with-react-hook-form/#create-express-server
 // https://www.commoninja.com/blog/handling-multiple-uploads-react-hook-form#Creating-the-Functions-for-Image-Preview-and-Handling-Form-Submission
 function Chatbox({ userId, from, isGroup, picture }) {
@@ -15,7 +16,7 @@ function Chatbox({ userId, from, isGroup, picture }) {
 
   const onSubmit = (data) => {
     // console.log("data: ", data);
-    if (data.message.trim() === "") return;
+    if (data.message.trim() === '') return;
     // console.log('message; ', message)
     const message = {
       to: userId,
@@ -26,7 +27,7 @@ function Chatbox({ userId, from, isGroup, picture }) {
     // onMessageSend(message);
     // console.log('message: ', message)
     socket.connect();
-    socket.emit("dm", message);
+    socket.emit('dm', message);
     // console.log('message: ', message)
     setMessages((prevMsg) => {
       return [...prevMsg, message];
@@ -34,8 +35,8 @@ function Chatbox({ userId, from, isGroup, picture }) {
   };
 
   const handleOnKeyDown = (e) => {
-    console.log("e: ", e.target.value);
-    if (e.key === "Enter" && e.shiftKey === false) {
+    console.log('e: ', e.target.value);
+    if (e.key === 'Enter' && e.shiftKey === false) {
       // console.log('target value: ', e.target.value)
       setFeedbackToggle(false);
       const feedback = {
@@ -43,12 +44,12 @@ function Chatbox({ userId, from, isGroup, picture }) {
         showFeedback: false,
       };
       socket.connect();
-      socket.emit("feedback_typing", feedback);
+      socket.emit('feedback_typing', feedback);
       handleSubmit(onSubmit)();
     }
   };
 
-  const handleOnChange = (e) => {
+  const handleOnChange = () => {
     // reset textarea back to original height if message body is empty
     // console.log('e; ', e.target.value)
     // setMessage(e.target.value)
@@ -59,7 +60,7 @@ function Chatbox({ userId, from, isGroup, picture }) {
         showFeedback: true,
       };
       socket.connect();
-      socket.emit("feedback_typing", feedback);
+      socket.emit('feedback_typing', feedback);
     }
     /*if(e.target.value === "") {
       e.target.style.height = "43px";
@@ -70,13 +71,13 @@ function Chatbox({ userId, from, isGroup, picture }) {
 
   useEffect(() => {
     if (formState.isSubmitSuccessful) {
-      reset({ message: "" });
+      reset({ message: '' });
     }
   }, [formState, reset]);
 
   return (
     <div className="chatbox-container">
-      <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
         <FileUpload
           userId={userId}
           from={from}
@@ -86,10 +87,10 @@ function Chatbox({ userId, from, isGroup, picture }) {
         <Box
           component="form"
           sx={{
-            p: "2px 4px",
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
+            p: '2px 4px',
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
           }}
           onSubmit={handleSubmit(onSubmit)}
         >
@@ -114,7 +115,7 @@ function Chatbox({ userId, from, isGroup, picture }) {
               ),
             }}
             name="message"
-            {...register("message", {
+            {...register('message', {
               onChange: handleOnChange,
             })}
           />
@@ -124,6 +125,13 @@ function Chatbox({ userId, from, isGroup, picture }) {
     </div>
   );
 }
+
+Chatbox.propTypes = {
+  userId: PropTypes.string,
+  from: PropTypes.string,
+  isGroup: PropTypes.bool,
+  picture: PropTypes.string,
+};
 
 export default Chatbox;
 /*

@@ -1,10 +1,12 @@
-import AddFriendRFH from "./AddFriend.RFH";
-import CreateGroup from "./CreateGroup";
-import Logout from "../Logout";
-import ChannelList from "./ChannelList";
-import { useUserContext } from "../../userContext";
-import Box from "@mui/material/Box";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import React from 'react';
+import PropTypes from 'prop-types';
+import AddFriendRFH from './AddFriend.RFH';
+import CreateGroup from './CreateGroup';
+import Logout from '../Logout';
+import ChannelList from './ChannelList';
+import { useUserContext } from '../../userContext';
+import Box from '@mui/material/Box';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const Sidebar = ({ showDrawer, setShowDrawer }) => {
   const { user } = useUserContext();
@@ -20,13 +22,18 @@ const Sidebar = ({ showDrawer, setShowDrawer }) => {
           {user?.username}
         </div>
       </header>
-      <Box sx={{ margin: "10px", padding: "5px", textAlign: "left" }}>
+      <Box sx={{ margin: '10px', padding: '5px', textAlign: 'left' }}>
         <AddFriendRFH />
         <CreateGroup />
       </Box>
       <ChannelList />
     </aside>
   );
+};
+
+Sidebar.propTypes = {
+  showDrawer: PropTypes.bool,
+  setShowDrawer: PropTypes.func,
 };
 
 export default Sidebar;

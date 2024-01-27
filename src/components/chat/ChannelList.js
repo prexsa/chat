@@ -1,7 +1,8 @@
-import { useContext, useState } from "react";
-import { FriendContext, SocketContext } from "./Main";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import CheckIcon from "@mui/icons-material/Check";
+import React from 'react';
+import { useContext, useState } from 'react';
+import { FriendContext, SocketContext } from './Main';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import CheckIcon from '@mui/icons-material/Check';
 
 function ChannelList() {
   const { friendList, setFriendList, channel, setChannel } =
@@ -15,19 +16,19 @@ function ChannelList() {
     setChannel({
       ...channelObj,
       username: channelObj?.username || channelObj?.title,
-      isGroup: channelObj.hasOwnProperty("roomId"),
+      isGroup: channelObj.hasOwn('roomId'),
       // checks whether channel is a group, group has 'roomId' instead of 'userId'
     });
-    if (channelObj.userId === "" && index === null) return;
+    if (channelObj.userId === '' && index === null) return;
     // get messages for channel
     setFriendList((prevFriends) => {
       return [...prevFriends].map((friend) => {
         if (friend.userId === channelObj.userId) {
           socket.connect();
           // socket.emit('clear_unread_count', { roomId: channelObj.userID })
-          socket.emit("handle_room_selected", {
+          socket.emit('handle_room_selected', {
             channelId: channelObj?.userId || channelObj?.roomId,
-            isGroup: channelObj.hasOwnProperty("roomId"),
+            isGroup: channelObj.hasOwn('roomId'),
           });
         }
         return friend;
@@ -36,14 +37,14 @@ function ChannelList() {
   };
 
   const setBadgeCSS = (value) => {
-    return Number(value) < 10 ? "badge" : "badge double-digits";
+    return Number(value) < 10 ? 'badge' : 'badge double-digits';
   };
   // console.log('friendList: ', friendList)
   return (
     <div className="channel-list-cntr">
       <button
         className="btn btn-link"
-        onClick={() => onChannelSelect({ userId: "" }, null)}
+        onClick={() => onChannelSelect({ userId: '' }, null)}
       >
         Clear Message Panel
       </button>
@@ -58,7 +59,7 @@ function ChannelList() {
             return (
               <li
                 className={`${
-                  activeIndex === index ? "active-list-item" : ""
+                  activeIndex === index ? 'active-list-item' : ''
                 } list-item-cntr`}
                 key={friend?.userId || friend?.roomId}
                 onClick={() => onChannelSelect(friend, index)}
@@ -78,7 +79,7 @@ function ChannelList() {
                         : friend.latestMessage}
                     </p>
                     <div className="newMessages">
-                      {friend.unreadCount === "0" ||
+                      {friend.unreadCount === '0' ||
                       friend.unreadCount === 0 ? (
                         <CheckIcon className="faCheck-img" />
                       ) : (

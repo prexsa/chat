@@ -1,8 +1,9 @@
-import { useContext, useState } from "react";
-import { useUserContext } from "../../userContext";
-import { FriendContext, SocketContext } from "./Main";
-import CloseIcon from "@mui/icons-material/Close";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import React, { useContext, useState } from 'react';
+import PropTypes from 'prop-types';
+import { useUserContext } from '../../userContext';
+import { FriendContext, SocketContext } from './Main';
+import CloseIcon from '@mui/icons-material/Close';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import {
@@ -12,7 +13,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-} from "@mui/material";
+} from '@mui/material';
 
 const LeaveChat = ({ isGroup }) => {
   const { user } = useUserContext();
@@ -28,25 +29,25 @@ const LeaveChat = ({ isGroup }) => {
     }*/
     socket.connect();
     socket.emit(
-      "leave_chat",
+      'leave_chat',
       {
         userId: user.userId,
         channelId: channel?.userId || channel?.roomId,
         isGroup,
       },
-      ({ roomId, isGroup }) => {
+      ({ roomId }) => {
         setFriendList((prevFriends) => {
           return [...prevFriends].filter((friend) => friend.userId !== roomId);
         });
         handleClose();
-        setChannel({ userId: "" });
+        setChannel({ userId: '' });
       },
     );
   };
 
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
-// sx={{ marginLeft: "auto" }}
+  // sx={{ marginLeft: "auto" }}
   return (
     <Box>
       <IconButton onClick={handleShow} size="sm">
@@ -57,14 +58,14 @@ const LeaveChat = ({ isGroup }) => {
         open={show}
         onClose={handleClose}
         fullWidth={true}
-        maxWidth={"xs"}
+        maxWidth={'xs'}
       >
         <DialogTitle>Leave Chat</DialogTitle>
         <IconButton
           aria-label="close"
           onClick={handleClose}
           sx={{
-            position: "absolute",
+            position: 'absolute',
             right: 8,
             top: 8,
             color: (theme) => theme.palette.grey[500],
@@ -88,6 +89,10 @@ const LeaveChat = ({ isGroup }) => {
       </Dialog>
     </Box>
   );
+};
+
+LeaveChat.propTypes = {
+  isGroup: PropTypes.bool,
 };
 
 export default LeaveChat;

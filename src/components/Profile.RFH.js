@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { useUserContext } from "../userContext";
-import Auth from "../services/Auth";
+import React, { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import { useForm } from 'react-hook-form';
+import { useUserContext } from '../userContext';
+import Auth from '../services/Auth';
 import {
   Box,
   Button,
@@ -10,8 +11,8 @@ import {
   IconButton,
   FormControl,
   FormHelperText,
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Profile = ({ editProfile }) => {
   const {
@@ -25,28 +26,28 @@ const Profile = ({ editProfile }) => {
     getValues,
     reset,
     formState: { dirtyFields },
-  } = useForm({ mode: "onChange" });
+  } = useForm({ mode: 'onChange' });
   const [profile, setProfile] = useState({
-    username: "",
-    firstname: "",
-    lastname: "",
-    password: "",
-    email: "",
+    username: '',
+    firstname: '',
+    lastname: '',
+    password: '',
+    email: '',
   });
   const [errors, setErrors] = useState({
-    username: { hasError: false, msg: "" },
-    firstname: { hasError: false, msg: "" },
-    lastname: { hasError: false, msg: "" },
-    password: { hasError: false, msg: "" },
-    email: { hasError: false, msg: "" },
+    username: { hasError: false, msg: '' },
+    firstname: { hasError: false, msg: '' },
+    lastname: { hasError: false, msg: '' },
+    password: { hasError: false, msg: '' },
+    email: { hasError: false, msg: '' },
   });
   // console.log('hello there')
   const formatErrorStr = (str) => {
-    let newStr = "";
-    if (str === "lastname") {
-      newStr = "Last name";
-    } else if (str === "firstname") {
-      newStr = "First name";
+    let newStr = '';
+    if (str === 'lastname') {
+      newStr = 'Last name';
+    } else if (str === 'firstname') {
+      newStr = 'First name';
     } else {
       newStr = str.charAt(0).toUpperCase() + str.slice(1);
     }
@@ -98,7 +99,7 @@ const Profile = ({ editProfile }) => {
   const handleShow = () => setShow(!show);
 
   const handleOnSubmit = async (values) => {
-    console.log("value: ", values);
+    console.log('value: ', values);
     // check updated form values with default values
     const dirtyKeys = Object.keys(dirtyFields);
     // console.log('dirtyKeys; ', dirtyKeys)
@@ -117,22 +118,22 @@ const Profile = ({ editProfile }) => {
     const payload = { ...valuesToUpdate, userId };
     const resp = await Auth.updateUserProfile(payload);
     // if accessToken is part of the resp, update localStorage.
-    if (Object.keys(resp.data).includes("accessToken")) {
-      localStorage.setItem("accessToken", resp.data.accessToken);
+    if (Object.keys(resp.data).includes('accessToken')) {
+      localStorage.setItem('accessToken', resp.data.accessToken);
     }
     // update profile state
     setProfile((prevState) => ({ ...prevState, ...values }));
     // check if the user changed their username
-    console.log("boolean: ", Object.keys(values).includes("username"));
-    if (Object.keys(values).includes("username")) {
+    console.log('boolean: ', Object.keys(values).includes('username'));
+    if (Object.keys(values).includes('username')) {
       setUser((prevState) => ({ ...prevState, username: values.username }));
     }
   };
   const onFocusHandler = (e) => {
     console.log(
-      "onFocusHandler: ",
+      'onFocusHandler: ',
       e.target.name,
-      "value: ",
+      'value: ',
       getValues(e.target.name),
     );
   };
@@ -142,7 +143,7 @@ const Profile = ({ editProfile }) => {
     // console.log('onBlurHandler: ', e.target.name, 'value: ', getValues(e.target.name))
     // console.log(profile[e.target.name])
     // if user clear value from a field, set errors
-    if (getValues(e.target.name) === "") {
+    if (getValues(e.target.name) === '') {
       setErrors({
         ...errors,
         [e.target.name]: {
@@ -157,7 +158,7 @@ const Profile = ({ editProfile }) => {
     reset();
     Object.entries(profile).map(([key, val]) => setValue(key, val));
     const resetFields = Object.keys(profile).reduce(
-      (acc, cv) => ({ ...acc, [cv]: { hasError: false, msg: "" } }),
+      (acc, cv) => ({ ...acc, [cv]: { hasError: false, msg: '' } }),
       {},
     );
     // console.log('resetFields: ', resetFields)
@@ -179,7 +180,7 @@ const Profile = ({ editProfile }) => {
   };
 
   const inputBorderColor = !editProfile
-    ? "transparent"
+    ? 'transparent'
     : '"rgba(0, 0, 0, 0.23)"';
 
   return (
@@ -191,13 +192,13 @@ const Profile = ({ editProfile }) => {
     >
       <Box
         sx={{
-          margin: "20px 0",
-          display: "flex",
-          alignItems: "baseline",
-          columnGap: "10px",
+          margin: '20px 0',
+          display: 'flex',
+          alignItems: 'baseline',
+          columnGap: '10px',
         }}
       >
-        <Box sx={{ width: "100px" }}>Username:</Box>
+        <Box sx={{ width: '100px' }}>Username:</Box>
         <FormControl
           // variant="outlined"
           fullWidth
@@ -209,7 +210,7 @@ const Profile = ({ editProfile }) => {
           {!editProfile ? (
             <Box>
               {profile?.username === undefined ? (
-                <Box sx={{ color: "darkgrey" }}>missing...</Box>
+                <Box sx={{ color: 'darkgrey' }}>missing...</Box>
               ) : (
                 profile.username
               )}
@@ -220,16 +221,16 @@ const Profile = ({ editProfile }) => {
                 type="text"
                 size="small"
                 sx={{
-                  "& .MuiOutlinedInput-notchedOutline": {
+                  '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: inputBorderColor,
                   },
                 }}
                 // disabled
                 // label="Password"
-                {...register("username", { required: true })}
+                {...register('username', { required: true })}
               />
               <FormHelperText id="component-error-text">
-                {errors.username.hasError ? errors.username.msg : ""}
+                {errors.username.hasError ? errors.username.msg : ''}
               </FormHelperText>
             </>
           )}
@@ -237,13 +238,13 @@ const Profile = ({ editProfile }) => {
       </Box>
       <Box
         sx={{
-          margin: "20px 0",
-          display: "flex",
-          alignItems: "baseline",
-          columnGap: "10px",
+          margin: '20px 0',
+          display: 'flex',
+          alignItems: 'baseline',
+          columnGap: '10px',
         }}
       >
-        <Box sx={{ width: "100px" }}>First Name:</Box>
+        <Box sx={{ width: '100px' }}>First Name:</Box>
         <FormControl
           variant="outlined"
           fullWidth
@@ -255,7 +256,7 @@ const Profile = ({ editProfile }) => {
           {!editProfile ? (
             <Box>
               {profile?.firstname === undefined ? (
-                <Box sx={{ color: "darkgrey" }}>missing...</Box>
+                <Box sx={{ color: 'darkgrey' }}>missing...</Box>
               ) : (
                 profile.firstname
               )}
@@ -266,10 +267,10 @@ const Profile = ({ editProfile }) => {
                 type="text"
                 size="small"
                 // label="Password"
-                {...register("firstname", { required: true })}
+                {...register('firstname', { required: true })}
               />
               <FormHelperText id="component-error-text">
-                {errors.firstname.hasError ? errors.firstname.msg : ""}
+                {errors.firstname.hasError ? errors.firstname.msg : ''}
               </FormHelperText>
             </>
           )}
@@ -277,13 +278,13 @@ const Profile = ({ editProfile }) => {
       </Box>
       <Box
         sx={{
-          margin: "20px 0",
-          display: "flex",
-          alignItems: "baseline",
-          columnGap: "10px",
+          margin: '20px 0',
+          display: 'flex',
+          alignItems: 'baseline',
+          columnGap: '10px',
         }}
       >
-        <Box sx={{ width: "100px" }}>Last Name:</Box>
+        <Box sx={{ width: '100px' }}>Last Name:</Box>
         <FormControl
           variant="outlined"
           fullWidth
@@ -295,7 +296,7 @@ const Profile = ({ editProfile }) => {
           {!editProfile ? (
             <Box>
               {profile?.lastname === undefined ? (
-                <Box sx={{ color: "darkgrey" }}>missing...</Box>
+                <Box sx={{ color: 'darkgrey' }}>missing...</Box>
               ) : (
                 profile.lastname
               )}
@@ -306,10 +307,10 @@ const Profile = ({ editProfile }) => {
                 type="text"
                 size="small"
                 // label="Password"
-                {...register("lastname", { required: true })}
+                {...register('lastname', { required: true })}
               />
               <FormHelperText id="component-error-text">
-                {errors.lastname.hasError ? errors.lastname.msg : ""}
+                {errors.lastname.hasError ? errors.lastname.msg : ''}
               </FormHelperText>
             </>
           )}
@@ -317,13 +318,13 @@ const Profile = ({ editProfile }) => {
       </Box>
       <Box
         sx={{
-          margin: "20px 0",
-          display: "flex",
-          alignItems: "baseline",
-          columnGap: "10px",
+          margin: '20px 0',
+          display: 'flex',
+          alignItems: 'baseline',
+          columnGap: '10px',
         }}
       >
-        <Box sx={{ width: "100px" }}>Password:</Box>
+        <Box sx={{ width: '100px' }}>Password:</Box>
         <FormControl
           variant="outlined"
           fullWidth
@@ -335,7 +336,7 @@ const Profile = ({ editProfile }) => {
           {!editProfile ? (
             <Box>
               {profile?.password === undefined ? (
-                <Box sx={{ color: "darkgrey" }}>missing...</Box>
+                <Box sx={{ color: 'darkgrey' }}>missing...</Box>
               ) : (
                 profile.password
               )}
@@ -343,7 +344,7 @@ const Profile = ({ editProfile }) => {
           ) : (
             <>
               <OutlinedInput
-                type={show ? "text" : "password"}
+                type={show ? 'text' : 'password'}
                 size="small"
                 // label="Password"
                 endAdornment={
@@ -353,10 +354,10 @@ const Profile = ({ editProfile }) => {
                     </IconButton>
                   </InputAdornment>
                 }
-                {...register("password", { required: true })}
+                {...register('password', { required: true })}
               />
               <FormHelperText id="component-error-text">
-                {errors.password.hasError ? errors.password.msg : ""}
+                {errors.password.hasError ? errors.password.msg : ''}
               </FormHelperText>
             </>
           )}
@@ -364,13 +365,13 @@ const Profile = ({ editProfile }) => {
       </Box>
       <Box
         sx={{
-          margin: "20px 0",
-          display: "flex",
-          alignItems: "baseline",
-          columnGap: "10px",
+          margin: '20px 0',
+          display: 'flex',
+          alignItems: 'baseline',
+          columnGap: '10px',
         }}
       >
-        <Box sx={{ width: "100px" }}>Email:</Box>
+        <Box sx={{ width: '100px' }}>Email:</Box>
         <FormControl
           variant="outlined"
           fullWidth
@@ -382,7 +383,7 @@ const Profile = ({ editProfile }) => {
           {!editProfile ? (
             <Box>
               {profile?.email === undefined ? (
-                <Box sx={{ color: "darkgrey" }}>missing...</Box>
+                <Box sx={{ color: 'darkgrey' }}>missing...</Box>
               ) : (
                 profile.email
               )}
@@ -393,17 +394,17 @@ const Profile = ({ editProfile }) => {
                 type="text"
                 size="small"
                 // label="Password"
-                {...register("email", { required: true })}
+                {...register('email', { required: true })}
               />
               <FormHelperText id="component-error-text">
-                {errors.email.hasError ? errors.email.msg : ""}
+                {errors.email.hasError ? errors.email.msg : ''}
               </FormHelperText>
             </>
           )}
         </FormControl>
       </Box>
       {!editProfile ? null : (
-        <Box sx={{ marginTop: "20px", marginLeft: "100px" }}>
+        <Box sx={{ marginTop: '20px', marginLeft: '100px' }}>
           <Button variant="contained" type="submit">
             Update
           </Button>
@@ -414,6 +415,10 @@ const Profile = ({ editProfile }) => {
       )}
     </Box>
   );
+};
+
+Profile.propTypes = {
+  editProfile: PropTypes.bool,
 };
 
 export default Profile;

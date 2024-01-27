@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { useUserContext } from "../userContext";
-import Auth from "../services/Auth";
-import NoAuthLayout from "./NoAuth.layout";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { useUserContext } from '../userContext';
+import Auth from '../services/Auth';
+import NoAuthLayout from './NoAuth.layout';
 import {
   Box,
   Button,
@@ -11,7 +11,7 @@ import {
   InputLabel,
   FormControl,
   FormHelperText,
-} from "@mui/material";
+} from '@mui/material';
 
 const Username = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Username = () => {
   const { setUser } = useUserContext();
   const [usernameError, setUsernameError] = useState({
     hasError: false,
-    msg: "",
+    msg: '',
   });
 
   const handleOnSubmit = async (values) => {
@@ -30,9 +30,9 @@ const Username = () => {
     const resp = await Auth.addUsername(values);
     if (resp.data.isSuccessful) {
       // console.log('response: ', response.data)
-      localStorage.setItem("accessToken", resp.data.accessToken);
+      localStorage.setItem('accessToken', resp.data.accessToken);
       setUser({ ...resp.data });
-      navigate("/chat");
+      navigate('/chat');
     } else {
       setUsernameError({
         hasError: true,
@@ -43,16 +43,16 @@ const Username = () => {
 
   const onErrors = (errors) => console.error(errors);
 
-  const onFocusHandler = (e) => {
-    setUsernameError({ hasError: false, msg: "" });
+  const onFocusHandler = () => {
+    setUsernameError({ hasError: false, msg: '' });
   };
 
   useEffect(() => {
     // check if accessToken exist, no need to parse it
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem('accessToken');
     // console.log("state; ", accessToken);
     if (accessToken === null) {
-      navigate("/");
+      navigate('/');
     }
   }, [state, navigate]);
 
@@ -67,7 +67,7 @@ const Username = () => {
         autoComplete="off"
         onSubmit={handleSubmit(handleOnSubmit, onErrors)}
       >
-        <Box sx={{ margin: "20px 0" }}>
+        <Box sx={{ margin: '20px 0' }}>
           <FormControl
             variant="outlined"
             fullWidth
@@ -77,7 +77,7 @@ const Username = () => {
           >
             <InputLabel
               htmlFor="outlined-adornment-password"
-              sx={{ top: "-7px" }}
+              sx={{ top: '-7px' }}
             >
               Create username...
             </InputLabel>
@@ -85,16 +85,16 @@ const Username = () => {
               type="text"
               size="small"
               label="Create username..."
-              {...register("username", {
-                required: "A username required",
+              {...register('username', {
+                required: 'A username required',
               })}
             />
             <FormHelperText id="component-error-text">
-              {usernameError.hasError ? usernameError.msg : ""}
+              {usernameError.hasError ? usernameError.msg : ''}
             </FormHelperText>
           </FormControl>
         </Box>
-        <Box sx={{ marginTop: "20px" }}>
+        <Box sx={{ marginTop: '20px' }}>
           <Button variant="contained" type="submit" fullWidth>
             Confirm
           </Button>

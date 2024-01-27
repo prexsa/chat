@@ -1,11 +1,11 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useContext, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 // import { Formik, Form, Field } from 'formik';
 // import * as Yup from 'yup';
 // import { useSocketContext } from './socketContext';
 // import socket from '../../socket';
-import { SocketContext } from "./Chat";
-import { MessagesContext } from "./Chat";
+import { SocketContext } from './Chat';
+import { MessagesContext } from './Chat';
 
 /*const MessageSchema = Yup.object({
   message: Yup.string().min(1).max(255)
@@ -23,20 +23,20 @@ function Chatbox({ userID, from }) {
     formState,
     formState: { errors, isSubmitSuccessful },
   } = useForm();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const onSubmit = ({ message }) => {
-    if (message.trim() === "") return;
+    if (message.trim() === '') return;
     // console.log('message; ', message)
   };
   const handleOnKeyDown = (e) => {
-    if (e.key === "Enter" && e.shiftKey === false) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
       // console.log('target value: ', e.target.value)
       handleSubmit(onSubmit)();
     }
     // resize textarea as message body increases
     const textareaHeight = parseInt(e.target.style.height);
     e.target.style.height = `${e.target.scrollHeight}px`;
-    e.target.style.position = "relative";
+    e.target.style.position = 'relative';
     // e.target.style.top = `-${Math.floor(e.target.style.fontSize / 2)}px`;
     // e.target.style.top = `${textareaHeight}-${e.target.scrollHeight}px`;
     // console.log('textareaHeight: ', textareaHeight)
@@ -48,21 +48,21 @@ function Chatbox({ userID, from }) {
     // console.log('e: ', e.target.value)
     // reset textarea back to original height if message body is empty
     setMessage(e.target.value);
-    if (e.target.value === "") {
-      e.target.style.height = "43px";
-      e.target.style.position = "relative";
-      e.target.style.top = "0px";
+    if (e.target.value === '') {
+      e.target.style.height = '43px';
+      e.target.style.position = 'relative';
+      e.target.style.top = '0px';
     }
   };
 
   useEffect(() => {
-    textareaRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
-    console.log("textareaRef: ", textareaRef.cu);
+    textareaRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    console.log('textareaRef: ', textareaRef.cu);
   }, [message]);
 
   useEffect(() => {
     if (formState.isSubmitSuccessful) {
-      reset({ message: "" });
+      reset({ message: '' });
     }
   }, [formState, reset]);
 
@@ -73,7 +73,7 @@ function Chatbox({ userID, from }) {
         type="text"
         placeholder="type..."
         onKeyDown={handleOnKeyDown}
-        {...register("message", {
+        {...register('message', {
           onChange: handleOnChange,
         })}
       />

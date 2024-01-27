@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { Carousel } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { Carousel } from 'react-bootstrap';
 
 function NoTransitionCarousel({ activeIndex, images }) {
   const [index, setIndex] = useState(0);
@@ -36,5 +37,10 @@ function NoTransitionCarousel({ activeIndex, images }) {
     </Carousel>
   );
 }
+
+NoTransitionCarousel.propTypes = {
+  activeIndex: PropTypes.number,
+  images: PropTypes.array,
+};
 
 export default NoTransitionCarousel;
