@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useContext, useState } from 'react';
 import { useUserContext } from '../../userContext';
 import { FriendContext } from './Main';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -11,7 +10,7 @@ import TitleForm from './TitleForm';
 import MessagePanel from './MessagePanel';
 import LeaveChat from './LeaveChat';
 
-function Chat({ isGroup }) {
+const Chat = ({ isGroup }) => {
   const { user } = useUserContext();
   const { channel } = useContext(FriendContext);
   // const [picture, setPicture] = useState(null);
@@ -92,7 +91,7 @@ function Chat({ isGroup }) {
       </footer>
     </div>
   );
-}
+};
 
 Chat.propTypes = {
   isGroup: PropTypes.bool,

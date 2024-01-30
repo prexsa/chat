@@ -1,5 +1,4 @@
-import React from 'react';
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { FriendContext, SocketContext } from './Main';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CheckIcon from '@mui/icons-material/Check';

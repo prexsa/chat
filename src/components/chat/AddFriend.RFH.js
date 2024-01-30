@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FriendContext, SocketContext } from './Main';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';

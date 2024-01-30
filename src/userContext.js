@@ -31,6 +31,7 @@ const UserProvider = ({ children }) => {
       .catch(() => {
         // console.log('UserContext error: ', err.response.data)
         localStorage.setItem('accessToken', null);
+        console.log('UserContext err ', err);
         return;
       });
   }, [navigate]);
@@ -53,6 +54,10 @@ UserProvider.propTypes = {
 
 export const useUserContext = () => {
   return useContext(UserContext);
+};
+
+UserProvider.propTypes = {
+  children: PropTypes.element,
 };
 
 export { UserContext, UserProvider };

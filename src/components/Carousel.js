@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Carousel } from 'react-bootstrap';
 
-function NoTransitionCarousel({ activeIndex, images }) {
+const NoTransitionCarousel = ({ activeIndex, images }) => {
   const [index, setIndex] = useState(0);
   // console.log('activeIndex: ', activeIndex)
   const handleSelect = (selectedIndex) => {
@@ -36,7 +36,7 @@ function NoTransitionCarousel({ activeIndex, images }) {
         })}
     </Carousel>
   );
-}
+};
 
 NoTransitionCarousel.propTypes = {
   activeIndex: PropTypes.number,
