@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { useUserContext } from "../userContext";
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { useUserContext } from '../userContext';
+
 import {
   Box,
   Button,
@@ -47,8 +48,8 @@ const Login = () => {
     console.log("data: ", data);
     if (data.isSuccessful) {
       // console.log("fdjslkf;j: ", response.data.hasOwnProperty("username"))
-      localStorage.setItem("accessToken", data.accessToken);
-      if (data.hasOwnProperty("email")) {
+      localStorage.setItem('accessToken', data.accessToken);
+      if (data.hasOwn('email')) {
         // console.log('response: ', response.data)
         setUser({ ...data });
         navigate("/chat");
@@ -174,7 +175,7 @@ const Login = () => {
             marginTop: "15px",
           }}
         >
-          Don't have an account? <Link to="/register">Sign up here</Link>
+          Don&apos;t have an account? <Link to="/register">Sign up here</Link>
         </Box>
       </Box>
     </NoAuthLayout>
