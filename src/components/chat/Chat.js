@@ -1,13 +1,15 @@
-import { useContext, useState } from "react";
-import { useUserContext } from "../../userContext";
-import { FriendContext } from "./Main";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import VerticallyCenteredModal from "../VerticallyCenteredModal";
-import Chatbox from "./Chatbox";
-import AddToGroup from "./AddToGroup";
-import TitleForm from "./TitleForm";
-import MessagePanel from "./MessagePanel";
-import LeaveChat from "./LeaveChat";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { useContext, useState } from 'react';
+import { useUserContext } from '../../userContext';
+import { FriendContext } from './Main';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import VerticallyCenteredModal from '../VerticallyCenteredModal';
+import Chatbox from './Chatbox';
+import AddToGroup from './AddToGroup';
+import TitleForm from './TitleForm';
+import MessagePanel from './MessagePanel';
+import LeaveChat from './LeaveChat';
 
 function Chat({ isGroup }) {
   const { user } = useUserContext();
@@ -21,7 +23,7 @@ function Chat({ isGroup }) {
   // console.log('channel: ', channel)
   const extractAllImagesFromMessages = async (selectedImgSrc, messages) => {
     const images = await messages.filter(
-      (message) => message.hasOwnProperty("isImage") === true,
+      (message) => message.hasOwn('isImage') === true,
     );
     let index = 0;
     for (let [key, value] of images.entries()) {
@@ -34,13 +36,13 @@ function Chat({ isGroup }) {
     setImageIndex(index);
   };
 
-  if (channel.userId === "" || channel.roomId === "") {
+  if (channel.userId === '' || channel.roomId === '') {
     return (
       <div className="message-panel-container">
         <h2>Choose a conversation</h2>
         <h3>
-          Click on an existing chat or click "New Chat" to create a new
-          conversation
+          Click on an existing chat or click &quot;New Chat&quot; to create a
+          new conversation
         </h3>
       </div>
     );
@@ -57,7 +59,7 @@ function Chat({ isGroup }) {
       />
       <header
         className={`${
-          toggleExpand ? "message-panel-header expand" : "message-panel-header"
+          toggleExpand ? 'message-panel-header expand' : 'message-panel-header'
         }`}
       >
         <LeaveChat isGroup={isGroup} />
@@ -91,6 +93,10 @@ function Chat({ isGroup }) {
     </div>
   );
 }
+
+Chat.propTypes = {
+  isGroup: PropTypes.bool,
+};
 
 export default Chat;
 /*

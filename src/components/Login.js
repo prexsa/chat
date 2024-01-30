@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { Formik, Form } from "formik";
-import * as Yup from "yup";
-import axios from "axios";
-import { MyTextInput, MyTextInputPassword } from "./TextInput";
-import { useUserContext } from "../userContext";
-import "./Login.css";
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
+import axios from 'axios';
+import { MyTextInput, MyTextInputPassword } from './TextInput';
+import { useUserContext } from '../userContext';
+import './Login.css';
 // https://codesandbox.io/s/formik-v2-tutorial-added-textarea-ujz18?file=/src/index.js
 const LoginSchema = Yup.object().shape({
   username: Yup.string()
-    .min(3, "Too short!")
-    .max(50, "Too long!")
-    .required("Required"),
-  password: Yup.string().required("Required"),
+    .min(3, 'Too short!')
+    .max(50, 'Too long!')
+    .required('Required'),
+  password: Yup.string().required('Required'),
 });
 
 function Login() {
@@ -24,7 +24,7 @@ function Login() {
     <div className="centered-cntr">
       <h2>Log in</h2>
       <Formik
-        initialValues={{ username: "", password: "" }}
+        initialValues={{ username: '', password: '' }}
         validateSchema={LoginSchema}
         onSubmit={async (values, actions) => {
           // console.log('onSubmit: ', values)
@@ -36,7 +36,7 @@ function Login() {
             withCredentials: true
           })*/
           const response = await axios.post(
-            "http://localhost:9000/api/auth/login",
+            'http://localhost:9000/api/auth/login',
             values,
             {
               withCredentials: true,
@@ -47,10 +47,10 @@ function Login() {
             setError(response.data.status);
           } else {
             // console.log('response: ', response)
-            localStorage.setItem("accessToken", response.data.accessToken);
+            localStorage.setItem('accessToken', response.data.accessToken);
             // localStorage.setItem('user', JSON.stringify(response.data))
             setUser(response.data);
-            navigate("/chat");
+            navigate('/chat');
           }
         }}
       >

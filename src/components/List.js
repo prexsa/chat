@@ -1,15 +1,13 @@
-import Box from "@mui/material/Box";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/Delete";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function InteractiveList({
-  members,
-  groupAdmin,
-  onClickDelete,
-}) {
+const InteractiveList = ({ members, groupAdmin, onClickDelete }) => {
   // const onClickDelete = () => console.log("Manifest your goals and dreams into reality");
   // console.log('groupAdmin: ', groupAdmin)
   // console.log('members; ', members)
@@ -40,4 +38,12 @@ export default function InteractiveList({
       </List>
     </Box>
   );
-}
+};
+
+InteractiveList.propTypes = {
+  members: PropTypes.array,
+  groupAdmin: PropTypes.object,
+  onClickDelete: PropTypes.func,
+};
+
+export default InteractiveList;

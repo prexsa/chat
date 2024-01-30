@@ -1,7 +1,9 @@
-import { Modal } from "react-bootstrap";
-import Carousel from "./Carousel";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Modal } from 'react-bootstrap';
+import Carousel from './Carousel';
 
-function VerticallyCenteredModal(props) {
+const VerticallyCenteredModal = ({ activeindex, images, ...props }) => {
   // console.log('props activeIndex; ', props.activeindex)
   return (
     <Modal
@@ -17,13 +19,18 @@ function VerticallyCenteredModal(props) {
         </Modal.Title>*/}
       </Modal.Header>
       <Modal.Body bsPrefix="custom-modal-body">
-        <Carousel activeIndex={props.activeindex} images={props.images} />
+        <Carousel activeIndex={activeindex} images={images} />
       </Modal.Body>
       {/*<Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>
       </Modal.Footer>*/}
     </Modal>
   );
-}
+};
+
+VerticallyCenteredModal.propTypes = {
+  activeindex: PropTypes.number,
+  images: PropTypes.array,
+};
 
 export default VerticallyCenteredModal;

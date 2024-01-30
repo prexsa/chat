@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import "./Login.css";
+import React, { useState, useMemo } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import axios from 'axios';
+import './Login.css';
 
 function Signup() {
   const navigate = useNavigate();
@@ -16,14 +16,14 @@ function Signup() {
 
   const onSubmit = async (data) => {
     // e.preventDefault();
-    console.log("data: ", data);
+    console.log('data: ', data);
     const response = await axios.post(
-      "http://localhost:9000/api/auth/signup",
+      'http://localhost:9000/api/auth/signup',
       data,
     );
-    console.log("response: ", response);
-    localStorage.setItem("accessToken", response.data.accessToken);
-    navigate("/chat", { state: { username: response.data.username } });
+    console.log('response: ', response);
+    localStorage.setItem('accessToken', response.data.accessToken);
+    navigate('/chat', { state: { username: response.data.username } });
   };
 
   /*const handleOnChange = (e) => {
@@ -32,7 +32,7 @@ function Signup() {
 
   const handleEmailCheck = async (e) => {
     const value = e.target.value;
-    console.log("value: ", value);
+    console.log('value: ', value);
     // const response = await axios.post()
   };
 
@@ -46,12 +46,12 @@ function Signup() {
           <input
             type="email"
             id="email"
-            aria-invalid={errors.email ? "true" : "false"}
-            {...register("email", {
-              required: "required",
+            aria-invalid={errors.email ? 'true' : 'false'}
+            {...register('email', {
+              required: 'required',
               pattern: {
                 value: /\S+@\S+\.\S+/,
-                message: "Entered value does not match email format",
+                message: 'Entered value does not match email format',
               },
             })}
           />
@@ -62,8 +62,8 @@ function Signup() {
           <input
             type="text"
             id="username"
-            {...register("username", {
-              required: "required",
+            {...register('username', {
+              required: 'required',
             })}
           />
           {errors.username && (
@@ -75,11 +75,11 @@ function Signup() {
           <input
             type="password"
             id="password"
-            {...register("password", {
-              required: "required",
+            {...register('password', {
+              required: 'required',
               minLength: {
                 value: 5,
-                message: "Min length is 5",
+                message: 'Min length is 5',
               },
             })}
           />

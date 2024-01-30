@@ -47,6 +47,5 @@ const Login = () => {
       <LoginForm />
     </Box>
   );
-};
 
 export default Login;

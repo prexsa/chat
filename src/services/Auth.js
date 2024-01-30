@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios from 'axios';
 
-let SERVER_ENDPOINT = "";
+let SERVER_ENDPOINT = '';
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === 'development') {
   SERVER_ENDPOINT = process.env.REACT_APP_SERVER_URL;
 } else {
   SERVER_ENDPOINT = process.env.CLIENT_URL;

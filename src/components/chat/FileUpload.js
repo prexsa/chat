@@ -1,14 +1,15 @@
-import { useContext } from "react";
-import { SocketContext, MessagesContext } from "./Main";
-import { IconButton } from "@mui/material";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
+import React, { useContext } from 'react';
+import PropTypes from 'prop-types';
+import { SocketContext, MessagesContext } from './Main';
+import { IconButton } from '@mui/material';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 // https://socket.io/how-to/upload-a-file
 /*
   Might be a better idea load file via "http post" request instead
 */
 
-const FileUpload = ({ userId, from, isGroup, picture }) => {
+const FileUpload = ({ userId, from, isGroup }) => {
   const { socket } = useContext(SocketContext);
   const { setMessages } = useContext(MessagesContext);
 
@@ -22,8 +23,8 @@ const FileUpload = ({ userId, from, isGroup, picture }) => {
       isGroup,
     };
     // console.log("fileObj: ", file);
-    socket.emit("upload_file", fileObj, (resp) => {
-      console.log("file upload cb: ", { resp });
+    socket.emit('upload_file', fileObj, (resp) => {
+      console.log('file upload cb: ', { resp });
       const { message } = resp;
       // console.log('msg; ', message)
       setMessages((prevMsg) => {
@@ -33,7 +34,7 @@ const FileUpload = ({ userId, from, isGroup, picture }) => {
   };
 
   const onChangeUpload = (e) => {
-    console.log("e: ", e.target.files[0]);
+    console.log('e: ', e.target.files[0]);
     const file = e.target.files[0];
     // handleSetPicture(URL.createObjectURL(file));
     handleFileUpload(file);
@@ -44,7 +45,7 @@ const FileUpload = ({ userId, from, isGroup, picture }) => {
   return (
     <label htmlFor="upload">
       <input
-        style={{ display: "none" }}
+        style={{ display: 'none' }}
         type="file"
         accept="image/png, image/jpeg"
         name="upload_file"
@@ -59,6 +60,12 @@ const FileUpload = ({ userId, from, isGroup, picture }) => {
       </IconButton>
     </label>
   );
+};
+
+FileUpload.propTypes = {
+  userId: PropTypes.string,
+  from: PropTypes.string,
+  isGroup: PropTypes.bool,
 };
 
 export default FileUpload;

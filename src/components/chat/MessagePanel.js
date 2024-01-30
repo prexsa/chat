@@ -1,8 +1,9 @@
-import { useContext, useEffect, useRef } from "react";
-import { MessagesContext } from "./Main";
-import { Box } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ImageNotSupportedIcon from "@mui/icons-material/ImageNotSupported";
+import React, { useContext, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+import { MessagesContext } from './Main';
+import { Box } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ImageNotSupportedIcon from '@mui/icons-material/ImageNotSupported';
 
 const MessagePanel = ({
   user,
@@ -22,7 +23,7 @@ const MessagePanel = ({
   }, [messages, feedback]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ block: "end", inline: "nearest" });
+    bottomRef.current?.scrollIntoView({ block: 'end', inline: 'nearest' });
   }, []);
 
   const displayModal = (imgSrc) => {
@@ -40,16 +41,16 @@ const MessagePanel = ({
           // check message if isImage key exist
           const isYou = message.from === null || message.from === user.userId;
           return (
-            <li key={idx} className={`${isYou ? "you" : ""}`}>
+            <li key={idx} className={`${isYou ? 'you' : ''}`}>
               <div
                 className={`icon-message-container ${
-                  isYou ? "flex-direction-row-reverse" : "flex-direction-row"
+                  isYou ? 'flex-direction-row-reverse' : 'flex-direction-row'
                 }`}
               >
                 <AccountCircleIcon />
                 <div className="message-container">
                   <div>
-                    {message.hasOwnProperty("isImage") ? (
+                    {message.hasOwn('isImage') ? (
                       message.urlLinkWorks ? (
                         <img
                           className="file-upload-image"
@@ -60,7 +61,7 @@ const MessagePanel = ({
                       ) : (
                         <>
                           <ImageNotSupportedIcon />
-                          <Box sx={{ color: "#808080", fontSize: "10px" }}>
+                          <Box sx={{ color: '#808080', fontSize: '10px' }}>
                             Image not available
                           </Box>
                         </>
@@ -91,12 +92,20 @@ const MessagePanel = ({
           </div>
         </li>*/}
         <li ref={bottomRef} className="feedback-typing">
-          {feedback ? `typing...` : ""}
+          {feedback ? `typing...` : ''}
         </li>
         <li ref={bottomRef}></li>
       </ul>
     </div>
   );
+};
+
+MessagePanel.propTypes = {
+  user: PropTypes.object,
+  channel: PropTypes.string,
+  isGroup: PropTypes.bool,
+  setShowModal: PropTypes.func,
+  extractAllImagesFromMessages: PropTypes.func,
 };
 
 export default MessagePanel;

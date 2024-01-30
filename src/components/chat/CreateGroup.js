@@ -1,11 +1,11 @@
-import { useState, useContext, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { FriendContext, SocketContext } from "./Main";
-import GroupIcon from "@mui/icons-material/Group";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
+import React, { useState, useContext, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { FriendContext, SocketContext } from './Main';
+import GroupIcon from '@mui/icons-material/Group';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import {
   Box,
   Button,
@@ -13,9 +13,9 @@ import {
   InputLabel,
   FormControl,
   FormHelperText,
-} from "@mui/material";
+} from '@mui/material';
 
-function CreateGroup({ friends }) {
+function CreateGroup() {
   const {
     register,
     handleSubmit,
@@ -24,22 +24,22 @@ function CreateGroup({ friends }) {
   } = useForm();
   const { setFriendList } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
-  const [showResp, setShowResp] = useState("");
+  const [showResp, setShowResp] = useState('');
   const [show, setShow] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
-      setShowResp("");
+      setShowResp('');
     }, 2000);
   }, [showResp]);
 
   const handleOnSubmit = (data) => {
     // console.log('data: ', data)
-    if (data.name.trim() === "") return;
+    if (data.name.trim() === '') return;
     socket.connect();
-    socket.emit("create_group", data, (resp) => {
-      console.log("resp: ", resp);
-      reset({ name: "" });
+    socket.emit('create_group', data, (resp) => {
+      console.log('resp: ', resp);
+      reset({ name: '' });
       setShow(false);
       setFriendList((prev) => {
         return [resp, ...prev];
@@ -65,14 +65,14 @@ function CreateGroup({ friends }) {
       <Dialog open={show} onClose={handleClose}>
         <DialogTitle>Create group</DialogTitle>
         <DialogContent>
-          <Box sx={{ color: "red" }}>{showResp}</Box>
+          <Box sx={{ color: 'red' }}>{showResp}</Box>
           <Box
             component="form"
             noValidate
             autoComplete="off"
             onSubmit={handleSubmit(handleOnSubmit, onErrors)}
           >
-            <Box sx={{ margin: "20px 0", width: "400px" }}>
+            <Box sx={{ margin: '20px 0', width: '400px' }}>
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -82,7 +82,7 @@ function CreateGroup({ friends }) {
               >
                 <InputLabel
                   htmlFor="outlined-adornment-password"
-                  sx={{ top: "-7px" }}
+                  sx={{ top: '-7px' }}
                 >
                   Add a title
                 </InputLabel>
@@ -90,14 +90,14 @@ function CreateGroup({ friends }) {
                   type="text"
                   size="small"
                   label="Username or email"
-                  {...register("name", { required: true })}
+                  {...register('name', { required: true })}
                 />
                 <FormHelperText id="component-error-text">
-                  {errors?.name ? errors?.name.message : ""}
+                  {errors?.name ? errors?.name.message : ''}
                 </FormHelperText>
               </FormControl>
             </Box>
-            <Box sx={{ marginTop: "20px" }}>
+            <Box sx={{ marginTop: '20px' }}>
               <Button variant="contained" type="submit" fullWidth>
                 Create
               </Button>

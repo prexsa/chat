@@ -1,8 +1,9 @@
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import React from 'react';
+import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
 // import socket from '../socket';
-import { SocketContext } from "./chat/Main";
+import { SocketContext } from './chat/Main';
 
 function Logout() {
   const navigate = useNavigate();
@@ -11,13 +12,13 @@ function Logout() {
   const handleLogout = () => {
     /*const sessionID = localStorage.getItem("sessionID");
     localStorage.removeItem("sessionID")*/
-    localStorage.removeItem("accessToken");
+    localStorage.removeItem('accessToken');
     // console.log('logoff')
     socket.connect();
-    socket.emit("logoff");
+    socket.emit('logoff');
     // logoff();
     // socket.emit('logoff', sessionID)
-    navigate("/");
+    navigate('/');
     // window.location.reload();
   };
 
@@ -28,7 +29,7 @@ function Logout() {
       onClick={() => handleLogout()}
       disableElevation
       fullWidth
-      sx={{ backgroundColor: "grey", borderRadius: "0" }}
+      sx={{ backgroundColor: 'grey', borderRadius: '0' }}
     >
       logout
     </Button>

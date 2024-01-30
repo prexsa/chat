@@ -1,8 +1,9 @@
-import { useState, useContext, useEffect, useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { FriendContext, SocketContext } from "./Main";
-import GroupAddIcon from "@mui/icons-material/GroupAdd";
-import CloseIcon from "@mui/icons-material/Close";
+import React from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { FriendContext, SocketContext } from './Main';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
@@ -15,8 +16,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-} from "@mui/material";
-import List from "../List";
+} from '@mui/material';
+import List from '../List';
 
 const AddToGroup = () => {
   const {
@@ -27,19 +28,19 @@ const AddToGroup = () => {
   } = useForm();
   const { channel, setFriendList } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
-  const [showResp, setShowResp] = useState("");
+  const [showResp, setShowResp] = useState('');
   const [show, setShow] = useState(false);
-  const [groupAdmin, setGroupAdmin] = useState({ userId: "", username: "" });
+  const [groupAdmin, setGroupAdmin] = useState({ userId: '', username: '' });
   const [members, setMembers] = useState([]);
   // console.log({ groupDetails })
   useEffect(() => {
     setTimeout(() => {
-      setShowResp("");
+      setShowResp('');
     }, 2000);
   }, [showResp]);
 
   useEffect(() => {
-    socket.on("exit_group_chat", ({ roomId, userId }) => {
+    socket.on('exit_group_chat', ({ roomId }) => {
       // console.log('exit_group_chat: ', { roomId, userId })
       // remove group chat from user's channel list
       setFriendList((prevFriends) => {
@@ -49,15 +50,15 @@ const AddToGroup = () => {
         return [...prevMembers].filter(member => member.userId !== userId)
       })*/
     });
-    return () => socket.off("exit_group_chat");
+    return () => socket.off('exit_group_chat');
   }, [socket, setFriendList]);
 
   const populateGroupMembers = useCallback(
     (roomId) => {
       // console.log('roomId: ', roomId)
-      console.log("channel: ", channel);
+      console.log('channel: ', channel);
       socket.connect();
-      socket.emit("get_group_members", { roomId }, ({ members }) => {
+      socket.emit('get_group_members', { roomId }, ({ members }) => {
         // console.log('get_group_members ', members)
         const ownerId = channel.owner;
         const parsedOutOwnerId = members.filter(
@@ -72,7 +73,7 @@ const AddToGroup = () => {
           };
         });
 
-        console.log("members: ", format4Selected);
+        console.log('members: ', format4Selected);
         // setSelected(format4Selected)
         setMembers(format4Selected);
       });
@@ -81,13 +82,13 @@ const AddToGroup = () => {
   );
 
   const handleOnSubmit = (data) => {
-    console.log("handleOnSubmit; ", data);
+    console.log('handleOnSubmit; ', data);
     socket.connect();
     socket.emit(
-      "add_members",
+      'add_members',
       { roomId: channel.roomId, name: data.name },
       (resp) => {
-        console.log("resp: ", resp);
+        console.log('resp: ', resp);
         if (resp.isFound) {
           const member = { username: resp.username, userId: resp.userId };
           setMembers((prev) => [...prev, member]);
@@ -97,7 +98,7 @@ const AddToGroup = () => {
     // const membersLen = members.length;
     // const changeIndex = data.multiselect.map((user, index) => ({ id: membersLen + 1 + index }))
     // setMembers([...members, ...data])
-    reset({ name: "" });
+    reset({ name: '' });
     // resetValues();
   };
 
@@ -106,10 +107,10 @@ const AddToGroup = () => {
     setMembers(members.filter((member, idx) => idx !== index));
     socket.connect();
     socket.emit(
-      "leave_group",
+      'leave_group',
       { channelId: channel.roomId, userId },
       ({ resp }) => {
-        console.log("resp: ", resp);
+        console.log('resp: ', resp);
       },
     );
   };
@@ -118,14 +119,14 @@ const AddToGroup = () => {
     // console.log('channel: ', channel)
     socket.connect();
     socket.emit(
-      "get_group_admin_info",
+      'get_group_admin_info',
       { ownerId: channel.owner },
       ({ username }) => {
         // console.log('username: ', username)
         setGroupAdmin({ userId: channel.owner, username });
       },
     );
-    return () => socket.off("get_group_admin_info");
+    return () => socket.off('get_group_admin_info');
   }, [channel, socket]);
 
   // console.log('calling')
@@ -153,7 +154,7 @@ const AddToGroup = () => {
           aria-label="close"
           onClick={handleClose}
           sx={{
-            position: "absolute",
+            position: 'absolute',
             right: 8,
             top: 8,
             color: (theme) => theme.palette.grey[500],
@@ -162,14 +163,14 @@ const AddToGroup = () => {
           <CloseIcon />
         </IconButton>
         <DialogContent>
-          <Box sx={{ color: "red" }}>{showResp}</Box>
+          <Box sx={{ color: 'red' }}>{showResp}</Box>
           <Box
             component="form"
             noValidate
             autoComplete="off"
             onSubmit={handleSubmit(handleOnSubmit, onErrors)}
           >
-            <Box sx={{ margin: "20px 0", width: "400px" }}>
+            <Box sx={{ margin: '20px 0', width: '400px' }}>
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -179,7 +180,7 @@ const AddToGroup = () => {
               >
                 <InputLabel
                   htmlFor="outlined-adornment-password"
-                  sx={{ top: "-7px" }}
+                  sx={{ top: '-7px' }}
                 >
                   Username or email
                 </InputLabel>
@@ -187,14 +188,14 @@ const AddToGroup = () => {
                   type="text"
                   size="small"
                   label="Username or email"
-                  {...register("name", { required: true })}
+                  {...register('name', { required: true })}
                 />
                 <FormHelperText id="component-error-text">
-                  {errors?.name ? errors?.name.message : ""}
+                  {errors?.name ? errors?.name.message : ''}
                 </FormHelperText>
               </FormControl>
             </Box>
-            <Box sx={{ marginTop: "20px" }}>
+            <Box sx={{ marginTop: '20px' }}>
               <Button variant="contained" type="submit" fullWidth>
                 Add
               </Button>
@@ -202,10 +203,10 @@ const AddToGroup = () => {
           </Box>
           <Box
             sx={{
-              marginTop: "25px",
-              borderTop: "1px solid lightgrey",
-              borderRadius: "3px",
-              padding: "10px 5px",
+              marginTop: '25px',
+              borderTop: '1px solid lightgrey',
+              borderRadius: '3px',
+              padding: '10px 5px',
             }}
           >
             <h4>Members</h4>
