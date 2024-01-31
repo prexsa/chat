@@ -64,8 +64,6 @@ const Login = () => {
       sx={{
         height: '100%',
         width: '100%',
-        background:
-          'radial-gradient(circle at 0% 0.5%, rgb(241, 241, 242) 0.1%, rgb(224, 226, 228) 100.2%)',
       }}
     >
       <Box
