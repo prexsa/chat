@@ -71,18 +71,3 @@ function Login() {
 }
 
 export default Login;
-
-/*<div className="form-field">
-  <label htmlFor="username">Username</label>
-  <Field name="username" />
-  {errors.username && touched.username ? (
-    <div className="feedback">{errors.username}</div>
-  ) : null}
-</div>
-<div className="form-field">
-  <label htmlFor="password">Password</label>
-  <Field name="password" />
-  {errors.password && touched.password ? (
-    <div className="feedback">{errors.password}</div>
-  ) : null}
-</div>*/

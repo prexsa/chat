@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useUserContext } from '../userContext';
@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Auth from '../services/Auth';
-import NoAuthLayout from './NoAuth.layout';
+// import NoAuthLayout from './NoAuth.layout';
 // import './Login.css';
 
 const Login = () => {
@@ -35,12 +35,6 @@ const Login = () => {
 
   const handleOnSubmit = async (values) => {
     console.log('onSubmit', values);
-    // check str if it's an email or a username
-    /*const emailFormat =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    const keyType = emailFormat.test(values.username) ? "email" : "username";
-    values.keyType = keyType;*/
-    // console.log('values: ', values)
     const resp = await Auth.login(values);
     // console.log('resp: ', resp)
     const { data } = resp;
@@ -48,7 +42,7 @@ const Login = () => {
     if (data.isSuccessful) {
       // console.log("fdjslkf;j: ", response.data.hasOwnProperty("username"))
       localStorage.setItem('accessToken', data.accessToken);
-      if (data.hasOwnProperty('email')) {
+      if (data.hasOwn('email')) {
         // console.log('response: ', response.data)
         setUser({ ...data });
         navigate('/chat');
@@ -96,7 +90,7 @@ const Login = () => {
   };
 
   return (
-    <NoAuthLayout heading={'Login'} subheading={'Login with your email'}>
+    <>
       <Box
         component="form"
         noValidate
@@ -174,74 +168,17 @@ const Login = () => {
             marginTop: '15px',
           }}
         >
-          Don't have an account? <Link to="/register">Sign up here</Link>
+          Don&apos;t have an account? <Link to="/register">Sign up here</Link>
         </Box>
       </Box>
-    </NoAuthLayout>
+    </>
   );
 };
 
 export default Login;
-
-// https://dribbble.com/shots/14223554-chat-Login-screen
-// https://dribbble.com/shots/14396669-Chat-app-Login
-
 /*
-<div className="centered-cntr">
-    <h3>Log in</h3>
-    {error ? (
-      <div className="text-danger">{error}</div>
-      )
-    : null}
-    <form onSubmit={handleSubmit(handleOnSubmit, onErrors)}>
-      <div className="form-field floating-label-cntr">
-        <input
-          className="floating-input" 
-          type="text" 
-          placeholder="Username or Email"
-          {...register("inputValue", { required: true })} 
-        />
-        <label className="floating-label" htmlFor="inputValue">Username or Email</label>
-      </div>
-      <small className="text-danger">
-        {errors?.inputValue && errors.inputValue.message}
-      </small>
-      <div className="form-field floating-label-cntr">
-        <input
-          className="floating-input" 
-          type={show ? "text" : "password"} 
-          placeholder="Password"
-          {...register("password", { required: true })} 
-        />
-        <label className="floating-label" htmlFor="password">Password</label>
-        <FaEyeSlash className='fa-eye' onClick={() => setShow(!show)} />
-      </div>
-      <small className="text-danger">
-        {errors?.password && errors.password.message}
-      </small>
-      <div className="form-field marginTop20">
-        <button type="submit" className="btn btn-primary btn-sm">Login</button>
-      </div>
-    </form>
-    <Link to="/forgot-password">Forgot password?</Link>
-    <div className="link-container">
-      Don't have an account? <Link to="/register">Sign up here</Link>
-    </div>
-  </div>
-*/
+    <NoAuthLayout heading={'Login'} subheading={'Login with your email'}>
+    */
 /*
-<Box sx={{ margin: '10px 0'}}>
-  <TextField
-    variant="outlined"
-    label="Username or email"
-    type="text"
-    fullWidth
-    size="small"
-    sx={{ margin: '15px 0' }}
-    helperText={usrNameError.hasError ? usrNameError.msg : ''}
-    error={usrNameError.hasError}
-    // onFocus={onFocusHandler}
-    {...register('username', { required: true })}
-  />
-</Box>
-*/
+    </NoAuthLayout>
+    */

@@ -28,7 +28,7 @@ const UserProvider = ({ children }) => {
         setUser(data);
         navigate('/chat');
       })
-      .catch(() => {
+      .catch((err) => {
         // console.log('UserContext error: ', err.response.data)
         localStorage.setItem('accessToken', null);
         console.log('UserContext err ', err);
