@@ -12,15 +12,6 @@ import {
   FormHelperText,
 } from '@mui/material';
 
-/* Check if string is email */
-/*function isEmailValid(str) {
-  // Regular expression to check if string is email
-  const regexExp =
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
-
-  return regexExp.test(str);
-}*/
-
 function ForgotPassword() {
   const navigate = useNavigate();
   const { register, watch, handleSubmit } = useForm();
@@ -92,59 +83,44 @@ function ForgotPassword() {
   }
 
   return (
-    <NoAuthLayout
-      heading="Trouble logging in?"
-      subheading="Enter your email and we will send you a link to your email, to get back into your account."
+    <Box
+      component="form"
+      noValidate
+      autoComplete="off"
+      onSubmit={handleSubmit(handleOnSubmit, onErrors)}
     >
-      <Box
-        component="form"
-        noValidate
-        autoComplete="off"
-        onSubmit={handleSubmit(handleOnSubmit, onErrors)}
-      >
-        <Box sx={{ margin: '20px 0' }}>
-          <FormControl
-            variant="outlined"
-            fullWidth
-            error={emailError.hasError}
-            name="email"
-            onFocus={onFocusHandler}
-          >
-            <InputLabel
-              htmlFor="outlined-adornment-password"
-              sx={{ top: '-7px' }}
-            >
-              Enter your email...
-            </InputLabel>
-            <OutlinedInput
-              type="text"
-              size="small"
-              label="Enter your email..."
-              {...register('email', { required: true })}
-            />
-            <FormHelperText id="component-error-text">
-              {emailError.hasError ? emailError.msg : ''}
-            </FormHelperText>
-          </FormControl>
-          <Box sx={{ marginTop: '20px' }}>
-            <Button variant="contained" type="submit" fullWidth>
-              Send link
-            </Button>
-          </Box>
-        </Box>
-        <Box
-          sx={{
-            fontSize: '14px',
-            marginTop: '15px',
-          }}
+      <Box sx={{ margin: '20px 0' }}>
+        <FormControl
+          variant="outlined"
+          fullWidth
+          error={emailError.hasError}
+          name="email"
+          onFocus={onFocusHandler}
         >
-          <Link to="/">Back to login</Link>
+          <InputLabel
+            htmlFor="outlined-adornment-password"
+            sx={{ top: '-7px' }}
+          >
+            Enter your email...
+          </InputLabel>
+          <OutlinedInput
+            type="text"
+            size="small"
+            label="Enter your email..."
+            {...register('email', { required: true })}
+          />
+          <FormHelperText id="component-error-text">
+            {emailError.hasError ? emailError.msg : ''}
+          </FormHelperText>
+        </FormControl>
+        <Box sx={{ marginTop: '20px' }}>
+          <Button variant="contained" type="submit" fullWidth>
+            Send link
+          </Button>
         </Box>
       </Box>
-    </NoAuthLayout>
+    </Box>
   );
 }
 
 export default ForgotPassword;
-
-// https://medium.com/@TusharKanjariya/input-floating-labels-using-only-pure-css-80d5f99831e3
