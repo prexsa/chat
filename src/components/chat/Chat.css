@@ -1,4 +1,4 @@
-.chat-container {
+/*.chat-container {
   width: 100%;
   height: inherit;
   background: #ffffff;
@@ -6,7 +6,7 @@
   font-size: 0;
   overflow: hidden;
   box-shadow: inset 0px 0px 20px 1px rgb(250, 251, 252);
-}
+}*/
 .username {
   padding: 5px 10px;
 }
@@ -14,7 +14,7 @@
   cursor: pointer;
   background-color: lightsteelblue;
 }
-aside {
+#aside {
   width: 260px;
   /*padding: 0 10px;*/
   height: inherit;
@@ -23,14 +23,14 @@ aside {
   font-size: 15px;
   vertical-align: top;
 }
-main {
+#main {
   width: calc(100% - 260px);
   height: inherit;
   display: inline-block;
   font-size: 15px;
   vertical-align: top;
 }
-aside header {
+#aside header {
   padding: 20px 15px;
 }
 .sidebar-header {

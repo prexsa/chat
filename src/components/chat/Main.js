@@ -1,5 +1,13 @@
+/* eslint-disable */
 import React, { createContext, useState, useEffect } from 'react';
-import { Box, IconButton, Button } from '@mui/material';
+import {
+  Box,
+  IconButton,
+  Button,
+  Drawer,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Chat from './Chat';
@@ -55,17 +63,49 @@ const Main = () => {
   );
 
   const editToggleHandler = () => setEditProfile(!editProfile);
-
+  const drawerWidth = 300;
   return (
     <FriendContext.Provider
       value={{ friendList, setFriendList, channel, setChannel, username }}
     >
       <SocketContext.Provider value={{ socket }}>
-        <div className="chat-container">
-          <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
-            <Sidebar showDrawer={showDrawer} setShowDrawer={setShowDrawer} />
-            <main>
-              {showDrawer ? (
+        <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
+          <Box sx={{ display: 'flex' }}>
+            <Box
+              component="nav"
+              sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+              aria-label="mailbox folders"
+            >
+              {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+
+              <Drawer
+                variant="permanent"
+                sx={{
+                  display: { xs: 'none', sm: 'block' },
+                  '& .MuiDrawer-paper': {
+                    boxSizing: 'border-box',
+                    width: drawerWidth,
+                  },
+                }}
+                open
+              >
+                <Sidebar
+                  showDrawer={showDrawer}
+                  setShowDrawer={setShowDrawer}
+                />
+              </Drawer>
+            </Box>
+            <Box
+              component="main"
+              sx={{
+                flexGrow: 1,
+                p: 3,
+                width: { sm: `calc(100% - ${drawerWidth}px)` },
+              }}
+            >
+              <Chat isGroup={channel.isGroup} />
+              {/*
+              showDrawer ? (
                 <Box sx={{ textAlign: 'Left', padding: '50px' }}>
                   <Button
                     aria-label="back"
@@ -97,13 +137,16 @@ const Main = () => {
                 </Box>
               ) : (
                 <Chat isGroup={channel.isGroup} />
-              )}
-            </main>
-          </MessagesContext.Provider>
-        </div>
+              )
+              */}
+            </Box>
+          </Box>
+        </MessagesContext.Provider>
       </SocketContext.Provider>
     </FriendContext.Provider>
   );
 };
 
 export default Main;
+
+// https://codesandbox.io/p/sandbox/zen-silence-njx9xx?file=%2Fsrc%2FDemo.js%3A33%2C25
