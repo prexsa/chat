@@ -9,6 +9,7 @@ import AddToGroup from './AddToGroup';
 import TitleForm from './TitleForm';
 import MessagePanel from './MessagePanel';
 import LeaveChat from './LeaveChat';
+import EmptyChat from './EmptyChat';
 
 const Chat = ({ isGroup }) => {
   const { user } = useUserContext();
@@ -36,15 +37,7 @@ const Chat = ({ isGroup }) => {
   };
 
   if (channel.userId === '' || channel.roomId === '') {
-    return (
-      <div className="message-panel-container">
-        <h2>Choose a conversation</h2>
-        <h3>
-          Click on an existing chat or click &quot;New Chat&quot; to create a
-          new conversation
-        </h3>
-      </div>
-    );
+    return <EmptyChat />;
   }
 
   return (
