@@ -2,14 +2,13 @@ import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useUserContext } from '../../userContext';
 import { FriendContext } from './Main';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import VerticallyCenteredModal from '../VerticallyCenteredModal';
 import Chatbox from './Chatbox';
-import AddToGroup from './AddToGroup';
-import TitleForm from './TitleForm';
+
 import MessagePanel from './MessagePanel';
-import LeaveChat from './LeaveChat';
+
 import EmptyChat from './EmptyChat';
+import ChatHeader from './ChatHeader';
 
 const Chat = ({ isGroup }) => {
   const { user } = useUserContext();
@@ -18,7 +17,6 @@ const Chat = ({ isGroup }) => {
   const [showModal, setShowModal] = useState(false);
   const [images, setImages] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
-  const [toggleExpand, setToggleExpand] = useState(false);
 
   // console.log('channel: ', channel)
   const extractAllImagesFromMessages = async (selectedImgSrc, messages) => {
@@ -36,7 +34,7 @@ const Chat = ({ isGroup }) => {
     setImageIndex(index);
   };
 
-  if (channel.userId === '' || channel.roomId === '') {
+  if (channel.userId === 'SDFSD' || channel.roomId === '') {
     return <EmptyChat />;
   }
 
@@ -49,22 +47,7 @@ const Chat = ({ isGroup }) => {
         images={images}
         activeindex={imageIndex}
       />
-      <header
-        className={`${
-          toggleExpand ? 'message-panel-header expand' : 'message-panel-header'
-        }`}
-      >
-        <LeaveChat isGroup={isGroup} />
-        {isGroup && <AddToGroup />}
-        <AccountCircleIcon className="channel-img" />
-        <TitleForm
-          toggleExpand={toggleExpand}
-          setToggleExpand={setToggleExpand}
-        />
-        {/*<p style={{ marginLeft: "auto" }}>
-          id: {channel?.userId || channel?.roomId}
-        </p>*/}
-      </header>
+      <ChatHeader />
       <MessagePanel
         user={user}
         channel={channel}
