@@ -40,7 +40,7 @@ const MessagePanel = ({
     <div className="message-box-container">
       <ul className="chat">
         <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          <ListItem alignItems="flex-start">
+          <ListItem sx={{ alignItems: 'flex-start' }}>
             <ListItemAvatar>
               <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
             </ListItemAvatar>
@@ -76,9 +76,9 @@ const MessagePanel = ({
           <ListItem
             sx={{
               display: 'flex',
-              alignItems: 'flex-end',
+              alignItems: 'flex-start',
               justifyContent: 'flex-end',
-              columnGap: '5px',
+              // columnGap: '5px',
             }}
           >
             <Box>
@@ -108,7 +108,9 @@ const MessagePanel = ({
                 Can&apos;t wait for dinner tonight, I&apos;m soo hungry!!!
               </Typography>
             </Box>
-            <ListItemAvatar>
+            <ListItemAvatar
+              sx={{ display: 'flex', justifyContent: 'flex-end' }}
+            >
               <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
             </ListItemAvatar>
           </ListItem>
