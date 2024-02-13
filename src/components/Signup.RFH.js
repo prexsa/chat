@@ -18,8 +18,6 @@ const Signup = () => {
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm({ shouldFocusError: false });
   const [show, setShow] = useState(false);
-  // const [error, setError] = useState(null);
-
   const [emailError, setEmailError] = useState({ hasError: false, msg: '' });
   const [passwordError, setPasswordError] = useState({
     hasError: false,
@@ -36,7 +34,7 @@ const Signup = () => {
     const resp = await Auth.signup(values);
     console.log('response: ', resp.data);
     if (resp.data.isSuccessful) {
-      // localStorage.setItem("accessToken", resp.data.accessToken);
+      // localStorage.setItem('accessToken', resp.data.accessToken);
       // setUser(resp.data);
       navigate('/create-username', { state: { user: resp.data } });
     } else {
@@ -215,7 +213,7 @@ const Signup = () => {
       </Box>
       <Box sx={{ marginTop: '20px' }}>
         <Button variant="contained" type="submit" fullWidth>
-          Login
+          Register
         </Button>
         <Button variant="text" type="reset" onClick={resetHandler} fullWidth>
           Reset

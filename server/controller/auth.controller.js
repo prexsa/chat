@@ -1,9 +1,9 @@
-const User = require("../model/auth.model");
-const bcrypt = require("bcryptjs");
-const crypto = require("crypto");
-const { sendMail } = require("./nodemailer.controller");
+const User = require('../model/auth.model');
+const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const { sendMail } = require('./nodemailer.controller');
 const JWT_SECRET = process.env.JWT_SECRET;
-const { jwtSign, jwtVerify, getJwt } = require("./jwt.controller");
+const { jwtSign, jwtVerify, getJwt } = require('./jwt.controller');
 
 exports.verifyToken = (req, res) => {
   const token = getJwt(req);
@@ -14,12 +14,12 @@ exports.verifyToken = (req, res) => {
       // console.log('decoded: ', decoded)
       res.status(200).send({
         loggedIn: true,
-        username: decoded.username,
+        // email: decoded.email,
         userId: decoded.userId,
       });
     })
     .catch((err) => {
-      console.log("check token error: ", err);
+      console.log('check token error: ', err);
       if (err) res.status(401).send({ loggedIn: false, status: err });
     });
 };
@@ -34,27 +34,27 @@ exports.login = (req, res) => {
       if (!user)
         return res.status(200).send({
           isSuccessful: false,
-          message: "Email not found",
-          errorType: "email",
+          message: 'Email not found',
+          errorType: 'email',
         });
       const passwordIsValid = bcrypt.compareSync(password, user.password);
       if (!passwordIsValid) {
         return res.status(200).send({
           accessToken: null,
-          message: "Invalid password!",
+          message: 'Invalid password!',
           isSuccessful: false,
-          errorType: "password",
+          errorType: 'password',
         });
       }
       const payload = {
         id: user._id,
-        username: user?.username,
+        // email: user?.email,
         userId: user.userId,
       };
       // console.log('payload: ', payload)
-      jwtSign(payload, JWT_SECRET, { expiresIn: "7d" }).then((token) => {
+      jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then((token) => {
         res.status(200).send({
-          username: user?.username,
+          // email: user?.email,
           accessToken: token,
           userId: user.userId,
           isSuccessful: true,
@@ -89,9 +89,9 @@ exports.signup = async (req, res) => {
           // username: user.username,
           userId: user.userId,
         };
-        jwtSign(payload, JWT_SECRET, { expiresIn: "7d" }).then((token) => {
+        jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then((token) => {
           res.send({
-            status: "User was registered successfully!",
+            status: 'User was registered successfully!',
             // username: username,
             accessToken: token,
             userId: user.userId,
@@ -100,19 +100,19 @@ exports.signup = async (req, res) => {
         });
       })
       .catch((err) => {
-        console.log("signup error: ", err);
+        console.log('signup error: ', err);
         res.status(500).send({ status: err, isSuccessful: false });
       });
   } else {
     res.status(200).send({
       isSuccessful: false,
-      message: "This is email is already taken.",
-      errorType: "email",
+      message: 'This is email is already taken.',
+      errorType: 'email',
     });
     return;
   }
 };
-
+/*
 exports.addUsername = async (req, res) => {
   const { userId, username } = req.body;
   // console.log('req.body: ', req.body)
@@ -129,7 +129,7 @@ exports.addUsername = async (req, res) => {
       userId: userId,
     };
     // console.log('payload: ', payload)
-    jwtSign(payload, JWT_SECRET, { expiresIn: "7d" }).then((token) => {
+    jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then((token) => {
       res.status(200).send({
         username: username,
         accessToken: token,
@@ -138,10 +138,10 @@ exports.addUsername = async (req, res) => {
       });
     });
   } else {
-    res.status(200).send({ isSuccessful: false, message: "Username is taken" });
+    res.status(200).send({ isSuccessful: false, message: 'Username is taken' });
   }
 };
-
+*/
 exports.getUserProfile = async (req, res) => {
   const { userId } = req.body;
   // console.log('userId: ', userId)
@@ -169,7 +169,7 @@ exports.updateUserProfile = async (req, res) => {
   );
   // console.log('user: ', user)
   // if user changes their username, re-issue a new token because the username is part of the JWT payload
-  if (Object.keys(req.body).includes("username")) {
+  if (Object.keys(req.body).includes('username')) {
     // create a new payload
     const payload = {
       id: user._id,
@@ -177,7 +177,7 @@ exports.updateUserProfile = async (req, res) => {
       userId: userId,
     };
     // console.log('payload: ', payload)
-    jwtSign(payload, JWT_SECRET, { expiresIn: "7d" }).then((token) => {
+    jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then((token) => {
       res.status(200).send({
         username: req.body.username,
         accessToken: token,
@@ -192,14 +192,14 @@ exports.updateUserProfile = async (req, res) => {
 
 exports.sendResetLink = async (req, res) => {
   const { keyType, value } = req.body;
-  console.log("req.body: ", req.body);
+  console.log('req.body: ', req.body);
   // findOne returns an obj
   const hasRecord = await User.findOne({ [keyType]: value });
-  console.log("hasRecord: ", hasRecord);
+  console.log('hasRecord: ', hasRecord);
   if (hasRecord === null) {
     res.status(200).send({
       isSuccessful: false,
-      message: "User does not exist in our system.",
+      message: 'User does not exist in our system.',
     });
     return;
   }
@@ -208,7 +208,7 @@ exports.sendResetLink = async (req, res) => {
   sendMail(payload);
   res.status(200).send({
     isSuccessful: true,
-    message: "An email has been sent to reset your password.",
+    message: 'An email has been sent to reset your password.',
   });
 };
 
