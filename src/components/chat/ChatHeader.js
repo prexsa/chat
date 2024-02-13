@@ -5,8 +5,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import TitleForm from './TitleForm';
 import AddToGroup from './AddToGroup';
 import LeaveChat from './LeaveChat';
-import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
-import VideoCallIcon from '@mui/icons-material/VideoCall';
+// import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
+// import VideoCallIcon from '@mui/icons-material/VideoCall';
 
 const ChatHeader = ({ isGroup }) => {
   const [toggleExpand, setToggleExpand] = useState(false);
@@ -28,6 +28,7 @@ const ChatHeader = ({ isGroup }) => {
       {/*<p style={{ marginLeft: "auto" }}>
           id: {channel?.userId || channel?.roomId}
         </p>*/}
+      {/* 
       <Box sx={{ '& > :not(style)': { m: 0.5 }, marginLeft: 'auto' }}>
         <LocalPhoneOutlinedIcon
           onClick={() => console.log('handlePhoneCall')}
@@ -80,6 +81,7 @@ const ChatHeader = ({ isGroup }) => {
           }}
         />
       </Box>
+      */}
     </Box>
   );
 };
