@@ -123,10 +123,10 @@ const MessagePanel = ({
     <div className="message-box-container">
       <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
         {selectedRoom.messages.map((message, index) => {
-          console.log('messages: ', message);
+          console.log('messages: ', message, ' user.userId', user.userId);
           return message.userId === user.userId
-            ? renderUserMessage(message)
-            : renderRoommatesMessage(message);
+            ? renderRoommatesMessage(message)
+            : renderUserMessage(message);
         })}
 
         <ListItem ref={bottomRef} className="feedback-typing">
