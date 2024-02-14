@@ -38,6 +38,11 @@ const Chat = ({ isGroup }) => {
     return <EmptyChat />;
   }
 
+  const displayRoommatesName = (roommates) => {
+    const filtered = roommates.filter((mate) => mate.userId !== user.userId);
+    return filtered[0].username;
+  };
+
   return (
     <div className="message-panel-container">
       {/* The Modal */}
@@ -47,7 +52,7 @@ const Chat = ({ isGroup }) => {
         images={images}
         activeindex={imageIndex}
       />
-      <ChatHeader roomName={selectedRoom.name} />
+      <ChatHeader roomName={displayRoommatesName(selectedRoom.mates)} />
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <Box
           sx={{

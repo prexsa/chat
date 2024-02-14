@@ -12,8 +12,13 @@ const RoomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  name: {
-    type: String,
+  mates: {
+    type: [
+      {
+        userId: String,
+        username: String,
+      },
+    ],
     required: true,
   },
 });

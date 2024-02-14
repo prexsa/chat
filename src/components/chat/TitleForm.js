@@ -11,7 +11,7 @@ const TitleForm = ({ toggleExpand, setToggleExpand }) => {
   const { register, handleSubmit, setValue, getValues } = useForm({
     mode: 'onChange',
   });
-  console.log('channel: ', selectedRoom);
+  // console.log('channel: ', selectedRoom);
   const onSubmit = async (data) => {
     // setName(data.name)
     socket.emit(

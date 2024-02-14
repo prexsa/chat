@@ -40,7 +40,7 @@ const Sidebar = () => {
         </span>
         <MoreVertIcon sx={{ marginLeft: 'auto' }} />
       </Box>
-      <ChannelList />
+      <ChannelList user={user} />
     </Box>
   );
 };

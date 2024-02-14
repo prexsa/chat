@@ -1,5 +1,6 @@
 /* eslint-disable */
 import React, { useContext, useState } from 'react';
+import PropTypes from 'prop-types';
 import { FriendContext, SocketContext } from './Main';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
@@ -28,7 +29,7 @@ const movies = [
   { label: 'Pulp Fiction', year: 1994 },
 ];
 
-function ChannelList() {
+function ChannelList({ user }) {
   const { roomList, setRoomList, selectedRoom, setSelectedRoom } =
     useContext(FriendContext);
   const { socket } = useContext(SocketContext);
@@ -36,7 +37,7 @@ function ChannelList() {
   const [isActive, setIsActive] = useState('');
 
   const handleChannelSelect = (room) => {
-    console.log('handleChannelSelect, ', room);
+    // console.log('handleChannelSelect, ', room);
     setIsActive(room.roomId);
     setSelectedRoom(room);
   };
@@ -87,6 +88,11 @@ function ChannelList() {
       </Box>
     );
   }*/
+
+  const displayRoommatesName = (roommates) => {
+    const filtered = roommates.filter((mate) => mate.userId !== user.userId);
+    return filtered[0].username;
+  };
 
   return (
     <div className="channel-list-cntr">
@@ -173,7 +179,7 @@ function ChannelList() {
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                  primary={`${room.name}`}
+                  primary={displayRoommatesName(room.mates)}
                   secondary={'Secondary text'}
                 />
                 <ListItemText
@@ -194,6 +200,10 @@ function ChannelList() {
     </div>
   );
 }
+
+ChannelList.propTypes = {
+  user: PropTypes.object,
+};
 
 export default ChannelList;
 
