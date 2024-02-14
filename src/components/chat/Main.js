@@ -33,6 +33,7 @@ const Main = () => {
     unreadCount: '',
     lastestMessage: '',
     isGroup: false,
+    mates: [],
   });
   const [username, setUsername] = useState('');
   const [feedback, setFeedback] = useState(false);

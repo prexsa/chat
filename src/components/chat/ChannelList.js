@@ -43,7 +43,7 @@ function ChannelList({ user }) {
   };
 
   // console.log('roomList: ', roomList);
-  const onChannelSelect = (channelObj, index) => {
+  /*const onChannelSelect = (channelObj, index) => {
     // console.log('channel: ', channelObj)
     // setActiveIndex(index);
     setSelectedRoom({
@@ -67,7 +67,7 @@ function ChannelList({ user }) {
         return friend;
       });
     });
-  };
+  };*/
   /*
   const setBadgeCSS = (value) => {
     return Number(value) < 10 ? 'badge' : 'badge double-digits';
@@ -141,7 +141,7 @@ function ChannelList({ user }) {
       </Box>
       <button
         className="btn btn-link"
-        onClick={() => onChannelSelect({ userId: '' }, null)}
+        onClick={() => setSelectedRoom({ userId: '' })}
       >
         Clear Message Panel
       </button>

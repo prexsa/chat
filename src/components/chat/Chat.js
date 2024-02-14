@@ -34,7 +34,7 @@ const Chat = ({ isGroup }) => {
     setImageIndex(index);
   };
 
-  if (selectedRoom.userId === 'SDFSD' || selectedRoom.roomId === '') {
+  if (selectedRoom.userId === '') {
     return <EmptyChat />;
   }
 
