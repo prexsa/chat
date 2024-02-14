@@ -79,7 +79,7 @@ const MessagePanel = ({
   };
 
   const getUsername = (userId) => {
-    const name = selectedRoom.mates.filter((mate) => mate.userId !== userId);
+    const name = selectedRoom.mates.filter((mate) => mate.userId === userId);
     return name[0].username;
   };
 
@@ -125,8 +125,8 @@ const MessagePanel = ({
         {selectedRoom.messages.map((message, index) => {
           console.log('messages: ', message, ' user.userId', user.userId);
           return message.userId === user.userId
-            ? renderRoommatesMessage(message)
-            : renderUserMessage(message);
+            ? renderUserMessage(message)
+            : renderRoommatesMessage(message);
         })}
 
         <ListItem ref={bottomRef} className="feedback-typing">
