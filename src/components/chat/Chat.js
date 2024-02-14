@@ -12,13 +12,13 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const Chat = ({ isGroup }) => {
   const { user } = useUserContext();
-  const { channel } = useContext(FriendContext);
+  const { selectedRoom } = useContext(FriendContext);
   // const [picture, setPicture] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [images, setImages] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
 
-  // console.log('channel: ', channel)
+  // console.log('selectedRoom: ', selectedRoom)
   const extractAllImagesFromMessages = async (selectedImgSrc, messages) => {
     const images = await messages.filter(
       (message) => message.hasOwn('isImage') === true,
@@ -34,7 +34,7 @@ const Chat = ({ isGroup }) => {
     setImageIndex(index);
   };
 
-  if (channel.userId === 'SDFSD' || channel.roomId === '') {
+  if (selectedRoom.userId === 'SDFSD' || selectedRoom.roomId === '') {
     return <EmptyChat />;
   }
 
@@ -47,7 +47,7 @@ const Chat = ({ isGroup }) => {
         images={images}
         activeindex={imageIndex}
       />
-      <ChatHeader />
+      <ChatHeader roomName={selectedRoom.name} />
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <Box
           sx={{
@@ -60,16 +60,16 @@ const Chat = ({ isGroup }) => {
         >
           <MessagePanel
             user={user}
-            channel={channel}
+            selectedRoom={selectedRoom}
             // picture={picture}
             isGroup={isGroup}
             setShowModal={setShowModal}
             extractAllImagesFromMessages={extractAllImagesFromMessages}
           />
           <Chatbox
-            userId={channel?.userId || channel?.roomId}
+            userId={selectedRoom?.userId || selectedRoom?.roomId}
             from={user.userId}
-            isGroup={channel?.isGroup}
+            isGroup={selectedRoom?.isGroup}
             // picture={picture}
             // handleSetPicture={setPicture}
           />
@@ -147,7 +147,7 @@ export default Chat;
                   (isYou) ? 
                   null 
                   : 
-                  <div className="chat-username-txt">{isGroup ? message.username : channel.username}</div>
+                  <div className="chat-username-txt">{isGroup ? message.username : selectedRoom.username}</div>
                 }
               </div>
             </li>

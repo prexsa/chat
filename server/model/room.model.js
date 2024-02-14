@@ -12,6 +12,10 @@ const RoomSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  name: {
+    type: String,
+    required: true,
+  },
 });
 
 const Room = mongoose.model('Room', RoomSchema);

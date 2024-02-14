@@ -24,9 +24,9 @@ export const SocketContext = createContext();
 // console.log('socketConn: ', socketConn)
 // console.log('socket: ', socket)
 const Main = () => {
-  const [friendList, setFriendList] = useState([]);
+  const [roomList, setRoomList] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [channel, setChannel] = useState({
+  const [selectedRoom, setSelectedRoom] = useState({
     username: '',
     userId: '',
     connected: '',
@@ -45,20 +45,20 @@ const Main = () => {
   const [socket, setSocket] = useState(() => socketConn(accessToken));
 
   useEffect(() => {
-    // console.log('friendList: ', friendList)
+    // console.log('roomList: ', roomList)
     // console.log('chat: ', { channel })
-  }, [channel]);
+  }, [selectedRoom]);
 
   useEffect(() => {
     setSocket(() => socketConn(accessToken));
   }, [accessToken]);
   // console.log('socket: ', socket)
   useSocket(
-    setFriendList,
+    setRoomList,
     setMessages,
     setUsername,
-    channel,
-    setChannel,
+    selectedRoom,
+    setSelectedRoom,
     setFeedback,
     socket,
   );
@@ -67,7 +67,7 @@ const Main = () => {
   const drawerWidth = 300;
   return (
     <FriendContext.Provider
-      value={{ friendList, setFriendList, channel, setChannel, username }}
+      value={{ roomList, setRoomList, selectedRoom, setSelectedRoom, username }}
     >
       <SocketContext.Provider value={{ socket }}>
         <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
@@ -105,7 +105,7 @@ const Main = () => {
                 width: { sm: `calc(100% - ${drawerWidth}px)` },
               }}
             >
-              {true ? <Chat isGroup={channel.isGroup} /> : <Video />}
+              {true ? <Chat isGroup={selectedRoom.isGroup} /> : <Video />}
             </Box>
           </Box>
         </MessagesContext.Provider>

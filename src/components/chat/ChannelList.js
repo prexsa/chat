@@ -1,11 +1,22 @@
+/* eslint-disable */
 import React, { useContext, useState } from 'react';
 import { FriendContext, SocketContext } from './Main';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import CheckIcon from '@mui/icons-material/Check';
-import { Box, Autocomplete, TextField, Typography } from '@mui/material';
-import AddFriendRFH from './AddFriend.RFH';
+// import CheckIcon from '@mui/icons-material/Check';
+import {
+  Box,
+  Autocomplete,
+  TextField,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+} from '@mui/material';
+// import AddFriendRFH from './AddFriend.RFH';
 
 const movies = [
   { label: 'The Shawshank Redemption', year: 1994 },
@@ -18,15 +29,23 @@ const movies = [
 ];
 
 function ChannelList() {
-  const { friendList, setFriendList, channel, setChannel } =
+  const { roomList, setRoomList, selectedRoom, setSelectedRoom } =
     useContext(FriendContext);
   const { socket } = useContext(SocketContext);
-  const [activeIndex, setActiveIndex] = useState(null);
+  // const [activeIndex, setActiveIndex] = useState(null);
+  const [isActive, setIsActive] = useState('');
 
+  const handleChannelSelect = (room) => {
+    console.log('handleChannelSelect, ', room);
+    setIsActive(room.roomId);
+    setSelectedRoom(room);
+  };
+
+  // console.log('roomList: ', roomList);
   const onChannelSelect = (channelObj, index) => {
     // console.log('channel: ', channelObj)
-    setActiveIndex(index);
-    setChannel({
+    // setActiveIndex(index);
+    setSelectedRoom({
       ...channelObj,
       username: channelObj?.username || channelObj?.title,
       isGroup: channelObj.hasOwn('roomId'),
@@ -34,7 +53,7 @@ function ChannelList() {
     });
     if (channelObj.userId === '' && index === null) return;
     // get messages for channel
-    setFriendList((prevFriends) => {
+    setRoomList((prevFriends) => {
       return [...prevFriends].map((friend) => {
         if (friend.userId === channelObj.userId) {
           socket.connect();
@@ -48,12 +67,12 @@ function ChannelList() {
       });
     });
   };
-
+  /*
   const setBadgeCSS = (value) => {
     return Number(value) < 10 ? 'badge' : 'badge double-digits';
   };
-  // console.log('friendList: ', friendList);
-  if (friendList.length <= 0) {
+  // console.log('roomList: ', roomList);
+  if (roomList.length <= 0) {
     return (
       <Box sx={{ p: 2 }}>
         <Typography variant="subtitle1">
@@ -67,7 +86,7 @@ function ChannelList() {
         </Box>
       </Box>
     );
-  }
+  }*/
 
   return (
     <div className="channel-list-cntr">
@@ -76,9 +95,6 @@ function ChannelList() {
           display: 'flex',
           alignItems: 'flex-end',
           padding: '15px 10px',
-          // borderBottom: '1px solid',
-          // borderTop: '1px solid',
-          // backgroundColor: '#fbfcf8',
           boxShadow: '1px 1px 4px 1px rgba(192,192,192,0.5)',
         }}
       >
@@ -111,8 +127,6 @@ function ChannelList() {
             boxShadow:
               'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px',
             '&:hover': {
-              // borderColor: 'primary.main',
-              // color: 'primary.main',
               cursor: 'pointer',
               boxShadow: '2px 2px 12px -2px rgba(0,0,0,0.75);',
             },
@@ -125,10 +139,71 @@ function ChannelList() {
       >
         Clear Message Panel
       </button>
-      <ul>
-        {friendList &&
-          friendList.map((friend, index) => {
-            // console.log("friend: ", friend);
+
+      <List dense={false} sx={{ mt: 2 }}>
+        {roomList &&
+          roomList.map((room) => {
+            return (
+              <ListItem
+                key={room.roomId}
+                onClick={() => handleChannelSelect(room)}
+                sx={{
+                  alignItems: 'flex-start',
+                  color: '#2c333d',
+                  '&.Mui-selected': {
+                    backgroundColor: '#f8fbfc',
+                    boxShadow: '1px 1px 4px -2px rgba(0,0,0,0.75);',
+                    borderRight: '2px solid #2c84f7',
+                  },
+                  '&:hover': {
+                    cursor: 'pointer',
+                    backgroundColor: '#dcdcdc',
+                    boxShadow: '2px 6px 15px -2px rgba(0,0,0,0.75);',
+                  },
+                  '&:active': {
+                    backgroundColor: 'fbfbf9',
+                    boxShadow: '2px 6px 15px -2px rgba(0,0,0,0.75);',
+                  },
+                }}
+                selected={isActive === room.roomId}
+              >
+                <ListItemAvatar>
+                  <Avatar>
+                    <AccountCircleIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={`${room.name}`}
+                  secondary={'Secondary text'}
+                />
+                <ListItemText
+                  primary="time"
+                  sx={{
+                    marginLeft: 'auto',
+                    textAlign: 'right',
+                    justifyContent: 'top',
+                    color: '#2c333d',
+                    fontWeight: 500,
+                    fontSize: 16,
+                  }}
+                />
+              </ListItem>
+            );
+          })}
+      </List>
+    </div>
+  );
+}
+
+export default ChannelList;
+
+// https://www.uplabs.com/posts/chat-ui-design-0b930711-4cfd-4ab4-b686-6e7785624b16
+
+/*
+<ul>
+        {roomList &&
+          roomList.map((friend, index) => {
+            console.log('friend: ', friend);
             // clear unreadCount if channel is active
             if (friend.userId === channel.userId) {
               friend.unreadCount = 0;
@@ -171,67 +246,5 @@ function ChannelList() {
             );
           })}
       </ul>
-    </div>
-  );
-}
-
-export default ChannelList;
-
-// https://www.uplabs.com/posts/chat-ui-design-0b930711-4cfd-4ab4-b686-6e7785624b16
-
-/*
-
-<List dense={false} sx={{ mt: 2 }}>
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map(
-          (value) => {
-            return (
-              <ListItem
-                key={value}
-                onClick={() => handleChannelSelect(value)}
-                sx={{
-                  alignItems: 'flex-start',
-                  color: '#2c333d',
-                  '&.Mui-selected': {
-                    backgroundColor: '#f8fbfc',
-                    boxShadow: '1px 1px 4px -2px rgba(0,0,0,0.75);',
-                    borderRight: '2px solid #2c84f7',
-                  },
-                  '&:hover': {
-                    cursor: 'pointer',
-                    backgroundColor: '#dcdcdc',
-                    boxShadow: '2px 6px 15px -2px rgba(0,0,0,0.75);',
-                  },
-                  '&:active': {
-                    backgroundColor: 'fbfbf9',
-                    boxShadow: '2px 6px 15px -2px rgba(0,0,0,0.75);',
-                  },
-                }}
-                selected={isActive === value}
-              >
-                <ListItemAvatar>
-                  <Avatar>
-                    <FolderIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Single-line item"
-                  secondary={'Secondary text'}
-                />
-                <ListItemText
-                  primary="time"
-                  sx={{
-                    marginLeft: 'auto',
-                    textAlign: 'right',
-                    justifyContent: 'top',
-                    color: '#2c333d',
-                    fontWeight: 500,
-                    fontSize: 16,
-                  }}
-                />
-              </ListItem>
-            );
-          },
-        )}
-      </List>
 
 */

@@ -6,27 +6,28 @@ import { SocketContext, FriendContext } from './Main';
 // title, isGroup, channelId,
 const TitleForm = ({ toggleExpand, setToggleExpand }) => {
   const { socket } = useContext(SocketContext);
-  const { channel, setFriendList, setChannel } = useContext(FriendContext);
+  const { selectedRoom, setSelectedRoom, setRoomList } =
+    useContext(FriendContext);
   const { register, handleSubmit, setValue, getValues } = useForm({
     mode: 'onChange',
   });
-  // console.log('channel: ', channel)
+  console.log('channel: ', selectedRoom);
   const onSubmit = async (data) => {
     // setName(data.name)
     socket.emit(
       'change_group_title',
-      { channelId: channel.roomId, title: data.name },
+      { channelId: selectedRoom.roomId, title: data.name },
       () => {
         // console.log('resp: ', resp )
         // console.log('channelId: ', channelId)
         setValue('name', data.name);
-        setChannel((prevState) => ({
+        setSelectedRoom((prevState) => ({
           ...prevState,
           title: data.name,
         }));
-        setFriendList((prevFriends) => {
+        setRoomList((prevFriends) => {
           return [...prevFriends].map((friend) => {
-            if (friend.roomId === channel.roomId) {
+            if (friend.roomId === selectedRoom.roomId) {
               friend.title = data.name;
             }
             return friend;
@@ -40,14 +41,14 @@ const TitleForm = ({ toggleExpand, setToggleExpand }) => {
     // console.log('value: ', getValues('name'))
     // update group title
     const value = getValues('name');
-    if (value !== channel.title) {
-      setValue('name', channel.title);
+    if (value !== selectedRoom.title) {
+      setValue('name', selectedRoom.title);
     }
-  }, [channel, getValues, setValue]);
+  }, [selectedRoom, getValues, setValue]);
 
   // return header only if it is not a group
-  if (channel.isGroup === false) {
-    return <h2>{channel.username}</h2>;
+  if (selectedRoom.isGroup === false) {
+    return <h2>{selectedRoom.name}</h2>;
   }
 
   return (
@@ -61,7 +62,7 @@ const TitleForm = ({ toggleExpand, setToggleExpand }) => {
               size="small"
               fullWidth
               autoComplete="off"
-              {...register('name', { value: channel?.title })}
+              {...register('name', { value: selectedRoom?.title })}
             />
             <div className="title-form-btn-container">
               <input type="submit" />
@@ -74,7 +75,9 @@ const TitleForm = ({ toggleExpand, setToggleExpand }) => {
           {/*name && <div>Submitted: {name}</div>*/}
         </div>
       ) : (
-        <h2 onClick={() => setToggleExpand(!toggleExpand)}>{channel?.title}</h2>
+        <h2 onClick={() => setToggleExpand(!toggleExpand)}>
+          {selectedRoom?.title}
+        </h2>
       )}
     </>
   );

@@ -61,10 +61,11 @@ const getRooms = async (socket) => {
       return details;
     }),
   );
+
   // console.log('roomList: ', roomList)
   return Promise.resolve({ rooms: roomList });
 };
-
+/*
 const notifyFriends = async (socket) => {
   const { rooms } = await getRooms(socket);
   const friendRooms = await rooms.map((room) => room.userId);
@@ -72,6 +73,26 @@ const notifyFriends = async (socket) => {
     socket.to(friendRooms).emit('connected', 'true', socket.user.userId);
   }
   socket.emit('friends', rooms);
+};
+*/
+
+const notifyRooms = async (socket, rooms) => {
+  // console.log({ socket, rooms });
+  if (rooms.length > 0) {
+    socket.to(rooms).emit('connected', 'true', socket.user.userId);
+  }
+  // socket.emit('roomList', rooms);
+};
+
+const getRoomDetails = async (socket, rooms) => {
+  const roomDetails = await Promise.all(
+    rooms.map(async (roomId) => {
+      const details = await Room.find({ roomId: roomId });
+      return details[0];
+    }),
+  );
+  socket.emit('roomList', roomDetails);
+  console.log('room details: ', roomDetails);
 };
 
 const populateRooms = async (socket) => {
@@ -137,7 +158,7 @@ const populateRooms = async (socket) => {
     }),
   );
   // console.log("asyncRes: ", asyncRes);
-  socket.emit('friends', asyncRes);
+  socket.emit('roomList', asyncRes);
 };
 
 const addToAllUsers = async (username, userId) => {
@@ -169,6 +190,11 @@ const isUsernameAvailable = async (username) => {
 module.exports.initializeUser = async (socket) => {
   // set user to active
   socket.join(socket.user.userId);
+
+  const user = await User.find({ userId: socket.user.userId });
+  // console.log('user: ', user);
+  const { rooms } = user[0];
+  // console.log('rooms: ', rooms);
   redisClient.hset(
     `userid:${socket.user.userId}`,
     'userId',
@@ -180,8 +206,9 @@ module.exports.initializeUser = async (socket) => {
   );
 
   addToAllUsers(socket.user.username, socket.user.userId);
-  notifyFriends(socket);
-  populateRooms(socket);
+  notifyRooms(socket, rooms);
+  getRoomDetails(socket, rooms);
+  // populateRooms(socket);
   // console.log('rooms: ', rooms)
   // updateFriendsList(socket)
   socket.emit('current_user', socket.user.username);
@@ -350,28 +377,6 @@ module.exports.addToGroup = async (socket, roomId, name, cb) => {
   });
   cb({ isFound: true, username: name, userId });
 };
-// https://developer.redis.com/howtos/chatapp/
-// https://redis.io/docs/data-types/sorted-sets/
-/*module.exports.removeUserFromGroup = async (socket, roomId, userId, cb) => {
-  const removedFromGroupList = await redisClient.srem(`grpmembers:${roomId}`, userId)
-  // remove roomid from user's list
-  const removedFromUsersList = await redisClient.srem(`rooms:${userId}`, roomId)
-  console.log('removedFromUsersList ', removedFromUsersList)
-  // emit to user
-  socket.to(userId).emit('exit_group_chat', { roomId })
-  cb({ isUserRemoved: true })
-}*/
-
-/*module.exports.leaveGroup = async (socket, userId, channelId, cb) => {
-  // console.log({ userId, channelId })
-  const removeFromGroupList = await redisClient.srem(`grpmembers:${channelId}`, userId)
-  const removeFromUserList = await redisClient.srem(`rooms:${userId}`, `group:${channelId}`)
-  // get remaining userId and emit to users the removed member
-  const members = await redisClient.smembers(`grpmembers:${channelId}`)
-  socket.to(members).emit('exit_group_chat', { roomId: channelId , userId })
-  // console.log('leaveGroup')
-  cb({ resp: { channelId }})
-}*/
 
 module.exports.leaveChatRoom = async (
   socket,
@@ -532,24 +537,6 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
       })
       .catch((err) => console.log(err));
   });
-
-  /*const readStream = fs.createReadStream(path.resolve(tmpFileDir, fileName), { encoding: 'binary'})
-  const chunks = []
-
-  readStream.on('readable', function() {
-    console.log('Image Loading')
-  })
-
-  readStream.on('data', function(chunk) {
-    chunks.push(chunk)
-    socket.emit('img-chunk', chunk)
-  })
-
-  readStream.on('end', function() {
-    console.log('Image loaded')
-  })*/
-
-  // await redisClient.hset(`file:${roomId.id}`)
 };
 
 const deleteStoredFile = (fileName) => {

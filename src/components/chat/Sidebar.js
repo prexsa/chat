@@ -1,34 +1,19 @@
 /* eslint-disable */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Box,
-  Autocomplete,
-  List,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
-  ListItemText,
-  TextField,
-} from '@mui/material';
-import FolderIcon from '@mui/icons-material/Folder';
+import { Box } from '@mui/material';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 // import CreateGroup from './CreateGroup';
 // import Logout from '../Logout';
 import ChannelList from './ChannelList';
-// import { useUserContext } from '../../userContext';
+import { useUserContext } from '../../userContext';
 // import Box from '@mui/material/Box';
 // Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
 
 const Sidebar = () => {
-  const [isActive, setIsActive] = useState(false);
-
-  const handleChannelSelect = (index) => {
-    console.log('handleChannelSelect, ', index);
-    setIsActive(index);
-  };
+  const { user } = useUserContext();
 
   return (
     <Box
@@ -50,7 +35,9 @@ const Sidebar = () => {
         }}
       >
         <AccountCircleIcon sx={{ fontSize: 30 }} />
-        <span>User</span>
+        <span>
+          {user.fname} {user.lname}
+        </span>
         <MoreVertIcon sx={{ marginLeft: 'auto' }} />
       </Box>
       <ChannelList />

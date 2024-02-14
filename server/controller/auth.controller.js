@@ -76,11 +76,12 @@ exports.login = (req, res) => {
     });
 };
 // requesterUserId, userId
-const createARoomRelationship = async (ids) => {
+const createARoomRelationship = async (ids, username) => {
   const roomUUID = crypto.randomUUID();
   // create room
   const room = new Room({
     roomId: roomUUID,
+    name: username,
   });
   const result = await room.save();
   // update both user records with
@@ -120,9 +121,10 @@ exports.signup = async (req, res) => {
           userId: user.userId,
         };
 
+        const username = `${fname} ${lname}`;
         // create relationship between users
         if (requesterUserId !== '')
-          createARoomRelationship([requesterUserId, user.userId]);
+          createARoomRelationship([requesterUserId, user.userId], username);
 
         jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then((token) => {
           res.send({

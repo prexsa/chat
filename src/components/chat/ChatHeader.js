@@ -8,7 +8,7 @@ import LeaveChat from './LeaveChat';
 // import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 // import VideoCallIcon from '@mui/icons-material/VideoCall';
 
-const ChatHeader = ({ isGroup }) => {
+const ChatHeader = ({ isGroup, roomName }) => {
   const [toggleExpand, setToggleExpand] = useState(false);
   return (
     <Box
@@ -20,7 +20,7 @@ const ChatHeader = ({ isGroup }) => {
       <LeaveChat isGroup={isGroup} />
       {isGroup && <AddToGroup />}
       <AccountCircleIcon className="channel-img" />
-      <Typography variant="h6">Bankai</Typography>
+      <Typography variant="h6">{roomName}</Typography>
       <TitleForm
         toggleExpand={toggleExpand}
         setToggleExpand={setToggleExpand}
@@ -88,6 +88,7 @@ const ChatHeader = ({ isGroup }) => {
 
 ChatHeader.propTypes = {
   isGroup: PropTypes.bool,
+  roomName: PropTypes.string,
 };
 
 export default ChatHeader;
