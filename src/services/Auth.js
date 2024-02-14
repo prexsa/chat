@@ -59,6 +59,13 @@ const updateUserProfile = async (values) => {
   );
 };
 
+const sendEmail = async (values) => {
+  // console.log('values; ', values);
+  return await axios.post(`${SERVER_ENDPOINT}/api/auth/send-email`, values, {
+    withCredentials: true,
+  });
+};
+
 const AuthServices = {
   login,
   signup,
@@ -67,6 +74,7 @@ const AuthServices = {
   updatePassword,
   getUserProfile,
   updateUserProfile,
+  sendEmail,
 };
 
 export default AuthServices;

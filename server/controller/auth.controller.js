@@ -1,14 +1,16 @@
 const User = require('../model/auth.model');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const { sendMail } = require('./nodemailer.controller');
+const {
+  sendPasswordResetEmail,
+  sendEmailRequest,
+} = require('./nodemailer.controller');
 const JWT_SECRET = process.env.JWT_SECRET;
 const { jwtSign, jwtVerify, getJwt } = require('./jwt.controller');
 
 exports.verifyToken = (req, res) => {
   const token = getJwt(req);
-  // console.log('token; ', token)
-  // console.log('token: ', token)
+
   jwtVerify(token, JWT_SECRET)
     .then((decoded) => {
       // console.log('decoded: ', decoded)
@@ -16,6 +18,8 @@ exports.verifyToken = (req, res) => {
         loggedIn: true,
         // email: decoded.email,
         userId: decoded.userId,
+        fname: decoded.fname,
+        lname: decoded.lname,
       });
     })
     .catch((err) => {
@@ -31,6 +35,7 @@ exports.login = (req, res) => {
   const { email, password } = req.body;
   User.findOne({ email: email })
     .then((user) => {
+      // console.log('User: ', user);
       if (!user)
         return res.status(200).send({
           isSuccessful: false,
@@ -50,11 +55,15 @@ exports.login = (req, res) => {
         id: user._id,
         // email: user?.email,
         userId: user.userId,
+        fname: user?.firstname,
+        lname: user?.lastname,
       };
       // console.log('payload: ', payload)
       jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then((token) => {
         res.status(200).send({
           // email: user?.email,
+          fname: user?.firstname,
+          lname: user?.lastname,
           accessToken: token,
           userId: user.userId,
           isSuccessful: true,
@@ -68,7 +77,7 @@ exports.login = (req, res) => {
 
 exports.signup = async (req, res) => {
   // console.log('signup ', req.body)
-  const { fname, lname, email, password } = req.body;
+  const { fname, lname, email, password, userId } = req.body;
   // console.log('req.body: ', req.body)
   const record = await User.findOne({ email: email });
   // console.log('record: ', record)
@@ -111,6 +120,18 @@ exports.signup = async (req, res) => {
     });
     return;
   }
+};
+
+exports.sendEmail = async (req, res) => {
+  // console.log('req: ', req.body);
+  const resp = await sendEmailRequest(req.body);
+  if (resp)
+    res.send({ isSuccessful: true, message: 'Email was successfully sent' });
+  else
+    res.send({
+      isSuccessful: false,
+      message: 'Email was not successfully sent',
+    });
 };
 /*
 exports.addUsername = async (req, res) => {
@@ -205,7 +226,7 @@ exports.sendResetLink = async (req, res) => {
   }
   const { userId, email } = hasRecord;
   const payload = { userId, email };
-  sendMail(payload);
+  sendPasswordResetEmail(payload);
   res.status(200).send({
     isSuccessful: true,
     message: 'An email has been sent to reset your password.',

@@ -18,6 +18,7 @@ router
 router.route('/signup').post(AuthControl.signup);
 router.route('/pw-reset').post(AuthControl.sendResetLink);
 router.route('/update-pw').post(AuthControl.passwordReset);
+router.route('/send-email').post(AuthControl.sendEmail);
 // router.route('/add-username').post(AuthControl.addUsername);
 router.route('/get-profile').post(AuthControl.getUserProfile);
 router

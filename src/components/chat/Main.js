@@ -11,6 +11,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Chat from './Chat';
+import Video from './Video';
 import Sidebar from './Sidebar';
 import Profile from '../Profile.RFH';
 import './Chat.css';
@@ -104,42 +105,7 @@ const Main = () => {
                 width: { sm: `calc(100% - ${drawerWidth}px)` },
               }}
             >
-              <Chat isGroup={channel.isGroup} />
-              {/*
-              showDrawer ? (
-                <Box sx={{ textAlign: 'Left', padding: '50px' }}>
-                  <Button
-                    aria-label="back"
-                    size="small"
-                    color="primary"
-                    startIcon={<ArrowBackIcon />}
-                    onClick={() => setShowDrawer(false)}
-                  >
-                    Back
-                  </Button>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                      marginTop: '25px',
-                    }}
-                  >
-                    Profile
-                    <IconButton
-                      sx={{ marginLeft: '5px' }}
-                      color="primary"
-                      onClick={editToggleHandler}
-                    >
-                      <EditIcon sx={{ fontSize: '14px' }} />
-                    </IconButton>
-                  </Box>
-                  <Profile editProfile={editProfile} />
-                </Box>
-              ) : (
-                <Chat isGroup={channel.isGroup} />
-              )
-              */}
+              {true ? <Chat isGroup={channel.isGroup} /> : <Video />}
             </Box>
           </Box>
         </MessagesContext.Provider>
@@ -151,3 +117,39 @@ const Main = () => {
 export default Main;
 
 // https://codesandbox.io/p/sandbox/zen-silence-njx9xx?file=%2Fsrc%2FDemo.js%3A33%2C25
+
+/*
+showDrawer ? (
+  <Box sx={{ textAlign: 'Left', padding: '50px' }}>
+    <Button
+      aria-label="back"
+      size="small"
+      color="primary"
+      startIcon={<ArrowBackIcon />}
+      onClick={() => setShowDrawer(false)}
+    >
+      Back
+    </Button>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        marginTop: '25px',
+      }}
+    >
+      Profile
+      <IconButton
+        sx={{ marginLeft: '5px' }}
+        color="primary"
+        onClick={editToggleHandler}
+      >
+        <EditIcon sx={{ fontSize: '14px' }} />
+      </IconButton>
+    </Box>
+    <Profile editProfile={editProfile} />
+  </Box>
+) : (
+  <Chat isGroup={channel.isGroup} />
+)
+*/

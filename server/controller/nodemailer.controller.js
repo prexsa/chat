@@ -1,7 +1,7 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: 'gmail',
   auth: {
     user: process.env.NODEMAILER_AUTH_EMAIL,
     pass: process.env.NODEMAILER_AUTH_PASSWORD,
@@ -10,9 +10,9 @@ const transporter = nodemailer.createTransport({
 
 transporter.verify((err) => {
   if (err) {
-    console.log("nodemailer error: ", err);
+    console.log('nodemailer error: ', err);
   } else {
-    console.log("nodemailer ready");
+    console.log('nodemailer ready');
   }
 });
 
@@ -24,25 +24,60 @@ const expireTimeThirtyMins = () => {
   return time;
 };
 
-module.exports.sendMail = (values) => {
+module.exports.sendPasswordResetEmail = (values) => {
   const { userId, email } = values;
-  const name = "Prexsa";
+  const name = 'Prexsa';
   const expireTime = expireTimeThirtyMins();
   const mail = {
-    from: "Task Manager",
-    to: "preksamam@gmail.com",
-    subject: "Password reset link for Chats",
+    from: 'Task Manager',
+    to: 'preksamam@gmail.com',
+    subject: 'Password reset link for Chats',
     html:
       `<p>Here is the link to reset your password for Chat</p>` +
-      "<br />" +
+      '<br />' +
       `<a href='http://localhost:3000/pw-reset?userId=${userID}&expireTime=${expireTime}'>Reset my password</a>`,
   };
 
-  return transporter.sendMail(mail, (err) => {
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mail, (err) => {
+      if (err) {
+        console.log('transporter err: ', err);
+        resolve(false);
+      } else resolve(true);
+    });
+  });
+};
+
+module.exports.sendEmailRequest = (values) => {
+  const { userId, email, fname, lname } = values;
+  console.log('values: ', values);
+  const mail = {
+    from: 'Chats',
+    to: email,
+    subject: `Connect with ${fname} ${lname} on Chats`,
+    html:
+      `<p>${fname} ${lname} wants to connect with you on Chats</p>` +
+      `<p>Click the link below, to go to Chats</p>` +
+      '<br />' +
+      `<a href='http://localhost:3000/register?userId=${userId}'>Go to Chats</a>`,
+  };
+
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mail, (err) => {
+      if (err) {
+        console.log('transporter err: ', err);
+        resolve(false);
+      } else resolve(true);
+    });
+  });
+};
+
+module.exports.sendMail = (payload) => {
+  return transporter.sendMail(payload, (err) => {
     if (err) {
-      console.log("transporter err: ", err);
+      console.log('transporter err: ', err);
       return;
     }
-    return "Message Sent";
+    return 'Message Sent';
   });
 };

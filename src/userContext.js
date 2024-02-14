@@ -8,10 +8,12 @@ const UserContext = React.createContext();
 const UserProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState({
-    username: '',
+    fname: '',
+    lname: '',
     userId: '',
     loggedIn: null,
   });
+
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
     // console.log('accessToken: ', accessToken)
@@ -23,7 +25,7 @@ const UserProvider = ({ children }) => {
         },
       })
       .then((response) => {
-        // console.log('response: ', response.data)
+        // console.log('response: ', response.data);
         const data = response.data;
         setUser(data);
         navigate('/chat');
@@ -35,7 +37,7 @@ const UserProvider = ({ children }) => {
         return;
       });
   }, [navigate]);
-
+  // console.log('user: ', user);
   return (
     <UserContext.Provider
       value={{

@@ -181,7 +181,7 @@ const MessagePanel = ({
 
 MessagePanel.propTypes = {
   user: PropTypes.object,
-  channel: PropTypes.string,
+  channel: PropTypes.object,
   isGroup: PropTypes.bool,
   setShowModal: PropTypes.func,
   extractAllImagesFromMessages: PropTypes.func,

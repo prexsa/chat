@@ -103,7 +103,7 @@ const Login = () => {
               Chat...
             </Typography>
             <Typography variant="h4" sx={{ fontSize: '20px', color: '#fff' }}>
-              Stay connected with friends and family
+              Stay connected with family and friends
             </Typography>
           </Box>
           <Box

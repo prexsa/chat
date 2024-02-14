@@ -14,8 +14,6 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Auth from '../services/Auth';
-// import NoAuthLayout from './NoAuth.layout';
-// import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -34,7 +32,7 @@ const Login = () => {
   });
 
   const handleOnSubmit = async (values) => {
-    console.log('onSubmit', values);
+    // console.log('onSubmit', values);
     const resp = await Auth.login(values);
     // console.log('resp: ', resp)
     const { data } = resp;
@@ -42,14 +40,9 @@ const Login = () => {
     if (data.isSuccessful) {
       // console.log("fdjslkf;j: ", response.data.hasOwnProperty("username"))
       localStorage.setItem('accessToken', data.accessToken);
-      if (data.hasOwn('email')) {
-        // console.log('response: ', response.data)
-        setUser({ ...data });
-        navigate('/chat');
-      } else {
-        // if username has not been created, redirect user to create username
-        navigate('/create-username', { state: { userId: data.userId } });
-      }
+      setUser({ ...data });
+      navigate('/chat');
+      // navigate('/create-username', { state: { userId: data.userId } });
     } else {
       // setError(response.data.status)
       if (data.errorType === 'email') {

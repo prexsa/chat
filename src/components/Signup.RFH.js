@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Auth from '../services/Auth';
 import {
@@ -16,6 +16,8 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [queryParameters] = useSearchParams();
+  const userId = queryParameters.get('userId');
   const { register, handleSubmit } = useForm({ shouldFocusError: false });
   const [show, setShow] = useState(false);
   const [emailError, setEmailError] = useState({ hasError: false, msg: '' });
@@ -30,7 +32,11 @@ const Signup = () => {
 
   const handleOnSubmit = async (values) => {
     // console.log('onSubmit: ', values)
-    // return;
+    /**
+     * if user was sent an email link to sign up with Chats
+     * this is the 'userId' of the sender
+     */
+    values['userId'] = userId ? userId : '';
     const resp = await Auth.signup(values);
     console.log('response: ', resp.data);
     if (resp.data.isSuccessful) {
