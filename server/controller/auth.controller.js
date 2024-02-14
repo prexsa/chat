@@ -1,4 +1,5 @@
-const User = require('../model/auth.model');
+const User = require('../model/user.model');
+const Room = require('../model/room.model');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const {
@@ -74,10 +75,30 @@ exports.login = (req, res) => {
       res.status(500).send({ status: err });
     });
 };
+// requesterUserId, userId
+const createARoomRelationship = async (ids) => {
+  const roomUUID = crypto.randomUUID();
+  // create room
+  const room = new Room({
+    roomId: roomUUID,
+  });
+  const result = await room.save();
+  // update both user records with
+  ids.map(async (user) => {
+    const resp = await User.updateOne(
+      { userId: user },
+      { $push: { rooms: roomUUID } },
+    );
+    console.log('resp ', resp);
+  });
+  res.send('success');
+};
+
+const addNewUserToExistingGroup = (roomId, userId) => {};
 
 exports.signup = async (req, res) => {
   // console.log('signup ', req.body)
-  const { fname, lname, email, password, userId } = req.body;
+  const { fname, lname, email, password, userId: requesterUserId } = req.body;
   // console.log('req.body: ', req.body)
   const record = await User.findOne({ email: email });
   // console.log('record: ', record)
@@ -98,6 +119,11 @@ exports.signup = async (req, res) => {
           // username: user.username,
           userId: user.userId,
         };
+
+        // create relationship between users
+        if (requesterUserId !== '')
+          createARoomRelationship([requesterUserId, user.userId]);
+
         jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then((token) => {
           res.send({
             status: 'User was registered successfully!',
