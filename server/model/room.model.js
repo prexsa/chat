@@ -5,8 +5,18 @@ const RoomSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  isGroup: {
+    type: Boolean,
+    required: true,
+  },
   messages: {
-    type: Array,
+    type: [
+      {
+        userId: String,
+        message: String,
+        date: String,
+      },
+    ],
   },
   roomId: {
     type: String,

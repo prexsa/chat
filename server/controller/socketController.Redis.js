@@ -266,11 +266,11 @@ module.exports.clearUnreadCount = async (socket, roomId) => {
 module.exports.dm = async (socket, msg) => {
   console.log('msg: ', msg);
   // check if the user is online
-  // const unixDateTime = Date.now();
+  const unixDateTime = Date.now();
   const message = {
     userId: msg.from,
     message: msg.content,
-    date: msg.date,
+    date: unixDateTime,
   };
 
   const updateRoomMessages = await Room.updateOne(
@@ -280,13 +280,10 @@ module.exports.dm = async (socket, msg) => {
 
   const getRoom = await Room.find({ roomId: msg.to });
   const getRoommates = getRoom[0].mates;
-  const matesToReceiveMsg = getRoommates
-    .filter((mate) => mate.userId !== msg.from)
-    .map((x) => x.userId);
-
-  // add roomId to message
-  message['roomId'] = msg.to;
-  socket.to(matesToReceiveMsg).emit('dm', message);
+  const matesToReceiveMsg = getRoommates.filter(
+    (mate) => mate.userId !== msg.from,
+  );
+  console.log('resp; ', matesToReceiveMsg);
 
   return;
   msg.from = socket.user.userId;

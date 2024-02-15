@@ -1,16 +1,16 @@
+/* eslint-disable */
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { SocketContext, MessagesContext } from './Main';
+import { SocketContext, FriendContext } from './Main';
 import { Box, Button, TextField, InputAdornment } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import FileUpload from './FileUpload';
-// https://refine.dev/blog/how-to-multipart-file-upload-with-react-hook-form/#create-express-server
-// https://www.commoninja.com/blog/handling-multiple-uploads-react-hook-form#Creating-the-Functions-for-Image-Preview-and-Handling-Form-Submission
+
 const Chatbox = ({ userId, from, isGroup, picture }) => {
   // console.log('userID: ', userId)
   const { socket } = useContext(SocketContext);
-  const { setMessages } = useContext(MessagesContext);
+  const { selectedRoom, setSelectedRoom } = useContext(FriendContext);
   const { register, handleSubmit, reset, formState } = useForm();
   const [feedbackToggle, setFeedbackToggle] = useState(false);
 
@@ -18,24 +18,35 @@ const Chatbox = ({ userId, from, isGroup, picture }) => {
     // console.log("data: ", data);
     if (data.message.trim() === '') return;
     // console.log('message; ', message)
+    const date = Date.now();
     const message = {
       to: userId,
       from: from,
       content: data.message,
       isGroup,
+      date,
     };
-    // onMessageSend(message);
-    // console.log('message: ', message)
+    // console.log(message);
+
     socket.connect();
     socket.emit('dm', message);
-    // console.log('message: ', message)
-    setMessages((prevMsg) => {
-      return [...prevMsg, message];
+
+    const addedNewMessagesToState = Object.assign({}, selectedRoom, {
+      messages: [
+        ...selectedRoom.messages,
+        { date, message: data.message, userId: from },
+      ],
     });
+
+    setSelectedRoom(addedNewMessagesToState);
+    // console.log('message: ', message)
+    /*setMessages((prevMsg) => {
+      return [...prevMsg, message];
+    });*/
   };
 
   const handleOnKeyDown = (e) => {
-    console.log('e: ', e.target.value);
+    // console.log('e: ', e.target.value);
     if (e.key === 'Enter' && e.shiftKey === false) {
       // console.log('target value: ', e.target.value)
       setFeedbackToggle(false);
@@ -166,3 +177,6 @@ export default Chatbox;
   <input className='chatbox-submit' type="submit" />
 </form>
 */
+
+// https://refine.dev/blog/how-to-multipart-file-upload-with-react-hook-form/#create-express-server
+// https://www.commoninja.com/blog/handling-multiple-uploads-react-hook-form#Creating-the-Functions-for-Image-Preview-and-Handling-Form-Submission

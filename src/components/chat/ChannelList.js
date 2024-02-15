@@ -5,7 +5,7 @@ import { FriendContext, SocketContext } from './Main';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-// import CheckIcon from '@mui/icons-material/Check';
+import CheckIcon from '@mui/icons-material/Check';
 import {
   Box,
   Autocomplete,
@@ -40,6 +40,16 @@ function ChannelList({ user }) {
     // console.log('handleChannelSelect, ', room);
     setIsActive(room.roomId);
     setSelectedRoom(room);
+
+    // clear out unreadCount
+    setRoomList((prevRoom) => {
+      return [...prevRoom].map((room) => {
+        if (room.roomId === room.roomId) {
+          room.unreadCount = 0;
+        }
+        return room;
+      });
+    });
   };
 
   // console.log('roomList: ', roomList);
@@ -89,9 +99,19 @@ function ChannelList({ user }) {
     );
   }*/
 
+  const clearRoomSelected = () => {
+    setSelectedRoom({ userId: '' });
+    setIsActive('');
+  };
+  // console.log({ selectedRoom, roomList });
   const displayRoommatesName = (roommates) => {
     const filtered = roommates.filter((mate) => mate.userId !== user.userId);
     return filtered[0].username;
+  };
+
+  const convertToHumanReadable = (unix) => {
+    const date = new Date(unix * 1000);
+    return date.toLocaleString([], { timeStyle: 'short' });
   };
 
   return (
@@ -139,16 +159,19 @@ function ChannelList({ user }) {
           }}
         />
       </Box>
-      <button
-        className="btn btn-link"
-        onClick={() => setSelectedRoom({ userId: '' })}
-      >
+      <button className="btn btn-link" onClick={clearRoomSelected}>
         Clear Message Panel
       </button>
 
       <List dense={false} sx={{ mt: 2 }}>
         {roomList &&
           roomList.map((room) => {
+            // console.log('room: ', room);
+
+            // check if room is active, clear out unreadCount
+            room.unreadCount =
+              room.roomId === selectedRoom.roomId ? 0 : room.unreadCount;
+
             return (
               <ListItem
                 key={room.roomId}
@@ -180,19 +203,29 @@ function ChannelList({ user }) {
                 </ListItemAvatar>
                 <ListItemText
                   primary={displayRoommatesName(room.mates)}
-                  secondary={'Secondary text'}
+                  secondary={room.messages[room.messages.length - 1].message}
                 />
-                <ListItemText
-                  primary="time"
+                <Box
                   sx={{
-                    marginLeft: 'auto',
-                    textAlign: 'right',
-                    justifyContent: 'top',
-                    color: '#2c333d',
-                    fontWeight: 500,
-                    fontSize: 16,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
+                    margin: '6px 0',
                   }}
-                />
+                >
+                  <Typography variant="caption">
+                    {convertToHumanReadable(
+                      room.messages[room.messages.length - 1].date,
+                    )}
+                  </Typography>
+                  <Typography variant="caption">
+                    {room.unreadCount > 0 ? (
+                      room.unreadCount
+                    ) : (
+                      <CheckIcon sx={{ color: '#0d6efd' }} fontSize="small" />
+                    )}
+                  </Typography>
+                </Box>
               </ListItem>
             );
           })}

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect, useRef } from 'react';
 
 const useSocket = (
@@ -69,7 +70,23 @@ const useSocket = (
     });
 
     socket.on('dm', (msg) => {
-      // console.log("ms: ", msg);
+      console.log('ms: ', msg);
+      const { date, message, userId, roomId } = msg;
+
+      setRoomList((prevRoom) => {
+        return [...prevRoom].map((room) => {
+          if (room.roomId === roomId) {
+            room.messages.push({ date, message, userId });
+            room.hasNewMessage = true;
+            room.unreadCount = room.hasOwnProperty('unreadCount')
+              ? room.unreadCount + 1
+              : 1;
+          }
+          return room;
+        });
+      });
+
+      return;
       // console.log('dm channel: ', channelRef.current)
       if (selectedRoomRef.current.userId === msg.from) {
         socket.emit('clear_unread_count', { roomId: msg.from });
