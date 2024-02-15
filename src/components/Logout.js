@@ -1,38 +1,35 @@
 import React, { useContext } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
-// import socket from '../socket';
 import { SocketContext } from './chat/Main';
 
-function Logout() {
+function Logout({ handleCloseMenu }) {
   const navigate = useNavigate();
   const { socket } = useContext(SocketContext);
 
   const handleLogout = () => {
-    /*const sessionID = localStorage.getItem("sessionID");
-    localStorage.removeItem("sessionID")*/
+    handleCloseMenu();
     localStorage.removeItem('accessToken');
-    // console.log('logoff')
     socket.connect();
     socket.emit('logoff');
-    // logoff();
-    // socket.emit('logoff', sessionID)
     navigate('/');
-    // window.location.reload();
   };
 
   return (
     <Button
-      // className="logout-btn"
-      variant="contained"
+      variant="text"
       onClick={() => handleLogout()}
       disableElevation
       fullWidth
-      sx={{ backgroundColor: 'grey', borderRadius: '0' }}
     >
       logout
     </Button>
   );
 }
+
+Logout.propTypes = {
+  handleCloseMenu: PropTypes.func,
+};
 
 export default Logout;

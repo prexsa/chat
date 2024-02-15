@@ -1,19 +1,26 @@
 /* eslint-disable */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Box } from '@mui/material';
-
+import { Box, Button, Menu, MenuItem } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 // import CreateGroup from './CreateGroup';
-// import Logout from '../Logout';
+import Logout from '../Logout';
 import ChannelList from './ChannelList';
 import { useUserContext } from '../../userContext';
-// import Box from '@mui/material/Box';
-// Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
 
 const Sidebar = () => {
   const { user } = useUserContext();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <Box
@@ -29,16 +36,39 @@ const Sidebar = () => {
         sx={{
           display: 'flex',
           alignItems: 'center',
-          // justifyContent: 'space-between',
+          justifyContent: 'space-between',
           padding: '20px 15px',
           borderBottom: '1px solid #dedede',
         }}
       >
-        <AccountCircleIcon sx={{ fontSize: 30 }} />
-        <span>
-          {user.fname} {user.lname}
-        </span>
-        <MoreVertIcon sx={{ marginLeft: 'auto' }} />
+        <Box>
+          <AccountCircleIcon sx={{ fontSize: 30 }} />
+          <span>
+            {user.fname} {user.lname}
+          </span>
+        </Box>
+        <Button
+          id="basic-button"
+          aria-controls={open ? 'basic-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+          onClick={handleClick}
+        >
+          <MoreVertIcon sx={{ marginLeft: 'auto' }} />
+        </Button>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button',
+          }}
+        >
+          <MenuItem>
+            <Logout handleCloseMenu={handleClose} />
+          </MenuItem>
+        </Menu>
       </Box>
       <ChannelList user={user} />
     </Box>
