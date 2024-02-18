@@ -145,38 +145,6 @@ Chatbox.propTypes = {
 };
 
 export default Chatbox;
-/*
-<form>
-  <div className="file-upload">
-    <label htmlFor="file">
-      <FaPaperclip className="faPaperclip" />
-    </label>
-    <input 
-      type="file" 
-      id="file"
-      accept="image/png, image/jpeg" 
-      name="file" 
-      {...register('file', {
-        onChange: onChangePicture
-      })} 
-    />
-  </div>
-</form>
-<form className="textarea-form">
-  <textarea
-    className="chatbox-textarea"
-    type="text"
-    placeholder="type..."
-    onKeyDown={handleOnKeyDown}
-    // onChange={handleOnChange}
-    name="message"
-    {...register('message', {
-      onChange: handleOnChange
-    })}
-  />
-  <input className='chatbox-submit' type="submit" />
-</form>
-*/
 
 // https://refine.dev/blog/how-to-multipart-file-upload-with-react-hook-form/#create-express-server
 // https://www.commoninja.com/blog/handling-multiple-uploads-react-hook-form#Creating-the-Functions-for-Image-Preview-and-Handling-Form-Submission
