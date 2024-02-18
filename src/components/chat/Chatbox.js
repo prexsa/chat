@@ -106,7 +106,7 @@ const Chatbox = ({ userId, from, isGroup, picture }) => {
           onSubmit={handleSubmit(onSubmit)}
         >
           <TextField
-            placeholder="Enter message..."
+            placeholder="Write your message..."
             InputLabelProps={{ shrink: false }}
             fullWidth
             // multiline

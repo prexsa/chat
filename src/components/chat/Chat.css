@@ -61,8 +61,8 @@
 }
 .channel-list-cntr {
   /*border: 1px solid blue;*/
-  margin-top: 15px;
-  padding: 0px 10px;
+  /*margin-top: 15px;
+  padding: 0px 10px;*/
 }
 .channel-list-cntr ul {
   padding-left: 0;
@@ -208,7 +208,7 @@ main .message-panel-container {
   height: inherit;
 }
 .message-panel-header {
-  height: 75px;
+  height: 77px;
   padding: 5px;
   display: flex;
   justify-content: flex-start;

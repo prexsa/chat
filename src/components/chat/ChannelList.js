@@ -3,12 +3,14 @@ import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FriendContext, SocketContext } from './Main';
 import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
+
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CheckIcon from '@mui/icons-material/Check';
 import {
   Box,
+  Button,
   Autocomplete,
+  Tooltip,
   TextField,
   Typography,
   List,
@@ -17,7 +19,7 @@ import {
   ListItemAvatar,
   Avatar,
 } from '@mui/material';
-// import AddFriendRFH from './AddFriend.RFH';
+import AddFriendRFH from './AddFriend.RFH';
 
 const movies = [
   { label: 'The Shawshank Redemption', year: 1994 },
@@ -51,6 +53,12 @@ function ChannelList({ user }) {
       });
     });
   };
+
+  // console.log('roomList ', roomList);
+
+  roomList.filter((room) => {
+    const roommates = room.mates;
+  });
 
   // console.log('roomList: ', roomList);
   /*const onChannelSelect = (channelObj, index) => {
@@ -121,7 +129,8 @@ function ChannelList({ user }) {
           display: 'flex',
           alignItems: 'flex-end',
           padding: '15px 10px',
-          boxShadow: '1px 1px 4px 1px rgba(192,192,192,0.5)',
+          // boxShadow: '1px 1px 4px 1px rgba(192,192,192,0.5)',
+          backgroundColor: '#fdfdfe',
         }}
       >
         <SearchIcon
@@ -139,25 +148,11 @@ function ChannelList({ user }) {
             <TextField
               {...params}
               variant="standard"
-              label="Search contact..."
+              label="Search friends..."
             />
           )}
         />
-        <AddIcon
-          sx={{
-            color: 'action.active',
-            mx: 1,
-            border: '1px solid',
-            borderRadius: '5px',
-            fontSize: '30px',
-            boxShadow:
-              'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px',
-            '&:hover': {
-              cursor: 'pointer',
-              boxShadow: '2px 2px 12px -2px rgba(0,0,0,0.75);',
-            },
-          }}
-        />
+        <AddFriendRFH />
       </Box>
       <button className="btn btn-link" onClick={clearRoomSelected}>
         Clear Message Panel
@@ -167,7 +162,6 @@ function ChannelList({ user }) {
         {roomList &&
           roomList.map((room) => {
             // console.log('room: ', room);
-
             // check if room is active, clear out unreadCount
             room.unreadCount =
               room.roomId === selectedRoom.roomId ? 0 : room.unreadCount;
@@ -178,11 +172,12 @@ function ChannelList({ user }) {
                 onClick={() => handleChannelSelect(room)}
                 sx={{
                   alignItems: 'flex-start',
+                  padding: '18px 10px',
                   color: '#2c333d',
                   '&.Mui-selected': {
                     backgroundColor: '#f8fbfc',
                     boxShadow: '1px 1px 4px -2px rgba(0,0,0,0.75);',
-                    borderRight: '2px solid #2c84f7',
+                    borderRight: '3px solid #2c84f7',
                   },
                   '&:hover': {
                     cursor: 'pointer',
@@ -202,6 +197,7 @@ function ChannelList({ user }) {
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
+                  sx={{ my: 0 }}
                   primary={displayRoommatesName(room.mates)}
                   secondary={room.messages[room.messages.length - 1].message}
                 />
@@ -210,7 +206,7 @@ function ChannelList({ user }) {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'flex-end',
-                    margin: '6px 0',
+                    // margin: '6px 0',
                   }}
                 >
                   <Typography variant="caption">

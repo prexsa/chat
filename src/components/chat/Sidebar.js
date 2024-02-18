@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Box, Button, Menu, MenuItem } from '@mui/material';
+import { Box, Button, Menu, MenuItem, Typography } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 // import CreateGroup from './CreateGroup';
@@ -29,7 +29,7 @@ const Sidebar = () => {
         borderRight: '1px solid #dedede',
         // width: 350,
         height: '100%',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#fdfdfe',
       }}
     >
       <Box
@@ -37,15 +37,22 @@ const Sidebar = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '20px 15px',
+          padding: '20px 0px 15px 15px',
           borderBottom: '1px solid #dedede',
+          backgroundColor: '#f0f2f6',
         }}
       >
-        <Box>
-          <AccountCircleIcon sx={{ fontSize: 30 }} />
-          <span>
+        <Box
+          sx={{
+            display: 'flex',
+            columnGap: '5px',
+            alignItems: 'center',
+          }}
+        >
+          <AccountCircleIcon sx={{ fontSize: 40 }} />
+          <Typography variant="subtitle1" sx={{ fontWeight: '600' }}>
             {user.fname} {user.lname}
-          </span>
+          </Typography>
         </Box>
         <Button
           id="basic-button"

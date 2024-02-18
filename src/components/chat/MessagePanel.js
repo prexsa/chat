@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FriendContext, MessagesContext } from './Main';
-import { Box, Typography, List, ListItem, Button } from '@mui/material';
+import { Box, Typography, List, ListItem } from '@mui/material';
 // import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
@@ -27,10 +27,6 @@ const MessagePanel = ({ user }) => {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: 'end', inline: 'nearest' });
   }, []);
-
-  const goScroll = () => {
-    bottomRef.current?.scrollIntoView({ block: 'end', inline: 'nearest' });
-  };
 
   /*const displayModal = (imgSrc) => {
     // console.log('displayModal; ')
@@ -127,8 +123,23 @@ const MessagePanel = ({ user }) => {
   };
 
   return (
-    <div className="message-box-container">
-      <Button onClick={goScroll}>Click me</Button>
+    <Box
+      className="message-box-container"
+      sx={{
+        overflowY: 'auto',
+        height: `calc(100% -120px)`,
+        '&::-webkit-scrollbar': {
+          width: '0.4em',
+        },
+        '&::-webkit-scrollbar-track': {
+          boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+          webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#9ac1f7',
+        },
+      }}
+    >
       <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
         {selectedRoom.messages.map((message, index) => {
           // console.log('messages: ', message, ' user.userId', user.userId);
@@ -146,7 +157,7 @@ const MessagePanel = ({ user }) => {
         </ListItem>
         <ListItem ref={bottomRef}></ListItem>
       </List>
-    </div>
+    </Box>
   );
 };
 
