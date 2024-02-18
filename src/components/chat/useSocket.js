@@ -8,6 +8,7 @@ const useSocket = (
   selectedRoom,
   setSelectedRoom,
   setFeedback,
+  setSearchOptions,
   socket,
 ) => {
   // const { channel } = useContext(FriendContext);
@@ -186,6 +187,7 @@ const useSocket = (
       socket.off('remove_from_chat');
       socket.off('unread-count');
       socket.off('update_group_name');
+      socket.off('search_users_db');
     };
   }, [
     setRoomList,

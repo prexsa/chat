@@ -39,6 +39,7 @@ const Main = () => {
   const [feedback, setFeedback] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
+  const [searchOptions, setSearchOptions] = useState([]);
 
   // const user = JSON.parse(localStorage.getItem('user'))
   const accessToken = localStorage.getItem('accessToken');
@@ -61,6 +62,7 @@ const Main = () => {
     selectedRoom,
     setSelectedRoom,
     setFeedback,
+    setSearchOptions,
     socket,
   );
 
@@ -68,7 +70,15 @@ const Main = () => {
   const drawerWidth = 300;
   return (
     <FriendContext.Provider
-      value={{ roomList, setRoomList, selectedRoom, setSelectedRoom, username }}
+      value={{
+        roomList,
+        setRoomList,
+        selectedRoom,
+        setSelectedRoom,
+        username,
+        searchOptions,
+        setSearchOptions,
+      }}
     >
       <SocketContext.Provider value={{ socket }}>
         <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
@@ -102,6 +112,7 @@ const Main = () => {
               sx={{
                 flexGrow: 1,
                 // p: 3,
+                paddingLeft: '10px',
                 height: 'auto',
                 width: { sm: `calc(100% - ${drawerWidth}px)` },
               }}
@@ -118,39 +129,3 @@ const Main = () => {
 export default Main;
 
 // https://codesandbox.io/p/sandbox/zen-silence-njx9xx?file=%2Fsrc%2FDemo.js%3A33%2C25
-
-/*
-showDrawer ? (
-  <Box sx={{ textAlign: 'Left', padding: '50px' }}>
-    <Button
-      aria-label="back"
-      size="small"
-      color="primary"
-      startIcon={<ArrowBackIcon />}
-      onClick={() => setShowDrawer(false)}
-    >
-      Back
-    </Button>
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        marginTop: '25px',
-      }}
-    >
-      Profile
-      <IconButton
-        sx={{ marginLeft: '5px' }}
-        color="primary"
-        onClick={editToggleHandler}
-      >
-        <EditIcon sx={{ fontSize: '14px' }} />
-      </IconButton>
-    </Box>
-    <Profile editProfile={editProfile} />
-  </Box>
-) : (
-  <Chat isGroup={channel.isGroup} />
-)
-*/

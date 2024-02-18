@@ -401,6 +401,33 @@ module.exports.addToGroup = async (socket, roomId, name, cb) => {
   cb({ isFound: true, username: name, userId });
 };
 
+module.exports.searchUsersDb = async (socket, name, cb) => {
+  console.log('name ', name);
+
+  const resp = await User.find(
+    {
+      $or: [
+        { email: { $regex: name, $options: 'i' } },
+        { firstname: { $regex: name, $options: 'i' } },
+        { lastname: { $regex: name, $options: 'i' } },
+      ],
+    },
+    { email: 1, firstname: 1, lastname: 1, userId: 1 },
+  );
+
+  const mergeFirstLastName = resp.map((user) => {
+    const username = `${user.firstname} ${user.lastname}`;
+    return {
+      email: user.email,
+      label: username,
+      userId: user.userId,
+    };
+  });
+
+  cb({ resp: mergeFirstLastName });
+  // console.log('resp: searchUsersDb ', resp);
+};
+
 module.exports.leaveChatRoom = async (
   socket,
   userId,
