@@ -1,33 +1,19 @@
-import React, { useState, useContext } from 'react';
-// import { useForm } from 'react-hook-form';
-// FriendContext,
-import { SocketContext } from './Main';
-// import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CustomTabPanel from './CustomTabPanel';
 import AddIcon from '@mui/icons-material/Add';
-import {
-  Box,
-  Button,
-  // OutlinedInput,
-  // InputLabel,
-  // FormControl,
-  // FormHelperText,
-  Tabs,
-  Tab,
-  Typography,
-  Tooltip,
-} from '@mui/material';
-
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { Box, Button, Tabs, Tab, Typography, Tooltip } from '@mui/material';
 import SearchAutoComplete from './Forms/SearchAutoComplete';
 import Email from './Forms/Email';
+import PulsatingDiv from '../animation/PulsatingDiv';
+import SlideLeft from '../animation/SlideLeft';
 
-function AddFriend() {
-  // const { setFriendList } = useContext(FriendContext);
-  const { socket } = useContext(SocketContext);
+const AddFriend = ({ roomList }) => {
   const [show, setShow] = useState(false);
   const [tabPanel, setTabPanel] = useState(0);
 
@@ -37,25 +23,45 @@ function AddFriend() {
 
   return (
     <div>
-      <Tooltip title="Add to chat">
-        <AddIcon
-          sx={{
-            color: '#ffffff',
-            backgroundColor: '#1976d2',
-            marginLeft: 1,
-            border: '1px solid #1976d2',
-            borderRadius: '50%',
-            fontSize: '40px',
-            boxShadow:
-              'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px',
-            '&:hover': {
-              cursor: 'pointer',
-              boxShadow: '2px 2px 12px -2px rgba(0,0,0,0.75);',
-            },
-          }}
-          onClick={() => setShow(true)}
-        />
-      </Tooltip>
+      <Box sx={{ display: 'flex' }}>
+        <Tooltip title="Add to chat">
+          <AddIcon
+            sx={{
+              color: '#ffffff',
+              backgroundColor: '#1976d2',
+              marginLeft: 1,
+              border: '1px solid #1976d2',
+              borderRadius: '50%',
+              fontSize: '40px',
+              boxShadow:
+                'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px',
+              '&:hover': {
+                cursor: 'pointer',
+                boxShadow: '2px 2px 12px -2px rgba(0,0,0,0.75);',
+              },
+            }}
+            onClick={() => setShow(true)}
+          />
+        </Tooltip>
+        {roomList.length <= 0 && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <SlideLeft>
+              <ArrowBackIosNewIcon />
+            </SlideLeft>
+            <PulsatingDiv>
+              <Typography variant="subtitle2" sx={{ textWrap: 'nowrap' }}>
+                Click here to add
+              </Typography>
+            </PulsatingDiv>
+          </Box>
+        )}
+      </Box>
 
       <Dialog open={show} onClose={handleClose}>
         <DialogTitle sx={{ textAlign: 'center', textTransform: 'capitalize' }}>
@@ -73,7 +79,7 @@ function AddFriend() {
             <Typography variant="subtitle1">
               Search for family or friends you may know
             </Typography>
-            <SearchAutoComplete socket={socket} />
+            <SearchAutoComplete />
           </CustomTabPanel>
           <CustomTabPanel value={tabPanel} index={1}>
             <Typography variant="subtitle1">
@@ -88,7 +94,11 @@ function AddFriend() {
       </Dialog>
     </div>
   );
-}
+};
+
+AddFriend.propTypes = {
+  roomList: PropTypes.array,
+};
 
 export default AddFriend;
 

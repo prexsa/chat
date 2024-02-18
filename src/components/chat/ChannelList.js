@@ -133,26 +133,30 @@ function ChannelList({ user }) {
           backgroundColor: '#fdfdfe',
         }}
       >
-        <SearchIcon
-          sx={{
-            color: 'action.active',
-            mr: 1,
-            my: 0.5,
-          }}
-        />
-        <Autocomplete
-          freeSolo
-          options={movies}
-          sx={{ width: 250 }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="standard"
-              label="Search friends..."
+        {roomList && roomList.length > 0 ? (
+          <>
+            <SearchIcon
+              sx={{
+                color: 'action.active',
+                mr: 1,
+                my: 0.5,
+              }}
             />
-          )}
-        />
-        <AddFriendRFH />
+            <Autocomplete
+              freeSolo
+              options={movies}
+              sx={{ width: 250 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="standard"
+                  label="Search friends..."
+                />
+              )}
+            />
+          </>
+        ) : null}
+        <AddFriendRFH roomList={roomList} />
       </Box>
       <button className="btn btn-link" onClick={clearRoomSelected}>
         Clear Message Panel
