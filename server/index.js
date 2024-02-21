@@ -61,7 +61,9 @@ io.on('connection', async (socket) => {
   socket.on('accept_request', (requesterId) =>
     acceptRequest(socket, requesterId),
   );
-  socket.on('deny_request', (requesterId) => denyRequest(socket, requesterId));
+  socket.on('deny_request', (requesterId, cb) =>
+    denyRequest(socket, requesterId, cb),
+  );
   socket.on('clear_unread_count', ({ roomId }) =>
     clearUnreadCount(socket, roomId),
   );

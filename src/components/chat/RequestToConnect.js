@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { SocketContext, FriendContext } from './Main';
@@ -8,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
 const RequestToConnect = () => {
-  const { pendingRequests } = useContext(FriendContext);
+  const { pendingRequests, setPendingRequests } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
   const [show, setShow] = useState(false);
   const [showBtn, setShowBtn] = useState(false);
@@ -23,18 +22,29 @@ const RequestToConnect = () => {
 
   const denyRequestHandler = (requesterId) => {
     socket.connect();
-    socket.emit('deny_request', requesterId);
+    socket.emit('deny_request', requesterId, () => {
+      setPendingRequests((prevState) => {
+        return prevState.filter((prev) => prev.userId !== requesterId);
+      });
+    });
   };
 
   const displayPendingBtn = useCallback(() => {
     setShowBtn(true);
   });
 
+  const closeModal = useCallback(() => {
+    setShow(false);
+  });
+
   useEffect(() => {
     if (pendingRequests.length > 0) {
       displayPendingBtn();
     }
-  }, [pendingRequests, displayPendingBtn]);
+    if (pendingRequests.length === 0) {
+      closeModal();
+    }
+  }, [pendingRequests, displayPendingBtn, closeModal]);
 
   // console.log('pending: ', pendingRequests);
   return (

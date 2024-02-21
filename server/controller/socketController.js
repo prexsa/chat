@@ -276,7 +276,23 @@ module.exports.acceptRequest = async (socket, requesterId, cb) => {
   socket.to(requesterId).emit('request-accepted', updateRequester);
 };
 
-module.exports.denyRequest = async (socket, userId, requesterId, cb) => {};
+module.exports.denyRequest = async (socket, requesterId, cb) => {
+  // update requestee pendingRequest array and add room
+  const userId = socket.user.userId;
+
+  const removeFromPendingRequest = await User.findOneAndUpdate(
+    { userId: userId },
+    { $pull: { pendingRequest: requesterId } },
+  );
+  // update requestor's requested array
+  const removeFromRequested = await User.findOneAndUpdate(
+    { userId: requesterId },
+    { $pull: { requested: userId } },
+    { returnDocument: true },
+  );
+
+  cb({ isSuccessful: true });
+};
 
 module.exports.sendRequest = async (socket, userId, cb) => {
   // socket.user.userId

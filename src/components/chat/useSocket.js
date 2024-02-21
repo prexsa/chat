@@ -31,7 +31,7 @@ const useSocket = (
       setUser(username);
     });
     socket.on('roomList', (roomList) => {
-      console.log('roomList: ', roomList);
+      // console.log('roomList: ', roomList);
       setRoomList(roomList);
     });
 
