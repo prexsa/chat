@@ -4,11 +4,12 @@ import { useEffect, useRef } from 'react';
 const useSocket = (
   setRoomList,
   setMessages,
-  setUsername,
+  setUser,
   selectedRoom,
   setSelectedRoom,
   setFeedback,
   setSearchOptions,
+  setPendingRequests,
   socket,
 ) => {
   // const { channel } = useContext(FriendContext);
@@ -26,11 +27,11 @@ const useSocket = (
     }
     // console.log('connect', () => console.log('connect to socket server'))
     socket.on('current_user', (username) => {
-      // console.log('usename: ', username)
-      setUsername(username);
+      // console.log('usename: ', username);
+      setUser(username);
     });
     socket.on('roomList', (roomList) => {
-      // console.log('roomList: ', roomList)
+      console.log('roomList: ', roomList);
       setRoomList(roomList);
     });
 
@@ -50,6 +51,25 @@ const useSocket = (
       setRoomList((prevFriends) => {
         return [newFriend, ...prevFriends];
       });
+    });
+
+    socket.on('requests_to_connect', ({ mappedNameToUserId }) => {
+      // const { username, userId } = userInfo;
+      // console.log('userInfo: ', mappedNameToUserId);
+      setPendingRequests((prevState) => {
+        // check for duplicates
+        const set = new Set(prevState.map(({ userId }) => userId));
+        const combined = [
+          ...prevState,
+          ...mappedNameToUserId.filter(({ userId }) => !set.has(userId)),
+        ];
+        // console.log('combined:', combined);
+        return [...combined];
+      });
+    });
+
+    socket.on('request_accepted', (updatedUserRecord) => {
+      console.log('updatedUserRecord ', updatedUserRecord);
     });
 
     socket.on('remove_from_chat', ({ roomId, usernameToRemove }) => {
@@ -188,11 +208,12 @@ const useSocket = (
       socket.off('unread-count');
       socket.off('update_group_name');
       socket.off('search_users_db');
+      socket.off('requests_to_connect');
     };
   }, [
     setRoomList,
     setMessages,
-    setUsername,
+    setUser,
     socket,
     setFeedback,
     selectedRoomRef,

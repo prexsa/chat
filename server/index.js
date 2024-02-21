@@ -9,7 +9,7 @@ const httpServer = require('http').createServer(app);
 const { corsConfig } = require('./session');
 const {
   authorizeUser,
-  addFriend,
+  sendRequest,
   createGroup,
   initializeUser,
   dm,
@@ -23,6 +23,8 @@ const {
   addToGroup,
   leaveChatRoom,
   searchUsersDb,
+  acceptRequest,
+  denyRequest,
   // removeUserFromGroup,
   // leaveGroup,
   // disconnectUserRelationship,
@@ -53,7 +55,13 @@ io.on('connection', async (socket) => {
   // console.log('connection')
   initializeUser(socket);
   socket.on('dm', (message) => dm(socket, message));
-  socket.on('add_friend', (name, cb) => addFriend(socket, name, cb));
+  socket.on('send_request', ({ email, userId, username }, cb) =>
+    sendRequest(socket, userId, cb),
+  );
+  socket.on('accept_request', (requesterId) =>
+    acceptRequest(socket, requesterId),
+  );
+  socket.on('deny_request', (requesterId) => denyRequest(socket, requesterId));
   socket.on('clear_unread_count', ({ roomId }) =>
     clearUnreadCount(socket, roomId),
   );

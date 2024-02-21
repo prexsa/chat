@@ -24,6 +24,12 @@ const UserSchema = new mongoose.Schema({
   rooms: {
     type: Array,
   },
+  requested: {
+    type: Array,
+  },
+  pendingRequest: {
+    type: Array,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

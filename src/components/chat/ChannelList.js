@@ -3,7 +3,6 @@ import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FriendContext, SocketContext } from './Main';
 import SearchIcon from '@mui/icons-material/Search';
-
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CheckIcon from '@mui/icons-material/Check';
 import {
@@ -18,8 +17,10 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
+  Snackbar,
 } from '@mui/material';
 import AddFriendRFH from './AddFriend.RFH';
+import RequestToConnect from './RequestToConnect';
 
 const movies = [
   { label: 'The Shawshank Redemption', year: 1994 },
@@ -54,58 +55,9 @@ function ChannelList({ user }) {
     });
   };
 
-  // console.log('roomList ', roomList);
-
   roomList.filter((room) => {
     const roommates = room.mates;
   });
-
-  // console.log('roomList: ', roomList);
-  /*const onChannelSelect = (channelObj, index) => {
-    // console.log('channel: ', channelObj)
-    // setActiveIndex(index);
-    setSelectedRoom({
-      ...channelObj,
-      username: channelObj?.username || channelObj?.title,
-      isGroup: channelObj.hasOwn('roomId'),
-      // checks whether channel is a group, group has 'roomId' instead of 'userId'
-    });
-    if (channelObj.userId === '' && index === null) return;
-    // get messages for channel
-    setRoomList((prevFriends) => {
-      return [...prevFriends].map((friend) => {
-        if (friend.userId === channelObj.userId) {
-          socket.connect();
-          // socket.emit('clear_unread_count', { roomId: channelObj.userID })
-          socket.emit('handle_room_selected', {
-            channelId: channelObj?.userId || channelObj?.roomId,
-            isGroup: channelObj.hasOwn('roomId'),
-          });
-        }
-        return friend;
-      });
-    });
-  };*/
-  /*
-  const setBadgeCSS = (value) => {
-    return Number(value) < 10 ? 'badge' : 'badge double-digits';
-  };
-  // console.log('roomList: ', roomList);
-  if (roomList.length <= 0) {
-    return (
-      <Box sx={{ p: 2 }}>
-        <Typography variant="subtitle1">
-          Your friend&apos;s list is empty
-        </Typography>
-        <Typography variant="subtitle2">
-          Add friends to your chat with the button below
-        </Typography>
-        <Box sx={{ mt: 5 }}>
-          <AddFriendRFH />
-        </Box>
-      </Box>
-    );
-  }*/
 
   const clearRoomSelected = () => {
     setSelectedRoom({ userId: '' });
@@ -114,7 +66,7 @@ function ChannelList({ user }) {
   // console.log({ selectedRoom, roomList });
   const displayRoommatesName = (roommates) => {
     const filtered = roommates.filter((mate) => mate.userId !== user.userId);
-    return filtered[0].username;
+    return filtered[0].fullname;
   };
 
   const convertToHumanReadable = (unix) => {
@@ -158,10 +110,10 @@ function ChannelList({ user }) {
         ) : null}
         <AddFriendRFH roomList={roomList} />
       </Box>
-      <button className="btn btn-link" onClick={clearRoomSelected}>
+      <Button className="btn btn-link" onClick={clearRoomSelected}>
         Clear Message Panel
-      </button>
-
+      </Button>
+      <RequestToConnect />
       <List dense={false} sx={{ mt: 2 }}>
         {roomList &&
           roomList.map((room) => {
@@ -203,7 +155,11 @@ function ChannelList({ user }) {
                 <ListItemText
                   sx={{ my: 0 }}
                   primary={displayRoommatesName(room.mates)}
-                  secondary={room.messages[room.messages.length - 1].message}
+                  secondary={
+                    room.messages.length > 0
+                      ? room.messages[room.messages.length - 1].message
+                      : null
+                  }
                 />
                 <Box
                   sx={{
@@ -214,9 +170,11 @@ function ChannelList({ user }) {
                   }}
                 >
                   <Typography variant="caption">
-                    {convertToHumanReadable(
-                      room.messages[room.messages.length - 1].date,
-                    )}
+                    {room.messages.length > 0
+                      ? convertToHumanReadable(
+                          room.messages[room.messages.length - 1].date,
+                        )
+                      : null}
                   </Typography>
                   <Typography variant="caption">
                     {room.unreadCount > 0 ? (

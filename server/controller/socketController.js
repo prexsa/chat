@@ -11,6 +11,8 @@ const User = require('../model/user.model');
 const Room = require('../model/room.model');
 // const Message = require('../model/message.model');
 
+const RoomUtil = require('./room.util');
+
 module.exports.authorizeUser = (socket, next) => {
   // console.log('socket: ', socket.request.session)
   const token = socket.handshake.auth.token;
@@ -88,6 +90,11 @@ const getRoomDetails = async (socket, rooms) => {
   const roomDetails = await Promise.all(
     rooms.map(async (roomId) => {
       const details = await Room.find({ roomId: roomId });
+      // console.log('details: ', details[0]);
+      const { mates } = details[0];
+      const mapped = await mapNameToUserId(mates);
+      details[0].mates = mapped;
+      // console.log('details: ', mapped);
       return details[0];
     }),
   );
@@ -187,13 +194,37 @@ const isUsernameAvailable = async (username) => {
   return await redisClient.sismember(`g_a_:`, username);
 };
 
+const mapNameToUserId = async (arrayOfUserIds) => {
+  const mapped = await Promise.all(
+    arrayOfUserIds.map(async (userId) => {
+      const user = await User.findOne(
+        { userId: userId },
+        { userId: 1, firstname: 1, lastname: 1 },
+      );
+      return {
+        userId: user.userId,
+        fullname: `${user.firstname} ${user.lastname}`,
+      };
+    }),
+  );
+
+  return Promise.resolve(mapped);
+};
+
+const getRequestsList = async (socket, pendingRequest) => {
+  // console.log('mapMsgToUsername :', mapNameToUserId);
+  const mappedNameToUserId = await mapNameToUserId(pendingRequest);
+  // console.log('mapped: ', mappedNameToUserId);
+  socket.emit('requests_to_connect', { mappedNameToUserId });
+};
+
 module.exports.initializeUser = async (socket) => {
   // set user to active
   socket.join(socket.user.userId);
 
   const user = await User.find({ userId: socket.user.userId });
   // console.log('user: ', user);
-  const { rooms } = user[0];
+  const { rooms, pendingRequest } = user[0];
   // console.log('rooms: ', rooms);
   redisClient.hset(
     `userid:${socket.user.userId}`,
@@ -208,6 +239,7 @@ module.exports.initializeUser = async (socket) => {
   addToAllUsers(socket.user.username, socket.user.userId);
   notifyRooms(socket, rooms);
   getRoomDetails(socket, rooms);
+  getRequestsList(socket, pendingRequest);
   // populateRooms(socket);
   // console.log('rooms: ', rooms)
   // updateFriendsList(socket)
@@ -218,9 +250,65 @@ module.exports.initializeUser = async (socket) => {
   const added = await redisClient.hset(`allUsers`)
 }*/
 
-module.exports.addFriend = async (socket, name, cb) => {
-  // console.log('name: ', name)
-  // console.log('socket user: ', socket.user)
+module.exports.acceptRequest = async (socket, requesterId, cb) => {
+  // console.log({ requesterId });
+  const userId = socket.user.userId;
+  // console.log('userId: ', userId);
+  // console.log('requesterId: ', requesterId);
+  // create room
+  const { roomId } = await RoomUtil.createARoomRelationship(
+    userId,
+    requesterId,
+  );
+  // update requestee pendingRequest array and add room
+  const updateAcceptee = await User.findOneAndUpdate(
+    { userId: userId },
+    { $pull: { pendingRequest: requesterId }, $addToSet: { rooms: roomId } },
+  );
+  // update requestor's requested array
+  const updateRequester = await User.findOneAndUpdate(
+    { userId: requesterId },
+    { $pull: { requested: userId }, $addToSet: { rooms: roomId } },
+    { returnDocument: true },
+  );
+  getRoomDetails(socket, updateRequester.rooms);
+  // send the socket
+  socket.to(requesterId).emit('request-accepted', updateRequester);
+};
+
+module.exports.denyRequest = async (socket, userId, requesterId, cb) => {};
+
+module.exports.sendRequest = async (socket, userId, cb) => {
+  // socket.user.userId
+  // update your requesting record
+  const addUserIdToRequestedArr = await User.findOneAndUpdate(
+    { userId: socket.user.userId },
+    { $addToSet: { requested: userId } },
+    { returnDocument: true },
+  );
+  // console.log('updated: ', updated);
+  // update requestee's records
+  const addUserIdToPendingRequest = await User.findOneAndUpdate(
+    { userId: userId },
+    { $addToSet: { pendingRequest: socket.user.userId } },
+    { returnDocument: true },
+  );
+
+  // console.log({ addUserIdToPendingRequest, addUserIdToRequestedArr });
+
+  const userInfo = [
+    {
+      username: `${addUserIdToRequestedArr.firstname} ${addUserIdToRequestedArr.lastname}`,
+      userId: addUserIdToRequestedArr.userId,
+    },
+  ];
+
+  // notify requestee of request
+  socket
+    .to(userId)
+    .emit('requests_to_connect', { mappedNameToUserId: userInfo });
+
+  /*
   const { userId } = await lookUpByUsername(name);
   // console.log('addFriend: userId ', userId)
   if (userId === '') {
@@ -255,7 +343,7 @@ module.exports.addFriend = async (socket, name, cb) => {
   };
   // emit to added friend
   socket.to(userId).emit('new_friend', self);
-  cb({ done: true, newFriend });
+  cb({ done: true, newFriend });*/
 };
 
 module.exports.clearUnreadCount = async (socket, roomId) => {

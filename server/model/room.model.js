@@ -7,7 +7,6 @@ const RoomSchema = new mongoose.Schema({
   },
   isGroup: {
     type: Boolean,
-    required: true,
   },
   messages: {
     type: [
@@ -23,12 +22,7 @@ const RoomSchema = new mongoose.Schema({
     required: true,
   },
   mates: {
-    type: [
-      {
-        userId: String,
-        username: String,
-      },
-    ],
+    type: Array,
     required: true,
   },
 });

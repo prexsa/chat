@@ -35,11 +35,12 @@ const Main = () => {
     isGroup: false,
     mates: [],
   });
-  const [username, setUsername] = useState('');
+  const [user, setUser] = useState('');
   const [feedback, setFeedback] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
   const [searchOptions, setSearchOptions] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
 
   // const user = JSON.parse(localStorage.getItem('user'))
   const accessToken = localStorage.getItem('accessToken');
@@ -58,11 +59,12 @@ const Main = () => {
   useSocket(
     setRoomList,
     setMessages,
-    setUsername,
+    setUser,
     selectedRoom,
     setSelectedRoom,
     setFeedback,
     setSearchOptions,
+    setPendingRequests,
     socket,
   );
 
@@ -75,9 +77,11 @@ const Main = () => {
         setRoomList,
         selectedRoom,
         setSelectedRoom,
-        username,
+        user,
         searchOptions,
         setSearchOptions,
+        pendingRequests,
+        setPendingRequests,
       }}
     >
       <SocketContext.Provider value={{ socket }}>

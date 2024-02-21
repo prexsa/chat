@@ -6,6 +6,8 @@ const {
   sendPasswordResetEmail,
   sendEmailRequest,
 } = require('./nodemailer.controller');
+
+const RoomUtil = require('./room.util');
 const JWT_SECRET = process.env.JWT_SECRET;
 const { jwtSign, jwtVerify, getJwt } = require('./jwt.controller');
 
@@ -76,7 +78,7 @@ exports.login = (req, res) => {
     });
 };
 // requesterUserId, userId
-const createARoomRelationship = async (ids, username) => {
+/*const createARoomRelationship = async (ids, username) => {
   const roomUUID = crypto.randomUUID();
   // create room
   const room = new Room({
@@ -94,7 +96,7 @@ const createARoomRelationship = async (ids, username) => {
   });
   res.send('success');
 };
-
+*/
 const addNewUserToExistingGroup = (roomId, userId) => {};
 
 exports.signup = async (req, res) => {
@@ -124,7 +126,7 @@ exports.signup = async (req, res) => {
         const username = `${fname} ${lname}`;
         // create relationship between users
         if (requesterUserId !== '')
-          createARoomRelationship([requesterUserId, user.userId], username);
+          RoomUtil.createARoomRelationship(user.userId, requesterUserId);
 
         jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then((token) => {
           res.send({

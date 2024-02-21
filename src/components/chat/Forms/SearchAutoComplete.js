@@ -44,30 +44,10 @@ export default function CustomAutoComplete() {
     console.log('data: ', data);
     if (data.search.userId.trim() === '') return;
 
-    return;
-    socket.emit('add_friend', data.search, ({ errorMsg, done, newFriend }) => {
-      console.log(
-        'add_friend: ',
-        done,
-        'errorMsg: ',
-        errorMsg,
-        ' new: ',
-        newFriend,
-      );
-      /*
-      if (done) {
-        setFriendList((currFriendList) => [newFriend, ...currFriendList]);
-        setShowResp(true);
-        setRespMessage('Friend added');
-        reset({ name: '' });
-        setTimeout(() => {
-          handleClose();
-        }, 5000);
-      } else {
-        setRespMessage(errorMsg);
-        reset({ name: '' });
-      }
-*/
+    socket.emit('send_request', {
+      email: data.search.email,
+      username: data.search.label,
+      userId: data.search.userId,
     });
   };
 
@@ -116,7 +96,7 @@ export default function CustomAutoComplete() {
               onChange={(event, item) => {
                 onChange(item);
               }}
-              // inputValue={inputValue}
+              inputValue={inputValue}
               onInputChange={(event, newInputValue) => {
                 setInputValue(newInputValue);
               }}
