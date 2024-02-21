@@ -314,7 +314,7 @@ module.exports.sendRequest = async (socket, userId, cb) => {
 
   const userInfo = [
     {
-      username: `${addUserIdToRequestedArr.firstname} ${addUserIdToRequestedArr.lastname}`,
+      fullname: `${addUserIdToRequestedArr.firstname} ${addUserIdToRequestedArr.lastname}`,
       userId: addUserIdToRequestedArr.userId,
     },
   ];

@@ -63,8 +63,8 @@ const useSocket = (
           ...prevState,
           ...mappedNameToUserId.filter(({ userId }) => !set.has(userId)),
         ];
-        // console.log('combined:', combined);
-        return [...combined];
+        console.log('combined:', combined);
+        return combined;
       });
     });
 
