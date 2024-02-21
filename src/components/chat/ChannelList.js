@@ -17,7 +17,6 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  Snackbar,
 } from '@mui/material';
 import AddFriendRFH from './AddFriend.RFH';
 import RequestToConnect from './RequestToConnect';

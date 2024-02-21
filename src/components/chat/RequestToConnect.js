@@ -5,12 +5,14 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import CustomSnackbar from './CustomSnackbar';
 
 const RequestToConnect = () => {
   const { pendingRequests, setPendingRequests } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
   const [show, setShow] = useState(false);
   const [showBtn, setShowBtn] = useState(false);
+  const [openSnackBar, setOpenSnackbar] = useState(false);
 
   const handleClose = () => setShow(false);
 
@@ -31,9 +33,11 @@ const RequestToConnect = () => {
 
   const displayPendingBtn = useCallback(() => {
     setShowBtn(true);
+    setOpenSnackbar(true);
   });
 
   const closeModal = useCallback(() => {
+    setShowBtn(false);
     setShow(false);
   });
 
@@ -52,6 +56,10 @@ const RequestToConnect = () => {
       {showBtn ? (
         <Button onClick={() => setShow(true)}>Request to connect</Button>
       ) : null}
+      <CustomSnackbar
+        open={openSnackBar}
+        handleClose={() => setOpenSnackbar(false)}
+      />
       <Dialog open={show} onClose={handleClose}>
         <DialogTitle sx={{ textAlign: 'center', textTransform: 'capitalize' }}>
           Are you ready to connect?
