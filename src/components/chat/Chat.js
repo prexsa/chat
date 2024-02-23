@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { useUserContext } from '../../userContext';
 import { FriendContext } from './Main';
 import { Box, Typography, Divider, Paper, Grid } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import VerticallyCenteredModal from '../VerticallyCenteredModal';
 import Chatbox from './Chatbox';
 import MessagePanel from './MessagePanel';
 import EmptyChat from './EmptyChat';
 import ChatHeader from './ChatHeader';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const Chat = ({ isGroup }) => {
   const { user } = useUserContext();
@@ -33,14 +33,15 @@ const Chat = ({ isGroup }) => {
     setImages(images);
     setImageIndex(index);
   };
-
-  if (selectedRoom.userId === '') {
+  // console.log('selectedRoom: ', selectedRoom);
+  if (Object.keys(selectedRoom).length === 0 || selectedRoom.roomId === '') {
     return <EmptyChat />;
   }
 
   const displayRoommatesName = (roommates) => {
+    // console.log('roommates: ', roommates);
     const filtered = roommates.filter((mate) => mate.userId !== user.userId);
-    return filtered[0].username;
+    return filtered[0];
   };
 
   return (
@@ -52,7 +53,7 @@ const Chat = ({ isGroup }) => {
         images={images}
         activeindex={imageIndex}
       />
-      <ChatHeader roomName={displayRoommatesName(selectedRoom.mates)} />
+      <ChatHeader roomDetails={displayRoommatesName(selectedRoom.mates)} />
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <Box
           sx={{
@@ -72,7 +73,7 @@ const Chat = ({ isGroup }) => {
             extractAllImagesFromMessages={extractAllImagesFromMessages}
           />
           <Chatbox
-            userId={selectedRoom?.userId || selectedRoom?.roomId}
+            roomId={selectedRoom?.userId || selectedRoom?.roomId}
             from={user.userId}
             isGroup={selectedRoom?.isGroup}
             // picture={picture}

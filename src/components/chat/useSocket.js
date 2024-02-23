@@ -63,7 +63,7 @@ const useSocket = (
           ...prevState,
           ...mappedNameToUserId.filter(({ userId }) => !set.has(userId)),
         ];
-        console.log('combined:', combined);
+        // console.log('combined:', combined);
         return combined;
       });
     });
@@ -72,9 +72,15 @@ const useSocket = (
       console.log('updatedUserRecord ', updatedUserRecord);
     });
 
-    socket.on('remove_from_chat', ({ roomId, usernameToRemove }) => {
-      // console.log('remove_from_chat: ', { roomId, usernameToRemove })
-      setRoomList((prevFriends) => {
+    socket.on('remove_from_chat', ({ roomId, userIdToRemove }) => {
+      console.log('remove_from_chat: ', { roomId, userIdToRemove });
+
+      setRoomList((prevState) => {
+        const filtered = prevState.filter((room) => room.roomId !== roomId);
+        // console.log('filtered: ', filtered);
+        return filtered;
+      });
+      /*setRoomList((prevFriends) => {
         // console.log('prevFriends: ', prevFriends)
         if (prevFriends === undefined) return;
         let index = null;
@@ -87,64 +93,37 @@ const useSocket = (
           .slice(0, index)
           .concat(prevFriends.slice(index + 1));
         return updatedFriendsList;
-      });
+      });*/
     });
 
     socket.on('dm', (msg) => {
-      console.log('ms: ', msg);
+      // console.log('ms: ', msg);
       const { date, message, userId, roomId } = msg;
+      // check if the user is currently selected
+      // console.log('selectedRoom: ', selectedRoom);
+      if (selectedRoom.roomId === roomId) {
+        // console.log('is it selected');
+        setSelectedRoom((prevState) => {
+          // console.log((prevState.messages = [...prevState.messages, msg]));
+          return (prevState.messages = [...prevState.messages, msg]);
+        });
+      }
 
       setRoomList((prevRoom) => {
         return [...prevRoom].map((room) => {
           if (room.roomId === roomId) {
             room.messages.push({ date, message, userId });
             room.hasNewMessage = true;
-            room.unreadCount = room.hasOwnProperty('unreadCount')
-              ? room.unreadCount + 1
-              : 1;
+            const unreadCount =
+              room.hasOwnProperty('unreadCount') &&
+              room.unreadCount !== undefined
+                ? room.unreadCount + 1
+                : 1;
+            room.unreadCount = unreadCount;
           }
           return room;
         });
       });
-
-      return;
-      // console.log('dm channel: ', channelRef.current)
-      if (selectedRoomRef.current.userId === msg.from) {
-        socket.emit('clear_unread_count', { roomId: msg.from });
-      }
-      // socket.emit('handle_room_selected', { channelId: channelObj.userID })
-      setRoomList((prevFriends) => {
-        // console.log('prevFriends: ', prevFriends)
-        // console.log('channel: ', channelRef)
-        return [...prevFriends].map((friend) => {
-          // if channel is active
-          if (msg.isGroup) {
-            if (friend.roomId === msg.to) {
-              friend.latestMessage = msg.content;
-            }
-          } else {
-            if (msg.from === friend.userId) {
-              friend.latestMessage = msg.content;
-            }
-          }
-          return friend;
-        });
-      });
-      // console.log('channelRef: ', channelRef)
-      // if incoming messages matches active channel, add messages to message array
-      if (msg.isGroup) {
-        if (msg.to === selectedRoomRef.current.roomId) {
-          setMessages((prevMsg) => {
-            return [...prevMsg, msg];
-          });
-        }
-      } else {
-        if (msg.from === selectedRoomRef.current.userId) {
-          setMessages((prevMsg) => {
-            return [...prevMsg, msg];
-          });
-        }
-      }
     });
 
     socket.on('update_group_name', ({ roomId, updatedTitle }) => {

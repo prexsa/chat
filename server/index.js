@@ -88,9 +88,10 @@ io.on('connection', async (socket) => {
   // socket.on('leave_group', ({ userId, channelId }, cb) => leaveGroup(socket, userId, channelId, cb))
   // socket.on('remove_member_from_group', ({ roomId, userId }, cb) => removeUserFromGroup(socket, roomId, userId, cb))
 
-  socket.on('leave_chat', ({ userId, channelId, isGroup }, cb) =>
-    leaveChatRoom(socket, userId, channelId, isGroup, cb),
+  socket.on('leave_chat', ({ hostUserId, userIdToRemove, roomId }, cb) =>
+    leaveChatRoom(socket, hostUserId, userIdToRemove, roomId, cb),
   );
+
   socket.on('add_members', ({ roomId, name }, cb) =>
     addToGroup(socket, roomId, name, cb),
   );

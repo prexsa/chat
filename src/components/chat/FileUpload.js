@@ -9,14 +9,14 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
   Might be a better idea load file via "http post" request instead
 */
 
-const FileUpload = ({ userId, from, isGroup }) => {
+const FileUpload = ({ roomId, from, isGroup }) => {
   const { socket } = useContext(SocketContext);
   const { setMessages } = useContext(MessagesContext);
 
   const handleFileUpload = (file) => {
     // console.log("file; ", file);
     const fileObj = {
-      to: userId,
+      roomId: roomId,
       from: from,
       fileName: file.name,
       file: file,
@@ -63,7 +63,7 @@ const FileUpload = ({ userId, from, isGroup }) => {
 };
 
 FileUpload.propTypes = {
-  userId: PropTypes.string,
+  roomId: PropTypes.string,
   from: PropTypes.string,
   isGroup: PropTypes.bool,
 };

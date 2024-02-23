@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useUserContext } from '../../userContext';
@@ -15,32 +16,30 @@ import {
   DialogTitle,
 } from '@mui/material';
 
-const LeaveChat = ({ isGroup }) => {
+const LeaveChat = ({ isGroup, userId }) => {
   const { user } = useUserContext();
-  const { channel, setFriendList, setChannel } = useContext(FriendContext);
+  const { selectedRoom, setRoomList, setSelectedRoom } =
+    useContext(FriendContext);
   const { socket } = useContext(SocketContext);
   const [show, setShow] = useState(false);
 
   const leaveChat = () => {
-    // check if channel is a group
-    /*if(channel.owner === user.userId) {
-      console.log('matched')
-      return;
-    }*/
+    console.log({ user, selectedRoom });
     socket.connect();
     socket.emit(
       'leave_chat',
       {
-        userId: user.userId,
-        channelId: channel?.userId || channel?.roomId,
-        isGroup,
+        hostUserId: user.userId,
+        userIdToRemove: userId,
+        roomId: selectedRoom.roomId,
       },
-      ({ roomId }) => {
-        setFriendList((prevFriends) => {
-          return [...prevFriends].filter((friend) => friend.userId !== roomId);
+      ({ roomId, userIdToRemove }) => {
+        console.log({ roomId, userIdToRemove });
+        setRoomList((prevRooms) => {
+          return [...prevRooms].filter((room) => room.roomId !== roomId);
         });
         handleClose();
-        setChannel({ userId: '' });
+        setSelectedRoom({});
       },
     );
   };
@@ -93,6 +92,7 @@ const LeaveChat = ({ isGroup }) => {
 
 LeaveChat.propTypes = {
   isGroup: PropTypes.bool,
+  userId: PropTypes.string.isRequired,
 };
 
 export default LeaveChat;

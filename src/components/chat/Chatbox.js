@@ -7,7 +7,7 @@ import { Box, Button, TextField, InputAdornment } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import FileUpload from './FileUpload';
 
-const Chatbox = ({ userId, from, isGroup, picture }) => {
+const Chatbox = ({ roomId, from, isGroup, picture }) => {
   // console.log('userID: ', userId)
   const { socket } = useContext(SocketContext);
   const { selectedRoom, setSelectedRoom } = useContext(FriendContext);
@@ -20,7 +20,7 @@ const Chatbox = ({ userId, from, isGroup, picture }) => {
     // console.log('message; ', message)
     const date = Date.now();
     const message = {
-      to: userId,
+      roomId: roomId,
       from: from,
       content: data.message,
       isGroup,
@@ -51,7 +51,7 @@ const Chatbox = ({ userId, from, isGroup, picture }) => {
       // console.log('target value: ', e.target.value)
       setFeedbackToggle(false);
       const feedback = {
-        userId,
+        userId: roomId,
         showFeedback: false,
       };
       socket.connect();
@@ -67,7 +67,7 @@ const Chatbox = ({ userId, from, isGroup, picture }) => {
     if (!feedbackToggle) {
       setFeedbackToggle(true);
       const feedback = {
-        userId,
+        userId: roomId,
         showFeedback: true,
       };
       socket.connect();
@@ -90,7 +90,7 @@ const Chatbox = ({ userId, from, isGroup, picture }) => {
     <div className="chatbox-container">
       <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
         <FileUpload
-          userId={userId}
+          roomId={roomId}
           from={from}
           isGroup={isGroup}
           picture={picture}

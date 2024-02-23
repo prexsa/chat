@@ -59,7 +59,7 @@ function ChannelList({ user }) {
   });
 
   const clearRoomSelected = () => {
-    setSelectedRoom({ userId: '' });
+    setSelectedRoom({});
     setIsActive('');
   };
   // console.log({ selectedRoom, roomList });
@@ -72,7 +72,7 @@ function ChannelList({ user }) {
     const date = new Date(unix * 1000);
     return date.toLocaleString([], { timeStyle: 'short' });
   };
-
+  // console.log('roomList; ', roomList);
   return (
     <div className="channel-list-cntr">
       <Box

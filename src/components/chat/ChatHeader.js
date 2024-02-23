@@ -8,7 +8,8 @@ import LeaveChat from './LeaveChat';
 // import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
 // import VideoCallIcon from '@mui/icons-material/VideoCall';
 
-const ChatHeader = ({ isGroup, roomName }) => {
+const ChatHeader = ({ isGroup, roomDetails }) => {
+  // console.log('roomDetails: ', roomDetails);
   const [toggleExpand, setToggleExpand] = useState(false);
   return (
     <Box
@@ -17,10 +18,10 @@ const ChatHeader = ({ isGroup, roomName }) => {
         toggleExpand ? 'message-panel-header expand' : 'message-panel-header'
       }`}
     >
-      <LeaveChat isGroup={isGroup} />
+      <LeaveChat isGroup={isGroup} userId={roomDetails.userId} />
       {isGroup && <AddToGroup />}
       <AccountCircleIcon className="channel-img" />
-      <Typography variant="h6">{roomName}</Typography>
+      <Typography variant="h6">{roomDetails.fullname}</Typography>
       <TitleForm
         toggleExpand={toggleExpand}
         setToggleExpand={setToggleExpand}
@@ -88,7 +89,10 @@ const ChatHeader = ({ isGroup, roomName }) => {
 
 ChatHeader.propTypes = {
   isGroup: PropTypes.bool,
-  roomName: PropTypes.string,
+  roomDetails: PropTypes.shape({
+    fullname: PropTypes.string.isRequired,
+    userId: PropTypes.string.isRequired,
+  }),
 };
 
 export default ChatHeader;

@@ -87,6 +87,7 @@ const notifyRooms = async (socket, rooms) => {
 };
 
 const getRoomDetails = async (socket, rooms) => {
+  // console.log('rooms: ', rooms);
   const roomDetails = await Promise.all(
     rooms.map(async (roomId) => {
       const details = await Room.find({ roomId: roomId });
@@ -371,26 +372,48 @@ module.exports.dm = async (socket, msg) => {
   console.log('msg: ', msg);
   // check if the user is online
   // const unixDateTime = Date.now();
+  const roomId = msg.roomId;
   const message = {
     userId: msg.from,
     message: msg.content,
     date: msg.date,
   };
 
-  const updateRoomMessages = await Room.updateOne(
-    { roomId: msg.to },
+  const updatedRoomMessages = await Room.findOneAndUpdate(
+    { roomId: roomId },
     { $push: { messages: message } },
+    { new: true }, // flag to return the updated record
   );
 
-  const getRoom = await Room.find({ roomId: msg.to });
+  // console.log(updateRoomMessages);
+
+  let roomMessages = updatedRoomMessages.messages;
+  let getLastMessage = [];
+  if (roomMessages.length > 0) {
+    getLastMessage = roomMessages[roomMessages.length - 1];
+  } else {
+    getLastMessage = roomMessages[0];
+  }
+
+  const getRoom = await Room.find({ roomId: roomId });
   const getRoommates = getRoom[0].mates;
-  const matesToReceiveMsg = getRoommates
-    .filter((mate) => mate.userId !== msg.from)
-    .map((x) => x.userId);
+  // console.log('getRoommates: ', getRoommates);
+  const matesToReceiveMsg = getRoommates.filter((mate) => mate !== msg.from);
+  // .map((x) => x.userId);
 
   // add roomId to message
-  message['roomId'] = msg.to;
-  socket.to(matesToReceiveMsg).emit('dm', message);
+  // getLastMessage['roomId'] = roomId;
+  // console.log('matesToReceiveMsg ', matesToReceiveMsg);
+  // console.log('getLastMessage: ', getLastMessage);
+  const addRoomId = {
+    userId: getLastMessage.userId,
+    message: getLastMessage.message,
+    date: getLastMessage.date,
+    _id: getLastMessage._id,
+    roomId,
+  };
+  // console.log('addRoomId: ', addRoomId);
+  socket.to(matesToReceiveMsg).emit('dm', addRoomId);
 
   return;
   msg.from = socket.user.userId;
@@ -534,11 +557,36 @@ module.exports.searchUsersDb = async (socket, name, cb) => {
 
 module.exports.leaveChatRoom = async (
   socket,
-  userId,
-  channelId,
-  isGroup,
+  hostUserId,
+  userIdToRemove,
+  roomId,
   cb,
 ) => {
+  // remove connection from host records
+  const hostRecord = await User.findOneAndUpdate(
+    { userId: hostUserId },
+    { $pull: { rooms: userIdToRemove } },
+    { returnDocument: true },
+  );
+  // remove connection from mates records
+  const matesRecord = await User.findOneAndUpdate(
+    { userId: hostUserId },
+    { $pull: { rooms: hostUserId } },
+    { returnDocument: true },
+  );
+
+  // delete room's records
+  const roomRecordRemoved = await Room.deleteOne({ roomId: roomId });
+
+  // notify user to remove connection
+  socket
+    .to(userIdToRemove)
+    .emit('remove_from_chat', { userIdToRemove: hostUserId, roomId });
+
+  // callback to update host's state
+  cb({ userIdToRemove, roomId });
+
+  return;
   if (isGroup) {
     const removeFromGroupList = await redisClient.srem(
       `grpmembers:${channelId}`,

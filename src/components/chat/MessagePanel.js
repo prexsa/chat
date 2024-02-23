@@ -39,7 +39,7 @@ const MessagePanel = ({ user }) => {
     const date = new Date(unix * 1000);
     return date.toLocaleString([], { timeStyle: 'short' });
   };
-
+  // console.log('selectedRoom; ', selectedRoom);
   const renderUserMessage = (message) => {
     return (
       <ListItem
@@ -83,7 +83,8 @@ const MessagePanel = ({ user }) => {
 
   const getUsername = (userId) => {
     const name = selectedRoom.mates.filter((mate) => mate.userId === userId);
-    return name[0].username;
+    // console.log('name; ', name);
+    return name[0].fullname;
   };
 
   const renderRoommatesMessage = (message) => {

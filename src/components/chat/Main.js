@@ -28,7 +28,7 @@ const Main = () => {
   const [messages, setMessages] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState({
     username: '',
-    userId: '',
+    roomId: '',
     connected: '',
     unreadCount: '',
     lastestMessage: '',
