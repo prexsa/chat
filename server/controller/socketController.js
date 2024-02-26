@@ -324,43 +324,6 @@ module.exports.sendRequest = async (socket, userId, cb) => {
   socket
     .to(userId)
     .emit('requests_to_connect', { mappedNameToUserId: userInfo });
-
-  /*
-  const { userId } = await lookUpByUsername(name);
-  // console.log('addFriend: userId ', userId)
-  if (userId === '') {
-    cb({ done: false, errorMsg: "User doesn't exist." });
-    return;
-  }
-  if (userId === socket.user.username) {
-    cb({ done: false, errorMsg: 'Cannot add self!' });
-    return;
-  }
-
-  const connectStatus = await redisClient.hget(`userid:${userId}`, 'connected');
-  const { roomId } = await checkForOldRoomIdPairing(socket.user.userId, userId);
-  // console.log('roomId: ', roomId)
-  if (roomId.id === '') {
-    createRoomId(socket.user.userId, userId);
-  } else {
-    restoreRoomIdPairing(roomId.first, roomId.second, roomId);
-  }
-  // create roomId connection to store relationship for messages
-
-  const newFriend = {
-    username: name,
-    userId: userId,
-    connected: connectStatus,
-  };
-
-  const self = {
-    username: socket.user.username,
-    userId: socket.user.userId,
-    connected: 'true',
-  };
-  // emit to added friend
-  socket.to(userId).emit('new_friend', self);
-  cb({ done: true, newFriend });*/
 };
 
 module.exports.clearUnreadCount = async (socket, roomId) => {
@@ -414,41 +377,6 @@ module.exports.dm = async (socket, msg) => {
   };
   // console.log('addRoomId: ', addRoomId);
   socket.to(matesToReceiveMsg).emit('dm', addRoomId);
-
-  return;
-  msg.from = socket.user.userId;
-  const username = socket.user.username;
-  const { count } = await incrementUnreadCount(msg.to, socket.user.userId);
-  // emit to the user that is receiving the current count
-  socket.to(msg.to).emit('unread-count', { userId: socket.user.userId, count });
-  // check whether isGroup
-  let roomIdStr = '';
-  if (msg.isGroup) {
-    roomIdStr = msg.to;
-  } else {
-    const { roomId } = await getRoomId(socket.user.userId, msg.to);
-    roomIdStr = roomId.id;
-  }
-  // messages are stored in sorted set
-  /*const unixDateTime = Date.now();
-  const message = {
-    to: msg.to,
-    from: msg.from,
-    content: msg.content,
-    date: unixDateTime,
-  };*/
-  // save message
-  await redisClient.zadd(
-    `messages:${roomIdStr}`,
-    unixDateTime,
-    JSON.stringify(message),
-  );
-  if (msg.isGroup) {
-    const members = await redisClient.smembers(`grpmembers:${msg.to}`);
-    socket.to(members).emit('dm', msg);
-  } else {
-    socket.to(msg.to).emit('dm', msg);
-  }
 };
 
 module.exports.changeGroupTitle = async (socket, channelId, title, cb) => {
@@ -463,6 +391,8 @@ module.exports.changeGroupTitle = async (socket, channelId, title, cb) => {
 
 module.exports.createGroup = async (socket, title, cb) => {
   const randomId = crypto.randomUUID();
+
+  return;
   const groupId = `group:${randomId}`;
   const created = await redisClient.hset(
     `${groupId}`,
@@ -477,6 +407,62 @@ module.exports.createGroup = async (socket, title, cb) => {
   // const addToMembers = await redisClient.sadd(`grpmembers:${randomId}`)
   console.log({ created, added });
   cb({ roomId: groupId, title: title.name });
+};
+
+module.exports.addToGroup = async (socket, roomId, userId, cb) => {
+  console.log('addToGroup: ', { roomId, userId });
+  // get host userId
+  const hostUserId = socket.user.userId;
+  // get room record
+  const updatedRoomRecordWithNewMember = await Room.findOneAndUpdate(
+    { roomId: roomId },
+    { $push: { mates: userId }, $set: { isGroup: true } },
+    { new: true },
+  );
+
+  // update new members record with roomId
+  const updateNewMemberRecord = await User.findOneAndUpdate(
+    { userId: userId },
+    { $push: { rooms: roomId } },
+    { new: true },
+  );
+
+  const mates = updatedRoomRecordWithNewMember.mates;
+  const matesToNotify = mates.filter((mate) => mate !== hostUserId);
+
+  socket.to(matesToNotify).emit('new_member_added_to_group', {
+    roomId,
+    newMemberProfile: {
+      userId,
+      fullname: `${updateNewMemberRecord.firstname} ${updateNewMemberRecord.lastname}`,
+    },
+  });
+
+  socket.to(userId).emit('update_new_group_member_roomlist', {
+    roomRecord: updatedRoomRecordWithNewMember,
+  });
+
+  /*
+  const { userId } = await lookUpByUsername(name);
+  // console.log('userId; ', userId)
+  if (userId === '') {
+    cb({ isFound: false, msg: 'User does not exist.' });
+    return;
+  }
+  // add user to group set
+  // update user records
+  const { title } = await getGroupTitle(roomId);
+  const integerResp = await redisClient.sadd(`grpmembers:${roomId}`, userId);
+  // add roomId to member's rooms set
+  const updateRoomSet = await redisClient.sadd(
+    `rooms:${userId}`,
+    `group:${roomId}`,
+  );
+  socket.to(userId).emit('new_friend', {
+    roomId,
+    title,
+  });
+  cb({ isFound: true, username: name, userId });*/
 };
 
 module.exports.getGroupAdminInfo = async (ownerId, cb) => {
@@ -501,31 +487,6 @@ const getGroupTitle = async (roomId) => {
   return Promise.resolve({
     title: await redisClient.hget(`group:${roomId}`, 'title'),
   });
-};
-
-module.exports.addToGroup = async (socket, roomId, name, cb) => {
-  console.log('addToGroup: ', { roomId, name });
-  // locate user by name or email
-  const { userId } = await lookUpByUsername(name);
-  // console.log('userId; ', userId)
-  if (userId === '') {
-    cb({ isFound: false, msg: 'User does not exist.' });
-    return;
-  }
-  // add user to group set
-  // update user records
-  const { title } = await getGroupTitle(roomId);
-  const integerResp = await redisClient.sadd(`grpmembers:${roomId}`, userId);
-  // add roomId to member's rooms set
-  const updateRoomSet = await redisClient.sadd(
-    `rooms:${userId}`,
-    `group:${roomId}`,
-  );
-  socket.to(userId).emit('new_friend', {
-    roomId,
-    title,
-  });
-  cb({ isFound: true, username: name, userId });
 };
 
 module.exports.searchUsersDb = async (socket, name, cb) => {

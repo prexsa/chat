@@ -5,13 +5,7 @@ import { Box, Typography, List, ListItem } from '@mui/material';
 // import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-// import ImageNotSupportedIcon from '@mui/icons-material/ImageNotSupported';
-// selectedRoom,
-// picture,
-// isGroup,
-// setShowModal,
-// extractAllImagesFromMessages,
+
 const MessagePanel = ({ user }) => {
   const bottomRef = useRef(null);
   const { feedback } = useContext(MessagesContext);

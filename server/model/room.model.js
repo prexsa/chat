@@ -25,6 +25,9 @@ const RoomSchema = new mongoose.Schema({
     type: Array,
     required: true,
   },
+  name: {
+    type: String,
+  },
 });
 
 const Room = mongoose.model('Room', RoomSchema);

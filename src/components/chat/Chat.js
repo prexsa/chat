@@ -18,7 +18,7 @@ const Chat = ({ isGroup }) => {
   const [images, setImages] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
 
-  // console.log('selectedRoom: ', selectedRoom)
+  // console.log('selectedRoom: ', selectedRoom);
   const extractAllImagesFromMessages = async (selectedImgSrc, messages) => {
     const images = await messages.filter(
       (message) => message.hasOwn('isImage') === true,
@@ -39,9 +39,16 @@ const Chat = ({ isGroup }) => {
   }
 
   const displayRoommatesName = (roommates) => {
-    // console.log('roommates: ', roommates);
+    console.log('roommates: ', roommates);
     const filtered = roommates.filter((mate) => mate.userId !== user.userId);
-    return filtered[0];
+    return filtered[0].fullname;
+  };
+
+  const getRoomName = () => {
+    let name = isGroup
+      ? selectedRoom.name
+      : displayRoommatesName(selectedRoom.mates);
+    return name;
   };
 
   return (
@@ -53,7 +60,11 @@ const Chat = ({ isGroup }) => {
         images={images}
         activeindex={imageIndex}
       />
-      <ChatHeader roomDetails={displayRoommatesName(selectedRoom.mates)} />
+      <ChatHeader
+        roomId={selectedRoom.roomId}
+        roomName={getRoomName()}
+        // roomDetails={displayRoommatesName(selectedRoom.mates)}
+      />
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <Box
           sx={{

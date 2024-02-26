@@ -153,7 +153,9 @@ function ChannelList({ user }) {
                 </ListItemAvatar>
                 <ListItemText
                   sx={{ my: 0 }}
-                  primary={displayRoommatesName(room.mates)}
+                  primary={
+                    room.isGroup ? room.name : displayRoommatesName(room.mates)
+                  }
                   secondary={
                     room.messages.length > 0
                       ? room.messages[room.messages.length - 1].message

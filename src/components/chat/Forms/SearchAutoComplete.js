@@ -1,5 +1,5 @@
-/* eslint-disable */
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
 import { SocketContext, FriendContext } from './../Main';
 import { Box, Autocomplete, TextField, Button } from '@mui/material';
@@ -7,28 +7,8 @@ import { Box, Autocomplete, TextField, Button } from '@mui/material';
 // https://refine.dev/blog/material-ui-autocomplete-component/#the-useautocomplete-hook
 // https://codesandbox.io/p/sandbox/clever-surf-8dmo7?file=%2Fsrc%2FForm%2FComponents%2FUsers.js%3A27%2C22
 // https://codesandbox.io/p/sandbox/elastic-leavitt-pwgdex?file=%2Fsrc%2FApp.js
-export const users = [
-  {
-    name: 'Andrew',
-    address: {
-      country: 'AQ',
-    },
-  },
-  {
-    name: 'Danniel',
-    address: {
-      country: 'IL',
-    },
-  },
-  {
-    name: 'Alex',
-    address: {
-      country: 'BE',
-    },
-  },
-];
 
-export default function CustomAutoComplete() {
+export default function CustomAutoComplete({ formSubmitHandler }) {
   const { handleSubmit, control } = useForm({
     defaultValues: { search: null },
   });
@@ -38,19 +18,7 @@ export default function CustomAutoComplete() {
   const [isError, setIsError] = useState(false);
   const [respMessage, setRespMessage] = useState('');
   const [inputValue, setInputValue] = useState('');
-  // const [options, setOptions] = useState([]);
-  // console.log('searchOptions: ', searchOptions);
-  const formSubmitHandler = (data) => {
-    console.log('data: ', data);
-    if (data.search.userId.trim() === '') return;
-
-    socket.emit('send_request', {
-      email: data.search.email,
-      username: data.search.label,
-      userId: data.search.userId,
-    });
-  };
-
+  /*
   const fetchHandler = useCallback((socket, inputValue) => {
     socket.connect();
 
@@ -58,7 +26,7 @@ export default function CustomAutoComplete() {
       console.log({ errorMsg, resp });
       // setOptions([{ label: 'Bankai', id: 1 }]);
     });
-  });
+  });*/
 
   useEffect(() => {
     setTimeout(() => {
@@ -132,3 +100,7 @@ export default function CustomAutoComplete() {
     </Box>
   );
 }
+
+CustomAutoComplete.propTypes = {
+  formSubmitHandler: PropTypes.func,
+};

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
+import { SocketContext } from './Main';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -14,12 +15,24 @@ import PulsatingDiv from '../animation/PulsatingDiv';
 import SlideLeft from '../animation/SlideLeft';
 
 const AddFriend = ({ roomList }) => {
+  const { socket } = useContext(SocketContext);
   const [show, setShow] = useState(false);
   const [tabPanel, setTabPanel] = useState(0);
 
   const handleClose = () => setShow(false);
 
   // const onErrors = (errors) => console.error(errors);
+
+  const formSubmitHandler = (data) => {
+    console.log('data: ', data);
+    if (data.search.userId.trim() === '') return;
+
+    socket.emit('send_request', {
+      email: data.search.email,
+      username: data.search.label,
+      userId: data.search.userId,
+    });
+  };
 
   return (
     <div>
@@ -79,7 +92,7 @@ const AddFriend = ({ roomList }) => {
             <Typography variant="subtitle1">
               Search for family or friends you may know
             </Typography>
-            <SearchAutoComplete />
+            <SearchAutoComplete formSubmitHandler={formSubmitHandler} />
           </CustomTabPanel>
           <CustomTabPanel value={tabPanel} index={1}>
             <Typography variant="subtitle1">

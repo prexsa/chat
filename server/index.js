@@ -92,8 +92,8 @@ io.on('connection', async (socket) => {
     leaveChatRoom(socket, hostUserId, userIdToRemove, roomId, cb),
   );
 
-  socket.on('add_members', ({ roomId, name }, cb) =>
-    addToGroup(socket, roomId, name, cb),
+  socket.on('add_to_group', ({ roomId, userId }, cb) =>
+    addToGroup(socket, roomId, userId, cb),
   );
   socket.on('feedback_typing', ({ userId, showFeedback }) => {
     console.log('userId: ', userId);

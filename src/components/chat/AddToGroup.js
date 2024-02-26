@@ -1,4 +1,6 @@
+/* eslint-disable */
 import React, { useState, useContext, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { FriendContext, SocketContext } from './Main';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
@@ -18,14 +20,16 @@ import {
 } from '@mui/material';
 import List from '../List';
 
-const AddToGroup = () => {
+import SearchAutoComplete from './Forms/SearchAutoComplete';
+
+const AddToGroup = ({ roomId }) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm();
-  const { channel, setFriendList } = useContext(FriendContext);
+  const { selectedRoom, setRoomList } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
   const [showResp, setShowResp] = useState('');
   const [show, setShow] = useState(false);
@@ -42,7 +46,7 @@ const AddToGroup = () => {
     socket.on('exit_group_chat', ({ roomId }) => {
       // console.log('exit_group_chat: ', { roomId, userId })
       // remove group chat from user's channel list
-      setFriendList((prevFriends) => {
+      setRoomList((prevFriends) => {
         return [...prevFriends].filter((friend) => friend?.roomId !== roomId);
       });
       /*setMembers(prevMembers => {
@@ -50,55 +54,21 @@ const AddToGroup = () => {
       })*/
     });
     return () => socket.off('exit_group_chat');
-  }, [socket, setFriendList]);
+  }, [socket, setRoomList]);
 
-  const populateGroupMembers = useCallback(
-    (roomId) => {
-      // console.log('roomId: ', roomId)
-      console.log('channel: ', channel);
-      socket.connect();
-      socket.emit('get_group_members', { roomId }, ({ members }) => {
-        // console.log('get_group_members ', members)
-        const ownerId = channel.owner;
-        const parsedOutOwnerId = members.filter(
-          (member) => member.userId !== ownerId,
-        );
-        const format4Selected = parsedOutOwnerId.map((member, index) => {
-          return {
-            username: member.username,
-            id: index,
-            userId: member.userId,
-            owner: channel.owner === member.userId ? true : false,
-          };
-        });
-
-        console.log('members: ', format4Selected);
-        // setSelected(format4Selected)
-        setMembers(format4Selected);
-      });
-    },
-    [channel, socket],
-  );
-
-  const handleOnSubmit = (data) => {
-    console.log('handleOnSubmit; ', data);
+  const formSubmitHandler = (data) => {
+    // console.log('data: ', data);
+    const {
+      search: { userId },
+    } = data;
     socket.connect();
-    socket.emit(
-      'add_members',
-      { roomId: channel.roomId, name: data.name },
-      (resp) => {
-        console.log('resp: ', resp);
-        if (resp.isFound) {
-          const member = { username: resp.username, userId: resp.userId };
-          setMembers((prev) => [...prev, member]);
-        }
-      },
-    );
-    // const membersLen = members.length;
-    // const changeIndex = data.multiselect.map((user, index) => ({ id: membersLen + 1 + index }))
-    // setMembers([...members, ...data])
-    reset({ name: '' });
-    // resetValues();
+    socket.emit('add_to_group', { roomId, userId }, (resp) => {
+      console.log('resp: ', resp);
+      if (resp.isFound) {
+        const member = { username: resp.username, userId: resp.userId };
+        setMembers((prev) => [...prev, member]);
+      }
+    });
   };
 
   const handleRemoveMember = (userId, index) => {
@@ -113,29 +83,6 @@ const AddToGroup = () => {
       },
     );
   };
-
-  useEffect(() => {
-    // console.log('channel: ', channel)
-    socket.connect();
-    socket.emit(
-      'get_group_admin_info',
-      { ownerId: channel.owner },
-      ({ username }) => {
-        // console.log('username: ', username)
-        setGroupAdmin({ userId: channel.owner, username });
-      },
-    );
-    return () => socket.off('get_group_admin_info');
-  }, [channel, socket]);
-
-  // console.log('calling')
-
-  useEffect(() => {
-    // console.log('channel: ', channel)
-    if (show) {
-      populateGroupMembers(channel.roomId);
-    }
-  }, [show, populateGroupMembers, channel]);
 
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
@@ -163,43 +110,7 @@ const AddToGroup = () => {
         </IconButton>
         <DialogContent>
           <Box sx={{ color: 'red' }}>{showResp}</Box>
-          <Box
-            component="form"
-            noValidate
-            autoComplete="off"
-            onSubmit={handleSubmit(handleOnSubmit, onErrors)}
-          >
-            <Box sx={{ margin: '20px 0', width: '400px' }}>
-              <FormControl
-                variant="outlined"
-                fullWidth
-                // error={usrNameError.hasError}
-                name="name"
-                // onFocus={onFocusHandler}
-              >
-                <InputLabel
-                  htmlFor="outlined-adornment-password"
-                  sx={{ top: '-7px' }}
-                >
-                  Username or email
-                </InputLabel>
-                <OutlinedInput
-                  type="text"
-                  size="small"
-                  label="Username or email"
-                  {...register('name', { required: true })}
-                />
-                <FormHelperText id="component-error-text">
-                  {errors?.name ? errors?.name.message : ''}
-                </FormHelperText>
-              </FormControl>
-            </Box>
-            <Box sx={{ marginTop: '20px' }}>
-              <Button variant="contained" type="submit" fullWidth>
-                Add
-              </Button>
-            </Box>
-          </Box>
+          <SearchAutoComplete formSubmitHandler={formSubmitHandler} />
           <Box
             sx={{
               marginTop: '25px',
@@ -225,70 +136,8 @@ const AddToGroup = () => {
   );
 };
 
+AddToGroup.propTypes = {
+  roomId: PropTypes.string.isRequired,
+};
+
 export default AddToGroup;
-/*<Modal 
-        show={show} 
-        onHide={handleClose}
-        backdrop={'static'} // disable onHide when backdrop is clicked
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Add to group</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="modal-body-children">
-            <h5>Current Members</h5>
-            <ListGroup>
-            {
-              members.length && members.map((member, index) => {
-                return (
-                  <ListGroup.Item key={index} action >
-                    <div className="addToGroup-list-item">
-                      {member.name}
-                      {
-                        // if owner, disable remove icon
-                        !member.owner ? 
-                        <div>
-                          <RemoveIcon 
-                            className="leave-icon" 
-                            onClick={() => handleRemoveListItem(member, index)} 
-                          />
-                        </div>
-                        :
-                        null
-                      }
-                    </div>
-                  </ListGroup.Item>
-                )
-              })
-            }
-            </ListGroup>
-          </div>
-          <div className="modal-body-children">
-            <h5>Add Members</h5>
-            <form onSubmit={handleSubmit(handleOnSubmit)}>
-              <Controller 
-                control={control}
-                name="multiselect"
-                render={({ field: { onChange, value }}) => (
-                  <Multiselect
-                    ref={multiselectRef}
-                    options={friends} // Options to display in the dropdown
-                    selectedValues={selected} // Preselected value to persist in dropdown
-                    onSelect={onChange} // Function will trigger on select event
-                    onRemove={onChange} // Function will trigger on remove event
-                    displayValue="name" // Property name to display in the dropdown options
-                    closeOnSelect={false}
-                    style={{
-                      multiselectContainer: {
-                        minHeight: '100px'
-                      }
-                    }}
-                    />
-                )}
-              />
-              <input type="submit" />
-            </form>
-            
-          </div>
-        </Modal.Body>
-      </Modal>*/

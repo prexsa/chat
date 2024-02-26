@@ -16,7 +16,7 @@ import {
   DialogTitle,
 } from '@mui/material';
 
-const LeaveChat = ({ isGroup, userId }) => {
+const LeaveChat = ({ isGroup }) => {
   const { user } = useUserContext();
   const { selectedRoom, setRoomList, setSelectedRoom } =
     useContext(FriendContext);
@@ -30,11 +30,11 @@ const LeaveChat = ({ isGroup, userId }) => {
       'leave_chat',
       {
         hostUserId: user.userId,
-        userIdToRemove: userId,
+        // userIdToRemove: userId,
         roomId: selectedRoom.roomId,
       },
-      ({ roomId, userIdToRemove }) => {
-        console.log({ roomId, userIdToRemove });
+      ({ roomId }) => {
+        console.log({ roomId });
         setRoomList((prevRooms) => {
           return [...prevRooms].filter((room) => room.roomId !== roomId);
         });
@@ -92,7 +92,7 @@ const LeaveChat = ({ isGroup, userId }) => {
 
 LeaveChat.propTypes = {
   isGroup: PropTypes.bool,
-  userId: PropTypes.string.isRequired,
+  // userId: PropTypes.string.isRequired,
 };
 
 export default LeaveChat;

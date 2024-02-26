@@ -48,10 +48,39 @@ const useSocket = (
 
     socket.on('new_friend', (newFriend) => {
       // console.log('new_friend: ', newFriend)
-      setRoomList((prevFriends) => {
-        return [newFriend, ...prevFriends];
+      setRoomList((prevState) => {
+        return [newFriend, ...prevState];
       });
     });
+
+    socket.on('update_new_group_member_roomlist', ({ roomRecord }) => {
+      setRoomList((prevState) => {
+        return [roomRecord, ...prevState];
+      });
+    });
+
+    socket.on(
+      'new_member_added_to_group',
+      ({ roomId, newMemberProfile: { userId, fullname } }) => {
+        // check if room is active
+        if (selectedRoom.roomId === roomId) {
+          // console.log('is it selected');
+          setSelectedRoom((prevState) => {
+            // console.log((prevState.messages = [...prevState.messages, msg]));
+            return (prevState.mates = [...prevState.mates, newMemberProfile]);
+          });
+        }
+        // update existing members of new member userid
+        setRoomList((prevState) => {
+          return [...prevState].map((room) => {
+            if (room.roomId === roomId) {
+              room.mates.push(newMemberProfile);
+            }
+            return room;
+          });
+        });
+      },
+    );
 
     socket.on('requests_to_connect', ({ mappedNameToUserId }) => {
       // const { username, userId } = userInfo;
