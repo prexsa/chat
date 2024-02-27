@@ -1,50 +1,64 @@
-import React, { useContext, useEffect } from 'react';
+/* eslint-disable */
+import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
-import TextField from '@mui/material/TextField';
+import { useForm, Controller } from 'react-hook-form';
+import {
+  Box,
+  Button,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Typography,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { SocketContext, FriendContext } from './Main';
 // title, isGroup, channelId,
-const TitleForm = ({ toggleExpand, setToggleExpand }) => {
+const TitleForm = ({ roomName }) => {
   const { socket } = useContext(SocketContext);
   const { selectedRoom, setSelectedRoom, setRoomList } =
     useContext(FriendContext);
-  const { register, handleSubmit, setValue, getValues } = useForm({
-    mode: 'onChange',
-  });
+  const { register, handleSubmit, setValue, getValues, control, reset } =
+    useForm({
+      defaultValues: { name: selectedRoom.name },
+    });
+  // console.log('selectedRoom: ', selectedRoom);
+  const [show, setShow] = useState(false);
   // console.log('channel: ', selectedRoom);
   const onSubmit = async (data) => {
     // setName(data.name)
+    // console.log('data: ', data.name);
+    if (selectedRoom.name === data.name) return;
     socket.emit(
-      'change_group_title',
-      { channelId: selectedRoom.roomId, title: data.name },
+      'update_group_name',
+      { roomId: selectedRoom.roomId, name: data.name },
       () => {
-        // console.log('resp: ', resp )
-        // console.log('channelId: ', channelId)
-        setValue('name', data.name);
         setSelectedRoom((prevState) => ({
           ...prevState,
-          title: data.name,
+          name: data.name,
         }));
-        setRoomList((prevFriends) => {
-          return [...prevFriends].map((friend) => {
-            if (friend.roomId === selectedRoom.roomId) {
-              friend.title = data.name;
+        setRoomList((prevState) => {
+          // console.log('prevState: ', prevState);
+          return [...prevState].map((room) => {
+            // console.log('room: ', room);
+            if (room.roomId === selectedRoom.roomId) {
+              room.name = data.name;
             }
-            return friend;
+            return room;
           });
         });
       },
     );
   };
 
+  const handleShow = () => setShow(true);
+  const handleClose = () => setShow(false);
+
   useEffect(() => {
-    // console.log('value: ', getValues('name'))
-    // update group title
-    const value = getValues('name');
-    if (value !== selectedRoom.title) {
-      setValue('name', selectedRoom.title);
-    }
-  }, [selectedRoom, getValues, setValue]);
+    setValue('name', selectedRoom.name);
+  }, [setValue]);
 
   // return header only if it is not a group
   if (selectedRoom.isGroup === false) {
@@ -53,39 +67,62 @@ const TitleForm = ({ toggleExpand, setToggleExpand }) => {
 
   return (
     <>
-      {toggleExpand ? (
-        <div className="title-form-input-container">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <TextField
-              id="name"
+      <Typography
+        variant="h6"
+        onClick={handleShow}
+        sx={{ '&:hover': { cursor: 'pointer' } }}
+      >
+        {roomName}
+      </Typography>
+      <Dialog open={show} onClose={handleClose}>
+        <DialogTitle>Change Group Name</DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent>
+          <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            sx={{ width: '400px' }}
+          >
+            <Controller
               name="name"
-              size="small"
-              fullWidth
-              autoComplete="off"
-              {...register('name', { value: selectedRoom?.title })}
+              defaultValue={''}
+              control={control}
+              render={({ field }) => (
+                <TextField {...field} fullWidth autoComplete="off" />
+              )}
             />
-            <div className="title-form-btn-container">
-              <input type="submit" />
-              <input
-                type="reset"
-                onClick={() => setToggleExpand(!toggleExpand)}
-              />
-            </div>
-          </form>
-          {/*name && <div>Submitted: {name}</div>*/}
-        </div>
-      ) : (
-        <h2 onClick={() => setToggleExpand(!toggleExpand)}>
-          {selectedRoom?.title}
-        </h2>
-      )}
+            <Box sx={{ display: 'flex', mt: '20px', columnGap: '15px' }}>
+              <Button variant="contained" type="submit">
+                submit
+              </Button>
+              <Button variant="text" type="submit" onClick={() => reset()}>
+                reset
+              </Button>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          {/*<Button onClick={handleClose}>Subscribe</Button>*/}
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
 
 TitleForm.propTypes = {
-  toggleExpand: PropTypes.bool,
-  setToggleExpand: PropTypes.func,
+  roomName: PropTypes.string,
 };
 
 export default TitleForm;

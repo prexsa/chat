@@ -82,6 +82,25 @@ const useSocket = (
       },
     );
 
+    socket.on('update_group_name', ({ roomId, name }) => {
+      // update channel title, if active
+      if (selectedRoomRef.current.roomId === roomId) {
+        setSelectedRoom((prevState) => ({
+          ...prevState,
+          name: name,
+        }));
+      }
+      setRoomList((prevState) => {
+        return [...prevState].map((room) => {
+          // console.log('update_group_name: ', friend)
+          if (room.roomId === roomId) {
+            room.name = name;
+          }
+          return room;
+        });
+      });
+    });
+
     socket.on('requests_to_connect', ({ mappedNameToUserId }) => {
       // const { username, userId } = userInfo;
       // console.log('userInfo: ', mappedNameToUserId);
@@ -151,25 +170,6 @@ const useSocket = (
             room.unreadCount = unreadCount;
           }
           return room;
-        });
-      });
-    });
-
-    socket.on('update_group_name', ({ roomId, updatedTitle }) => {
-      // update channel title, if active
-      if (selectedRoomRef.current.roomId === roomId) {
-        setSelectedRoom((prevState) => ({
-          ...prevState,
-          title: updatedTitle,
-        }));
-      }
-      setRoomList((prevFriends) => {
-        return [...prevFriends].map((friend) => {
-          // console.log('update_group_name: ', friend)
-          if (friend.roomId === roomId) {
-            friend.title = updatedTitle;
-          }
-          return friend;
         });
       });
     });

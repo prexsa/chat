@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, Typography } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -10,22 +10,16 @@ import LeaveChat from './LeaveChat';
 
 const ChatHeader = ({ isGroup, roomName, roomId }) => {
   // console.log('roomDetails: ', roomDetails);
-  const [toggleExpand, setToggleExpand] = useState(false);
   return (
-    <Box
-      sx={{ display: 'flex' }}
-      className={`${
-        toggleExpand ? 'message-panel-header expand' : 'message-panel-header'
-      }`}
-    >
+    <Box sx={{ display: 'flex' }} className="message-panel-header">
       <LeaveChat isGroup={isGroup} roomId={roomId} />
       <AddToGroup roomId={roomId} />
       <AccountCircleIcon className="channel-img" />
-      <Typography variant="h6">{roomName}</Typography>
-      <TitleForm
-        toggleExpand={toggleExpand}
-        setToggleExpand={setToggleExpand}
-      />
+      {isGroup ? (
+        <TitleForm roomName={roomName} />
+      ) : (
+        <Typography variant="h6">{roomName}</Typography>
+      )}
       {/*<p style={{ marginLeft: "auto" }}>
           id: {channel?.userId || channel?.roomId}
         </p>*/}

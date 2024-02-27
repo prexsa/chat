@@ -61,6 +61,7 @@ const Chat = ({ isGroup }) => {
         activeindex={imageIndex}
       />
       <ChatHeader
+        isGroup={isGroup}
         roomId={selectedRoom.roomId}
         roomName={getRoomName()}
         // roomDetails={displayRoommatesName(selectedRoom.mates)}

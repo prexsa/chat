@@ -17,7 +17,7 @@ const {
   clearUnreadCount,
   handleRoomSelected,
   uploadFile,
-  changeGroupTitle,
+  updateGroupName,
   getGroupAdminInfo,
   getGroupMembers,
   addToGroup,
@@ -72,8 +72,8 @@ io.on('connection', async (socket) => {
   );
   socket.on('upload_file', (fileObj, cb) => uploadFile(socket, fileObj, cb));
   socket.on('create_group', (name, cb) => createGroup(socket, name, cb));
-  socket.on('change_group_title', ({ channelId, title }, cb) =>
-    changeGroupTitle(socket, channelId, title, cb),
+  socket.on('update_group_name', ({ roomId, name }, cb) =>
+    updateGroupName(socket, roomId, name, cb),
   );
   socket.on('get_group_admin_info', ({ ownerId }, cb) =>
     getGroupAdminInfo(ownerId, cb),

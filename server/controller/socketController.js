@@ -379,14 +379,30 @@ module.exports.dm = async (socket, msg) => {
   socket.to(matesToReceiveMsg).emit('dm', addRoomId);
 };
 
-module.exports.changeGroupTitle = async (socket, channelId, title, cb) => {
-  if (title === '' || channelId === '') return;
-  const resp = await redisClient.hset(`group:${channelId}`, 'title', title);
-  const members = await redisClient.smembers(`grpmembers:${channelId}`);
+module.exports.updateGroupName = async (socket, roomId, name, cb) => {
+  const hostUserId = socket.user.userId;
+
+  const updateRoomName = await Room.findOneAndUpdate(
+    { roomId: roomId },
+    { $set: { name: name } },
+    { new: true },
+  );
+
+  const matesToUpdate = updateRoomName.mates.filter(
+    (mate) => mate !== hostUserId,
+  );
+
+  socket.to(matesToUpdate).emit('update_group_name', { roomId, name });
+  // console.log('updateRoomName: ', updateRoomName);
+  cb();
+  /*return;
+  if (title === '' || roomId === '') return;
+  const resp = await redisClient.hset(`group:${roomId}`, 'title', title);
+  const members = await redisClient.smembers(`grpmembers:${roomId}`);
   socket
     .to(members)
-    .emit('update_group_name', { roomId: channelId, updatedTitle: title });
-  cb({ resp });
+    .emit('update_group_name', { roomId: roomId, updatedTitle: title });
+  cb({ resp });*/
 };
 
 module.exports.createGroup = async (socket, title, cb) => {
