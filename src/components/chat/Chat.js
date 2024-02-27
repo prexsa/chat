@@ -39,7 +39,7 @@ const Chat = ({ isGroup }) => {
   }
 
   const displayRoommatesName = (roommates) => {
-    console.log('roommates: ', roommates);
+    // console.log('roommates: ', roommates);
     const filtered = roommates.filter((mate) => mate.userId !== user.userId);
     return filtered[0].fullname;
   };

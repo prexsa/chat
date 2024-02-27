@@ -126,8 +126,9 @@ function ChannelList({ user }) {
                 key={room.roomId}
                 onClick={() => handleChannelSelect(room)}
                 sx={{
-                  alignItems: 'flex-start',
+                  alignItems: 'center',
                   padding: '18px 10px',
+                  // textWrap: 'nowrap',
                   color: '#2c333d',
                   '&.Mui-selected': {
                     backgroundColor: '#f8fbfc',
@@ -152,14 +153,32 @@ function ChannelList({ user }) {
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                  sx={{ my: 0 }}
+                  sx={{ paddingRight: '10px' }}
                   primary={
-                    room.isGroup ? room.name : displayRoommatesName(room.mates)
+                    <Typography
+                      sx={{
+                        textOverflow: 'clip',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {room.isGroup
+                        ? room.name
+                        : displayRoommatesName(room.mates)}
+                    </Typography>
                   }
                   secondary={
-                    room.messages.length > 0
-                      ? room.messages[room.messages.length - 1].message
-                      : null
+                    <Typography
+                      sx={{
+                        textOverflow: 'clip',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {room.messages.length > 0
+                        ? room.messages[room.messages.length - 1].message
+                        : null}
+                    </Typography>
                   }
                 />
                 <Box
@@ -167,10 +186,14 @@ function ChannelList({ user }) {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'flex-end',
-                    // margin: '6px 0',
+                    // padding: '5px',
+                    // marginTop: '5px',
                   }}
                 >
-                  <Typography variant="caption">
+                  <Typography
+                    variant="caption"
+                    sx={{ textWrap: 'nowrap', margin: '5px 0' }}
+                  >
                     {room.messages.length > 0
                       ? convertToHumanReadable(
                           room.messages[room.messages.length - 1].date,
