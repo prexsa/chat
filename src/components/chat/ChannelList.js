@@ -20,6 +20,8 @@ import {
   Avatar,
   InputAdornment,
   TextField,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import AddFriendRFH from './AddFriend.RFH';
 import RequestToConnect from './RequestToConnect';
@@ -32,6 +34,7 @@ function ChannelList({ user }) {
   const [isActive, setIsActive] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [list, setList] = useState([]);
+  const [tabValue, setTabValue] = useState(0);
 
   const handleChannelSelect = (room) => {
     // console.log('handleChannelSelect, ', room);
@@ -63,10 +66,6 @@ function ChannelList({ user }) {
     setList([...filteredRoomsByTermFound]);
   };
 
-  roomList.filter((room) => {
-    const roommates = room.mates;
-  });
-
   const clearRoomSelected = () => {
     setSelectedRoom({});
     setIsActive('');
@@ -80,6 +79,19 @@ function ChannelList({ user }) {
   const convertToHumanReadable = (unix) => {
     const date = new Date(unix * 1000);
     return date.toLocaleString([], { timeStyle: 'short' });
+  };
+
+  const handleTabChange = (e, newValue) => {
+    if (newValue === 1) {
+      const privateRooms = roomList.filter((room) => !room.isGroup);
+      setList([...privateRooms]);
+    } else if (newValue === 2) {
+      const groupRooms = roomList.filter((room) => room.isGroup);
+      setList([...groupRooms]);
+    } else {
+      setList([...roomList]);
+    }
+    setTabValue(newValue);
   };
 
   useEffect(() => {
@@ -145,6 +157,18 @@ function ChannelList({ user }) {
         Clear Message Panel
       </Button>
       <RequestToConnect />
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="basic tabs example"
+        >
+          <Tab label="All" aria-controls="tab-panel-all" />
+          <Tab label="Private" aria-controls="tab-panel-private" />
+          <Tab label="Group" aria-controls="tab-panel-group" />
+        </Tabs>
+      </Box>
+
       <List dense={false} sx={{ mt: 2 }}>
         {list &&
           list.map((room) => {
