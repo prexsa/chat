@@ -1,35 +1,28 @@
 /* eslint-disable */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { FriendContext, SocketContext } from './Main';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
   Autocomplete,
   Tooltip,
-  TextField,
+  Input,
   Typography,
   List,
   ListItem,
   ListItemText,
   ListItemAvatar,
   Avatar,
+  InputAdornment,
+  TextField,
 } from '@mui/material';
 import AddFriendRFH from './AddFriend.RFH';
 import RequestToConnect from './RequestToConnect';
-
-const movies = [
-  { label: 'The Shawshank Redemption', year: 1994 },
-  { label: 'The Godfather', year: 1972 },
-  { label: 'The Godfather: Part II', year: 1974 },
-  { label: 'The Dark Knight', year: 2008 },
-  { label: '12 Angry Men', year: 1957 },
-  { label: "Schindler's List", year: 1993 },
-  { label: 'Pulp Fiction', year: 1994 },
-];
 
 function ChannelList({ user }) {
   const { roomList, setRoomList, selectedRoom, setSelectedRoom } =
@@ -37,6 +30,8 @@ function ChannelList({ user }) {
   const { socket } = useContext(SocketContext);
   // const [activeIndex, setActiveIndex] = useState(null);
   const [isActive, setIsActive] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [list, setList] = useState([]);
 
   const handleChannelSelect = (room) => {
     // console.log('handleChannelSelect, ', room);
@@ -52,6 +47,20 @@ function ChannelList({ user }) {
         return room;
       });
     });
+  };
+
+  const handleInputChange = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+
+    const filteredRoomsByTermFound = roomList.filter((room) => {
+      const found = room.mates.filter((mate) => {
+        return mate.fullname.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+      if (found.length > 0) return room;
+    });
+
+    setList([...filteredRoomsByTermFound]);
   };
 
   roomList.filter((room) => {
@@ -72,7 +81,20 @@ function ChannelList({ user }) {
     const date = new Date(unix * 1000);
     return date.toLocaleString([], { timeStyle: 'short' });
   };
-  // console.log('roomList; ', roomList);
+
+  useEffect(() => {
+    if (roomList.length > 0) {
+      setList([...roomList]);
+    }
+  }, [roomList]);
+
+  useEffect(() => {
+    if (searchTerm === '') {
+      setList([...roomList]);
+    }
+  }, [searchTerm]);
+
+  // console.log('roomList; ', list);
   return (
     <div className="channel-list-cntr">
       <Box
@@ -93,17 +115,27 @@ function ChannelList({ user }) {
                 my: 0.5,
               }}
             />
-            <Autocomplete
-              freeSolo
-              options={movies}
-              sx={{ width: 250 }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="standard"
-                  label="Search friends..."
-                />
-              )}
+            <TextField
+              variant="standard"
+              label="Type to search"
+              onChange={handleInputChange}
+              value={searchTerm}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <CloseIcon
+                      sx={{
+                        '&:hover': {
+                          cursor: 'pointer',
+                          boxShadow: '0 0 5px 0 rgba(0,0,0,0.5)',
+                          borderRadius: '50%',
+                        },
+                      }}
+                      onClick={() => setSearchTerm('')}
+                    />
+                  </InputAdornment>
+                ),
+              }}
             />
           </>
         ) : null}
@@ -114,8 +146,8 @@ function ChannelList({ user }) {
       </Button>
       <RequestToConnect />
       <List dense={false} sx={{ mt: 2 }}>
-        {roomList &&
-          roomList.map((room) => {
+        {list &&
+          list.map((room) => {
             // console.log('room: ', room);
             // check if room is active, clear out unreadCount
             room.unreadCount =
@@ -160,6 +192,7 @@ function ChannelList({ user }) {
                         textOverflow: 'clip',
                         overflow: 'hidden',
                         whiteSpace: 'nowrap',
+                        fontWeight: 600,
                       }}
                     >
                       {room.isGroup
@@ -169,6 +202,7 @@ function ChannelList({ user }) {
                   }
                   secondary={
                     <Typography
+                      variant="subtitle2"
                       sx={{
                         textOverflow: 'clip',
                         overflow: 'hidden',
@@ -223,53 +257,3 @@ ChannelList.propTypes = {
 export default ChannelList;
 
 // https://www.uplabs.com/posts/chat-ui-design-0b930711-4cfd-4ab4-b686-6e7785624b16
-
-/*
-<ul>
-        {roomList &&
-          roomList.map((friend, index) => {
-            console.log('friend: ', friend);
-            // clear unreadCount if channel is active
-            if (friend.userId === channel.userId) {
-              friend.unreadCount = 0;
-            }
-            return (
-              <li
-                className={`${
-                  activeIndex === index ? 'active-list-item' : ''
-                } list-item-cntr`}
-                key={friend?.userId || friend?.roomId}
-                onClick={() => onChannelSelect(friend, index)}
-              >
-                <AccountCircleIcon className="faUserCicle-channelList" />
-                <div className="list-item-right">
-                  <div className="list-item-right-header">
-                    <h3 className="header-item-name">
-                      {friend?.username || friend?.title}
-                    </h3>
-                    <div className="header-item-time">10:30 PM</div>
-                  </div>
-                  <div className="message-alerts">
-                    <p className="snippet">
-                      {friend.isImage
-                        ? '"image.^/jpg/png/"'
-                        : friend.latestMessage}
-                    </p>
-                    <div className="newMessages">
-                      {friend.unreadCount === '0' ||
-                      friend.unreadCount === 0 ? (
-                        <CheckIcon className="faCheck-img" />
-                      ) : (
-                        <span className={setBadgeCSS(friend.unreadCount)}>
-                          {friend.unreadCount}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-      </ul>
-
-*/
