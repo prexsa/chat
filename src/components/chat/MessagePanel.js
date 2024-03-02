@@ -78,7 +78,12 @@ const MessagePanel = ({ user }) => {
   const getUsername = (userId) => {
     const name = selectedRoom.mates.filter((mate) => mate.userId === userId);
     // console.log('name; ', name);
-    return name[0].fullname;
+
+    if (name.length === 0) {
+      return 'User was removed';
+    } else {
+      return name[0].fullname;
+    }
   };
 
   const renderRoommatesMessage = (message) => {

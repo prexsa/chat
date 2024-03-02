@@ -26,7 +26,7 @@ const {
   acceptRequest,
   denyRequest,
   // removeUserFromGroup,
-  // leaveGroup,
+  leaveGroup,
   // disconnectUserRelationship,
   // getRoomMessages,
   onDisconnect,
@@ -85,11 +85,13 @@ io.on('connection', async (socket) => {
 
   // socket.on('room_msgs', (roomId, cb) => getRoomMessages(socket, roomId, cb))
   // socket.on('remove_channel', ({ user, channel, isGroup }) => disconnectUserRelationship(socket, user, channel, isGroup))
-  // socket.on('leave_group', ({ userId, channelId }, cb) => leaveGroup(socket, userId, channelId, cb))
   // socket.on('remove_member_from_group', ({ roomId, userId }, cb) => removeUserFromGroup(socket, roomId, userId, cb))
 
   socket.on('leave_chat', ({ hostUserId, userIdToRemove, roomId }, cb) =>
     leaveChatRoom(socket, hostUserId, userIdToRemove, roomId, cb),
+  );
+  socket.on('leave_group', ({ userId, roomId }, cb) =>
+    leaveGroup(socket, roomId, userId, cb),
   );
 
   socket.on('add_to_group', ({ roomId, userId }, cb) =>

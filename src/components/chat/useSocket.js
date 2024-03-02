@@ -54,8 +54,17 @@ const useSocket = (
     });
 
     socket.on('update_new_group_member_roomlist', ({ roomRecord }) => {
+      // console.log('update_new_group_member_roomlist: ', roomRecord);
       setRoomList((prevState) => {
-        return [roomRecord, ...prevState];
+        // check if roomId exists
+        // console.log('prevState: ', prevState);
+        const roomId = roomRecord.roomId;
+        if (prevState === undefined) return;
+        const exist = prevState.filter((room) => room.roomId === roomId);
+        // console.log('exist; ', exist);
+        if (exist.length === 0) {
+          return [roomRecord, ...prevState];
+        }
       });
     });
 
@@ -63,6 +72,7 @@ const useSocket = (
       'new_member_added_to_group',
       ({ roomId, newMemberProfile: { userId, fullname } }) => {
         // check if room is active
+        // console.log('new_member_added_to_group: ', { userId, fullname });
         if (selectedRoom.roomId === roomId) {
           // console.log('is it selected');
           setSelectedRoom((prevState) => {
@@ -70,7 +80,7 @@ const useSocket = (
             return (prevState.mates = [...prevState.mates, newMemberProfile]);
           });
         }
-        // update existing members of new member userid
+        // update roomlist
         setRoomList((prevState) => {
           return [...prevState].map((room) => {
             if (room.roomId === roomId) {
@@ -142,6 +152,17 @@ const useSocket = (
           .concat(prevFriends.slice(index + 1));
         return updatedFriendsList;
       });*/
+    });
+
+    socket.on('left_group_chat', ({ roomId, userId }) => {
+      setRoomList((prevState) => {
+        return [...prevState].map((room) => {
+          if (room.roomId === roomId) {
+            room.mates = room.mates.filter((mate) => mate.userId !== userId);
+          }
+          return room;
+        });
+      });
     });
 
     socket.on('dm', (msg) => {
@@ -217,6 +238,8 @@ const useSocket = (
       socket.off('update_group_name');
       socket.off('search_users_db');
       socket.off('requests_to_connect');
+      socket.off('update_new_group_member_roomlist');
+      socket.off('new_member_added_to_group');
     };
   }, [
     setRoomList,

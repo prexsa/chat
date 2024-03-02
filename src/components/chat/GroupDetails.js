@@ -17,19 +17,23 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Typography,
+  Divider,
 } from '@mui/material';
 import List from '../List';
 
 import SearchAutoComplete from './Forms/SearchAutoComplete';
+import TitleForm from './TitleForm';
 
-const AddToGroup = ({ roomId }) => {
+const GroupDetails = ({ isGroup, roomId }) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm();
-  const { selectedRoom, setRoomList } = useContext(FriendContext);
+  const { selectedRoom, setSelectedRoom, setRoomList } =
+    useContext(FriendContext);
   const { socket } = useContext(SocketContext);
   const [showResp, setShowResp] = useState('');
   const [show, setShow] = useState(false);
@@ -41,7 +45,7 @@ const AddToGroup = ({ roomId }) => {
       setShowResp('');
     }, 2000);
   }, [showResp]);
-
+  /*
   useEffect(() => {
     socket.on('exit_group_chat', ({ roomId }) => {
       // console.log('exit_group_chat: ', { roomId, userId })
@@ -49,39 +53,41 @@ const AddToGroup = ({ roomId }) => {
       setRoomList((prevFriends) => {
         return [...prevFriends].filter((friend) => friend?.roomId !== roomId);
       });
-      /*setMembers(prevMembers => {
-        return [...prevMembers].filter(member => member.userId !== userId)
-      })*/
     });
     return () => socket.off('exit_group_chat');
   }, [socket, setRoomList]);
-
+*/
   const formSubmitHandler = (data) => {
     // console.log('data: ', data);
     const {
       search: { userId },
     } = data;
     socket.connect();
-    socket.emit('add_to_group', { roomId, userId }, (resp) => {
-      console.log('resp: ', resp);
-      if (resp.isFound) {
-        const member = { username: resp.username, userId: resp.userId };
-        setMembers((prev) => [...prev, member]);
-      }
-    });
+    socket.emit(
+      'add_to_group',
+      { roomId, userId },
+      ({ newGroupMember: { userId, fullname } }) => {
+        // console.log('resp: ', resp);
+        if (userId !== '') {
+          const member = { fullname, userId };
+          setMembers((prev) => [...prev, member]);
+        }
+      },
+    );
   };
 
   const handleRemoveMember = (userId, index) => {
     console.log({ userId, index });
     setMembers(members.filter((member, idx) => idx !== index));
     socket.connect();
-    socket.emit(
-      'leave_group',
-      { channelId: channel.roomId, userId },
-      ({ resp }) => {
-        console.log('resp: ', resp);
-      },
-    );
+    socket.emit('leave_group', { roomId: selectedRoom.roomId, userId }, () => {
+      setSelectedRoom({});
+      setRoomList((prevState) => {
+        return [...prevState].filter(
+          (room) => room.roomId !== selectedRoom.roomId,
+        );
+      });
+    });
   };
 
   const handleShow = () => setShow(true);
@@ -89,13 +95,23 @@ const AddToGroup = ({ roomId }) => {
 
   const onErrors = (errors) => console.error(errors);
 
+  useEffect(() => {
+    if (isGroup) {
+      // console.log('selectedRoom: ', selectedRoom.mates);
+      const members = selectedRoom.mates;
+      setMembers([...members]);
+    }
+  }, [isGroup]);
+
+  if (!isGroup) return;
+
   return (
     <>
       <IconButton onClick={handleShow} size="sm">
         <GroupAddIcon />
       </IconButton>
       <Dialog open={show} onClose={handleClose}>
-        <DialogTitle>Add members</DialogTitle>
+        <DialogTitle>Group Details</DialogTitle>
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -108,14 +124,23 @@ const AddToGroup = ({ roomId }) => {
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent>
+        <DialogContent sx={{ padding: '0px 24px' }}>
           <Box sx={{ color: 'red' }}>{showResp}</Box>
-          <SearchAutoComplete formSubmitHandler={formSubmitHandler} />
+          <Box sx={{ mb: '20px' }}>
+            <Typography variant="subtitle1" sx={{ my: '12px' }}>
+              Group name
+            </Typography>
+            <TitleForm />
+          </Box>
+          <Divider />
+          <Box sx={{ my: '20px' }}>
+            <Typography variant="subtitle1">Add to group</Typography>
+            <SearchAutoComplete formSubmitHandler={formSubmitHandler} />
+          </Box>
+          <Divider />
           <Box
             sx={{
               marginTop: '25px',
-              borderTop: '1px solid lightgrey',
-              borderRadius: '3px',
               padding: '10px 5px',
             }}
           >
@@ -136,8 +161,9 @@ const AddToGroup = ({ roomId }) => {
   );
 };
 
-AddToGroup.propTypes = {
+GroupDetails.propTypes = {
+  isGroup: PropTypes.bool,
   roomId: PropTypes.string.isRequired,
 };
 
-export default AddToGroup;
+export default GroupDetails;

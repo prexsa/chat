@@ -7,16 +7,13 @@ import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const InteractiveList = ({ members, groupAdmin, onClickDelete }) => {
+const InteractiveList = ({ members, onClickDelete }) => {
   // const onClickDelete = () => console.log("Manifest your goals and dreams into reality");
   // console.log('groupAdmin: ', groupAdmin)
   // console.log('members; ', members)
   return (
     <Box sx={{ flexGrow: 1, maxWidth: 752 }}>
       <List>
-        <ListItem>
-          <ListItemText>(owner) {groupAdmin.username}</ListItemText>
-        </ListItem>
         {members.map((member, index) => {
           return (
             <ListItem
@@ -31,7 +28,7 @@ const InteractiveList = ({ members, groupAdmin, onClickDelete }) => {
                 </IconButton>
               }
             >
-              <ListItemText>{member.username}</ListItemText>
+              <ListItemText>{member.fullname}</ListItemText>
             </ListItem>
           );
         })}
@@ -42,7 +39,6 @@ const InteractiveList = ({ members, groupAdmin, onClickDelete }) => {
 
 InteractiveList.propTypes = {
   members: PropTypes.array,
-  groupAdmin: PropTypes.object,
   onClickDelete: PropTypes.func,
 };
 

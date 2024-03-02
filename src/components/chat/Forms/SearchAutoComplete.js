@@ -4,15 +4,12 @@ import { useForm, Controller } from 'react-hook-form';
 import { SocketContext, FriendContext } from './../Main';
 import { Box, Autocomplete, TextField, Button } from '@mui/material';
 
-// https://refine.dev/blog/material-ui-autocomplete-component/#the-useautocomplete-hook
-// https://codesandbox.io/p/sandbox/clever-surf-8dmo7?file=%2Fsrc%2FForm%2FComponents%2FUsers.js%3A27%2C22
-// https://codesandbox.io/p/sandbox/elastic-leavitt-pwgdex?file=%2Fsrc%2FApp.js
-
 export default function CustomAutoComplete({ formSubmitHandler }) {
   const { handleSubmit, control } = useForm({
     defaultValues: { search: null },
   });
   const { socket } = useContext(SocketContext);
+  // selectedRoom,
   const { searchOptions, setSearchOptions } = useContext(FriendContext);
   const [showResp, setShowResp] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -43,7 +40,13 @@ export default function CustomAutoComplete({ formSubmitHandler }) {
       socket.connect();
 
       socket.emit('search_users_db', inputValue, ({ errorMsg, resp }) => {
-        console.log({ errorMsg, resp });
+        if (errorMsg) console.log('errorMsg: ', errorMsg);
+        // console.log({ errorMsg, resp });
+        /*const mates = selectedRoom.mates;
+        const filterOutExistedMates = resp.filter(
+          (user) => !mates.find(({ userId }) => user.userid !== userId),
+        );*/
+        // console.log('filterOutExistedMates: ', filterOutExistedMates);
         setSearchOptions(resp);
       });
     }
@@ -104,3 +107,7 @@ export default function CustomAutoComplete({ formSubmitHandler }) {
 CustomAutoComplete.propTypes = {
   formSubmitHandler: PropTypes.func,
 };
+
+// https://refine.dev/blog/material-ui-autocomplete-component/#the-useautocomplete-hook
+// https://codesandbox.io/p/sandbox/clever-surf-8dmo7?file=%2Fsrc%2FForm%2FComponents%2FUsers.js%3A27%2C22
+// https://codesandbox.io/p/sandbox/elastic-leavitt-pwgdex?file=%2Fsrc%2FApp.js

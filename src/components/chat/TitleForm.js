@@ -1,32 +1,17 @@
 /* eslint-disable */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
-import {
-  Box,
-  Button,
-  IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Box, Button, TextField } from '@mui/material';
 import { SocketContext, FriendContext } from './Main';
 // title, isGroup, channelId,
 const TitleForm = ({ roomName }) => {
   const { socket } = useContext(SocketContext);
   const { selectedRoom, setSelectedRoom, setRoomList } =
     useContext(FriendContext);
-  const { register, handleSubmit, setValue, getValues, control, reset } =
-    useForm({
-      defaultValues: { name: selectedRoom.name },
-    });
-  // console.log('selectedRoom: ', selectedRoom);
-  const [show, setShow] = useState(false);
-  // console.log('channel: ', selectedRoom);
+  const { handleSubmit, setValue, control, reset } = useForm({
+    defaultValues: { name: selectedRoom.name },
+  });
   const onSubmit = async (data) => {
     // setName(data.name)
     // console.log('data: ', data.name);
@@ -53,9 +38,6 @@ const TitleForm = ({ roomName }) => {
     );
   };
 
-  const handleShow = () => setShow(true);
-  const handleClose = () => setShow(false);
-
   useEffect(() => {
     setValue('name', selectedRoom.name);
   }, [setValue]);
@@ -66,58 +48,33 @@ const TitleForm = ({ roomName }) => {
   }
 
   return (
-    <>
-      <Typography
-        variant="h6"
-        onClick={handleShow}
-        sx={{ '&:hover': { cursor: 'pointer' } }}
-      >
-        {roomName}
-      </Typography>
-      <Dialog open={show} onClose={handleClose}>
-        <DialogTitle>Change Group Name</DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent>
-          <Box
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            sx={{ width: '400px' }}
-          >
-            <Controller
-              name="name"
-              defaultValue={''}
-              control={control}
-              render={({ field }) => (
-                <TextField {...field} fullWidth autoComplete="off" />
-              )}
-            />
-            <Box sx={{ display: 'flex', mt: '20px', columnGap: '15px' }}>
-              <Button variant="contained" type="submit">
-                submit
-              </Button>
-              <Button variant="text" type="submit" onClick={() => reset()}>
-                reset
-              </Button>
-            </Box>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          {/*<Button onClick={handleClose}>Subscribe</Button>*/}
-        </DialogActions>
-      </Dialog>
-    </>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      sx={{ width: '400px' }}
+    >
+      <Controller
+        name="name"
+        defaultValue={''}
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            fullWidth
+            autoComplete="off"
+            label="Group Name"
+          />
+        )}
+      />
+      <Box sx={{ display: 'flex', mt: '20px', columnGap: '15px' }}>
+        <Button variant="contained" type="submit">
+          submit
+        </Button>
+        <Button variant="text" type="submit" onClick={() => reset()}>
+          reset
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

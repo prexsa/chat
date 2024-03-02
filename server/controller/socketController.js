@@ -196,6 +196,7 @@ const isUsernameAvailable = async (username) => {
 };
 
 const mapNameToUserId = async (arrayOfUserIds) => {
+  // console.log('arrayOfUserIds: ', arrayOfUserIds);
   const mapped = await Promise.all(
     arrayOfUserIds.map(async (userId) => {
       const user = await User.findOne(
@@ -444,41 +445,53 @@ module.exports.addToGroup = async (socket, roomId, userId, cb) => {
   );
 
   const mates = updatedRoomRecordWithNewMember.mates;
+  const mappedNameToUserId = await mapNameToUserId(mates);
+  // console.log('mappedNameToUserId ', mappedNameToUserId);
+  updatedRoomRecordWithNewMember.mates = mappedNameToUserId;
+  /*console.log(
+    'updatedRoomRecordWithNewMember ',
+    updatedRoomRecordWithNewMember,
+  );*/
+  // console.log('mates: ', mates);
   const matesToNotify = mates.filter((mate) => mate !== hostUserId);
-
+  console.log('matesToNotify: ', matesToNotify);
+  // notify other sockets in room of new user
+  const newGroupMemberFullname = `${updateNewMemberRecord.firstname} ${updateNewMemberRecord.lastname}`;
   socket.to(matesToNotify).emit('new_member_added_to_group', {
     roomId,
     newMemberProfile: {
       userId,
-      fullname: `${updateNewMemberRecord.firstname} ${updateNewMemberRecord.lastname}`,
+      fullname: newGroupMemberFullname,
     },
+    roomRecord: updatedRoomRecordWithNewMember,
   });
 
   socket.to(userId).emit('update_new_group_member_roomlist', {
     roomRecord: updatedRoomRecordWithNewMember,
   });
 
-  /*
-  const { userId } = await lookUpByUsername(name);
-  // console.log('userId; ', userId)
-  if (userId === '') {
-    cb({ isFound: false, msg: 'User does not exist.' });
-    return;
+  cb({ newGroupMember: { userId: userId, fullname: newGroupMemberFullname } });
+};
+
+module.exports.leaveGroup = async (socket, roomId, userId, cb) => {
+  // user has the only authority to leave the group
+  const hostUserId = socket.user.userId;
+  if (hostUserId === userId) {
+    // remove roomId from user record
+    const removedRoomIdFromUser = await User.findOneAndUpdate(
+      { userId: userId },
+      { $pull: { rooms: roomId } },
+    );
+    // remove userId from room records
+    const removedUserIdFromRoom = await Room.findOneAndUpdate(
+      { roomId: roomId },
+      { $pull: { mates: userId } },
+      { new: true },
+    );
+    const { mates } = removedUserIdFromRoom;
+    socket.to(mates).emit('left_group_chat', { roomId, userId });
   }
-  // add user to group set
-  // update user records
-  const { title } = await getGroupTitle(roomId);
-  const integerResp = await redisClient.sadd(`grpmembers:${roomId}`, userId);
-  // add roomId to member's rooms set
-  const updateRoomSet = await redisClient.sadd(
-    `rooms:${userId}`,
-    `group:${roomId}`,
-  );
-  socket.to(userId).emit('new_friend', {
-    roomId,
-    title,
-  });
-  cb({ isFound: true, username: name, userId });*/
+  cb();
 };
 
 module.exports.getGroupAdminInfo = async (ownerId, cb) => {
