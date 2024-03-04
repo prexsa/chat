@@ -9,8 +9,8 @@ export default function CustomAutoComplete({ formSubmitHandler }) {
     defaultValues: { search: null },
   });
   const { socket } = useContext(SocketContext);
-  // selectedRoom,
-  const { searchOptions, setSearchOptions } = useContext(FriendContext);
+  const { selectedRoom, searchOptions, setSearchOptions } =
+    useContext(FriendContext);
   const [showResp, setShowResp] = useState(false);
   const [isError, setIsError] = useState(false);
   const [respMessage, setRespMessage] = useState('');
@@ -41,13 +41,17 @@ export default function CustomAutoComplete({ formSubmitHandler }) {
 
       socket.emit('search_users_db', inputValue, ({ errorMsg, resp }) => {
         if (errorMsg) console.log('errorMsg: ', errorMsg);
-        // console.log({ errorMsg, resp });
-        /*const mates = selectedRoom.mates;
+
+        const mates = selectedRoom.mates;
+        // console.log({ resp, mates });
         const filterOutExistedMates = resp.filter(
-          (user) => !mates.find(({ userId }) => user.userid !== userId),
-        );*/
+          (n) =>
+            !mates.some(
+              (mate) => mate.userId === n.userId && mate.label === n.fullname,
+            ),
+        );
         // console.log('filterOutExistedMates: ', filterOutExistedMates);
-        setSearchOptions(resp);
+        setSearchOptions(filterOutExistedMates);
       });
     }
     return () => {
