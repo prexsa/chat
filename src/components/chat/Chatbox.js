@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
@@ -142,6 +141,7 @@ Chatbox.propTypes = {
   from: PropTypes.string,
   isGroup: PropTypes.bool,
   picture: PropTypes.string,
+  roomId: PropTypes.string,
 };
 
 export default Chatbox;

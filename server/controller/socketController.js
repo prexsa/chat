@@ -9,6 +9,7 @@ const axios = require('axios');
 
 const User = require('../model/user.model');
 const Room = require('../model/room.model');
+const UploadFile = require('../model/file.model');
 // const Message = require('../model/message.model');
 
 const RoomUtil = require('./room.util');
@@ -669,10 +670,8 @@ module.exports.handleRoomSelected = async (socket, channelId, isGroup) => {
 // https://www.reddit.com/r/reactjs/comments/w22mag/how_to_handle_sending_images_and_videos_in_a_chat/
 // https://stackskills.com/courses/181862/lectures/2751724
 module.exports.uploadFile = async (socket, fileObj, cb) => {
-  const { to: channelId, from: userId, fileName, file, isGroup } = fileObj;
-  // console.log("fileObj: ", fileObj);
-  // console.log('uploadFile: ', { fileName, file })
-  // const userId = socket.user.userID
+  const { roomId, userId, fileName, file, isGroup } = fileObj;
+  console.log('fileObj: ', fileObj);
   const tmpFileDir = path.join(__dirname, '../tmp/upload');
   // write file to tmp/upload folder
   writeFile(tmpFileDir + '/' + `${fileName}`, file, (err) => {
@@ -692,8 +691,67 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
         deleteStoredFile(fileName);
         // destruct { url, public_id, secure_url, asset_id }
         const { url, public_id, secure_url, asset_id } = result;
+        // create instance
+        const file = new UploadFile({
+          cloudinaryUrl: url,
+          cloudinarySecureUrl: secure_url,
+          cloudinaryAssetId: asset_id,
+          name: public_id,
+          userId: userId,
+        });
+
+        // now save the file
+        file
+          .save()
+          .then(async (resp) => {
+            console.log('save resp: ', resp);
+            const { _id, createdAt, cloudinaryUrl, cloudinarySecureUrl, name } =
+              resp;
+            // save
+            // convert dateTime str to unix
+            const unixDateTime = parseInt(
+              new Date(createdAt).getTime() / 1000,
+            ).toFixed(0);
+
+            const updateRoomMessages = await Room.findOneAndUpdate(
+              { roomId: roomId },
+              {
+                $push: {
+                  messages: {
+                    userId,
+                    imageUrl: cloudinaryUrl,
+                    hasImage: true,
+                    name: name,
+                    date: unixDateTime,
+                    fileId: _id,
+                  },
+                  uploadFiles: {
+                    fileId: _id,
+                  },
+                },
+              },
+              { new: true },
+            );
+
+            const fileMessageObj = {
+              userId,
+              imageUrl: cloudinaryUrl,
+              hasImage: true,
+              name: name,
+              date: unixDateTime,
+              fileId: _id,
+            };
+            const mates = updateRoomMessages.mates;
+            // const filterOutSenderUserId = mates.filter(mate => mate.userId !== userId)
+            socket.to(mates).emit('dm', fileMessageObj);
+          })
+          .catch((err) => {
+            console.log('File saving error: ', err);
+          });
+        // console.log('file: ', file)
+        return;
         // check if channel isGroup
-        let roomIds = '';
+        /*let roomIds = '';
         let messageRoomId = '';
         if (isGroup) {
           // get all members from group
@@ -722,7 +780,7 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
           `messages:${messageRoomId}`,
           unixDateTime,
           JSON.stringify(message),
-        );
+        );*/
         // notify
         socket.to(roomIds).emit('dm', message);
         cb({ message });

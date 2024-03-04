@@ -14,15 +14,15 @@ const FileUpload = ({ roomId, from, isGroup }) => {
   const { setMessages } = useContext(MessagesContext);
 
   const handleFileUpload = (file) => {
-    // console.log("file; ", file);
+    console.log('file; ', file);
     const fileObj = {
       roomId: roomId,
-      from: from,
+      userId: from,
       fileName: file.name,
       file: file,
       isGroup,
     };
-    // console.log("fileObj: ", file);
+    console.log('fileObj: ', file);
     socket.emit('upload_file', fileObj, (resp) => {
       console.log('file upload cb: ', { resp });
       const { message } = resp;

@@ -14,6 +14,10 @@ const RoomSchema = new mongoose.Schema({
         userId: String,
         message: String,
         date: String,
+        imageUrl: String,
+        hasImage: Boolean,
+        name: String,
+        fileId: String,
       },
     ],
   },
@@ -27,6 +31,9 @@ const RoomSchema = new mongoose.Schema({
   },
   name: {
     type: String,
+  },
+  uploadFiles: {
+    type: Array,
   },
 });
 

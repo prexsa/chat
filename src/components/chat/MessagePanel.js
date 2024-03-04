@@ -35,6 +35,9 @@ const MessagePanel = ({ user }) => {
   };
   // console.log('selectedRoom; ', selectedRoom);
   const renderUserMessage = (message) => {
+    console.log('message: ', message);
+    const isAnImage = message?.hasImage;
+
     return (
       <ListItem
         sx={{
@@ -64,9 +67,17 @@ const MessagePanel = ({ user }) => {
               at {convertToHumanReadable(message.date)}
             </Typography>
           </Box>
-          <Typography variant="subtitles1" sx={{ color: '#616161' }}>
-            {message.message}
-          </Typography>
+          {isAnImage ? (
+            <img
+              src={message.imageUrl}
+              alt={message.name}
+              style={{ maxWidth: '180px' }}
+            />
+          ) : (
+            <Typography variant="subtitles1" sx={{ color: '#616161' }}>
+              {message.message}
+            </Typography>
+          )}
         </Box>
         <ListItemAvatar sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Avatar alt="User" src="/static/images/avatar/2.jpg" />
@@ -87,8 +98,10 @@ const MessagePanel = ({ user }) => {
   };
 
   const renderRoommatesMessage = (message) => {
+    // console.log('message: ', message);
     const username = getUsername(message.userId);
-
+    const isAnImage = message?.hasImage;
+    console.log('isAnImage; ', isAnImage);
     return (
       <ListItem sx={{ alignItems: 'flex-start' }}>
         <ListItemAvatar>
@@ -114,9 +127,17 @@ const MessagePanel = ({ user }) => {
               at {convertToHumanReadable(message.date)}
             </Typography>
           </Box>
-          <Typography variant="subtitles1" sx={{ color: '#616161' }}>
-            {message.message}
-          </Typography>
+          {isAnImage ? (
+            <img
+              src={message.imageUrl}
+              alt={message.name}
+              style={{ maxWidth: '180px' }}
+            />
+          ) : (
+            <Typography variant="subtitles1" sx={{ color: '#616161' }}>
+              {message.message}
+            </Typography>
+          )}
         </Box>
       </ListItem>
     );
@@ -143,6 +164,7 @@ const MessagePanel = ({ user }) => {
       <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
         {selectedRoom.messages.map((message, index) => {
           // console.log('messages: ', message, ' user.userId', user.userId);
+          // check if current message is an image
           return (
             <Box key={index}>
               {message.userId === user.userId

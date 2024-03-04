@@ -15,15 +15,6 @@ export default function CustomAutoComplete({ formSubmitHandler }) {
   const [isError, setIsError] = useState(false);
   const [respMessage, setRespMessage] = useState('');
   const [inputValue, setInputValue] = useState('');
-  /*
-  const fetchHandler = useCallback((socket, inputValue) => {
-    socket.connect();
-
-    socket.emit('search_users_db', inputValue, ({ errorMsg, resp }) => {
-      console.log({ errorMsg, resp });
-      // setOptions([{ label: 'Bankai', id: 1 }]);
-    });
-  });*/
 
   useEffect(() => {
     setTimeout(() => {
