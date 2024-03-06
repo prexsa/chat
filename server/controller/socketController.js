@@ -407,8 +407,41 @@ module.exports.updateGroupName = async (socket, roomId, name, cb) => {
   cb({ resp });*/
 };
 
-module.exports.createGroup = async (socket, title, cb) => {
+module.exports.createGroup = async (socket, data, cb) => {
+  const { groupName, members } = data;
   const randomId = crypto.randomUUID();
+  const hostUserId = socket.user.userId;
+  const extractUserId = members.map((member) => member.userId);
+  console.log('extractUserId: ', extractUserId);
+  const groupMembers = [hostUserId, ...extractUserId];
+
+  const room = new Room({
+    isGroup: true,
+    roomId: randomId,
+    mates: groupMembers,
+    name: groupName,
+  });
+
+  room
+    .save()
+    .then(async (resp) => {
+      // update all members records
+      console.log('resp: ', resp);
+      const addToRooms = await Promise.all(
+        groupMembers.map(async (userId) => {
+          const user = await User.findOneAndUpdate(
+            { userId: userId },
+            { $push: { rooms: randomId } },
+          );
+        }),
+      );
+
+      socket.to(extractUserId).emit('new_group_created', { roomRecord: resp });
+      cb({ room });
+    })
+    .catch((err) => {
+      console.log('Saving new group error: ', err);
+    });
 
   return;
   const groupId = `group:${randomId}`;

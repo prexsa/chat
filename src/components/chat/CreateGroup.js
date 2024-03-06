@@ -1,57 +1,41 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { FriendContext, SocketContext } from './Main';
 import GroupIcon from '@mui/icons-material/Group';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-
-import {
-  Box,
-  Button,
-  OutlinedInput,
-  InputLabel,
-  FormControl,
-  FormHelperText,
-} from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
+import { SearchAutoComplete } from './form-component/SearchAutoComplete';
+import { FormInputText } from './form-component/FormInputText';
+import { Modal } from './Modal';
 
 const CreateGroup = () => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-  const { setFriendList } = useContext(FriendContext);
+  const { handleSubmit, reset, control } = useForm({
+    defaultValues: { members: null, groupName: '' },
+  });
+  const { setRoomList } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
-  const [showResp, setShowResp] = useState('');
   const [show, setShow] = useState(false);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setShowResp('');
-    }, 2000);
-  }, [showResp]);
-
   const handleOnSubmit = (data) => {
-    // console.log('data: ', data)
-    if (data.name.trim() === '') return;
     socket.connect();
     socket.emit('create_group', data, (resp) => {
-      console.log('resp: ', resp);
-      reset({ name: '' });
-      setShow(false);
-      setFriendList((prev) => {
-        return [resp, ...prev];
+      reset();
+      setRoomList((prevState) => {
+        return [resp.room, ...prevState];
       });
+      handleClose();
     });
   };
+
+  /*const formSubmitHandler = (data) => {
+    console.log('formSubmitHandler: ', data);
+  };*/
 
   const handleClickOpen = () => setShow(true);
   const handleClose = () => setShow(false);
 
-  const onErrors = (errors) => console.error(errors);
+  const onErrors = (errors) => {
+    console.error(errors);
+  };
 
   return (
     <div>
@@ -63,53 +47,39 @@ const CreateGroup = () => {
       >
         Create group
       </Button>
-      <Dialog open={show} onClose={handleClose}>
-        <DialogTitle>Create group</DialogTitle>
-        <DialogContent>
-          <Box sx={{ color: 'red' }}>{showResp}</Box>
-          <Box
-            component="form"
-            noValidate
-            autoComplete="off"
-            onSubmit={handleSubmit(handleOnSubmit, onErrors)}
-          >
-            <Box sx={{ margin: '20px 0', width: '400px' }}>
-              <FormControl
-                variant="outlined"
-                fullWidth
-                // error={usrNameError.hasError}
-                name="name"
-                // onFocus={onFocusHandler}
-              >
-                <InputLabel
-                  htmlFor="outlined-adornment-password"
-                  sx={{ top: '-7px' }}
-                >
-                  Add a title
-                </InputLabel>
-                <OutlinedInput
-                  type="text"
-                  size="small"
-                  label="Username or email"
-                  {...register('name', { required: true })}
-                />
-                <FormHelperText id="component-error-text">
-                  {errors?.name ? errors?.name.message : ''}
-                </FormHelperText>
-              </FormControl>
-            </Box>
-            <Box sx={{ marginTop: '20px' }}>
-              <Button variant="contained" type="submit" fullWidth>
-                Create
-              </Button>
-            </Box>
+      <Modal open={show} onClose={handleClose} title={'Create Group'}>
+        <Typography variant="subtitle1" sx={{ textAlign: 'center' }}>
+          Add a group name and add members.
+        </Typography>
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSubmit(handleOnSubmit, onErrors)}
+        >
+          <Box sx={{ margin: '20px 0', width: '400px' }}>
+            <FormInputText
+              name={'groupName'}
+              control={control}
+              label={'Group Name'}
+            />
           </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          {/*<Button onClick={handleClose}>Subscribe</Button>*/}
-        </DialogActions>
-      </Dialog>
+          <Box sx={{ my: '20px' }}>
+            <Typography variant="subtitle1">Add to group</Typography>
+            <SearchAutoComplete
+              name={'members'}
+              control={control}
+              label={'Username or email'}
+              // formSubmitHandler={formSubmitHandler}
+            />
+          </Box>
+          <Box sx={{ marginTop: '20px' }}>
+            <Button variant="contained" type="submit" fullWidth>
+              Create Group
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </div>
   );
 };

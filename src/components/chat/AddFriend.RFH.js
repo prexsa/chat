@@ -9,8 +9,8 @@ import CustomTabPanel from './CustomTabPanel';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { Box, Button, Tabs, Tab, Typography, Tooltip } from '@mui/material';
-import SearchAutoComplete from './Forms/SearchAutoComplete';
-import Email from './Forms/Email';
+import { SearchAutoComplete } from './form-component/SearchAutoComplete';
+import Email from './form-component/Email';
 import PulsatingDiv from '../animation/PulsatingDiv';
 import SlideLeft from '../animation/SlideLeft';
 

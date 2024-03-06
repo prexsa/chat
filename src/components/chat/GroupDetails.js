@@ -22,7 +22,7 @@ import {
 } from '@mui/material';
 import List from '../List';
 
-import SearchAutoComplete from './Forms/SearchAutoComplete';
+import { SearchAutoComplete } from './form-component/SearchAutoComplete';
 import TitleForm from './TitleForm';
 
 const GroupDetails = ({ isGroup, roomId }) => {

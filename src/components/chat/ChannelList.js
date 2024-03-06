@@ -1,7 +1,6 @@
-/* eslint-disable */
 import React, { useContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { FriendContext, SocketContext } from './Main';
+import { FriendContext } from './Main';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CheckIcon from '@mui/icons-material/Check';
@@ -9,9 +8,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
-  Autocomplete,
-  Tooltip,
-  Input,
   Typography,
   List,
   ListItem,
@@ -25,11 +21,12 @@ import {
 } from '@mui/material';
 import AddFriendRFH from './AddFriend.RFH';
 import RequestToConnect from './RequestToConnect';
+import CreateGroup from './CreateGroup';
 
 function ChannelList({ user }) {
   const { roomList, setRoomList, selectedRoom, setSelectedRoom } =
     useContext(FriendContext);
-  const { socket } = useContext(SocketContext);
+  // const { socket } = useContext(SocketContext);
   // const [activeIndex, setActiveIndex] = useState(null);
   const [isActive, setIsActive] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -157,6 +154,7 @@ function ChannelList({ user }) {
         Clear Message Panel
       </Button>
       <RequestToConnect />
+      <CreateGroup />
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
           value={tabValue}

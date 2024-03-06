@@ -68,6 +68,13 @@ const useSocket = (
       });
     });
 
+    socket.on('new_group_created', ({ roomRecord }) => {
+      // console.log('roomRecord: ', roomRecord);
+      setRoomList((prevState) => {
+        return [roomRecord, ...prevState];
+      });
+    });
+
     socket.on(
       'new_member_added_to_group',
       ({ roomId, newMemberProfile: { userId, fullname } }) => {

@@ -1,26 +1,26 @@
 import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { SocketContext, FriendContext } from './../Main';
-import { Box, Autocomplete, TextField, Button } from '@mui/material';
-
-export default function CustomAutoComplete({ formSubmitHandler }) {
-  const { handleSubmit, control } = useForm({
+import { Autocomplete, TextField } from '@mui/material';
+// Button
+export const SearchAutoComplete = ({ name, control, label }) => {
+  /*const { control } = useForm({
     defaultValues: { search: null },
-  });
+  });*/
   const { socket } = useContext(SocketContext);
   const { selectedRoom, searchOptions, setSearchOptions } =
     useContext(FriendContext);
   const [showResp, setShowResp] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [respMessage, setRespMessage] = useState('');
+  // const [isError, setIsError] = useState(false);
+  // const [respMessage, setRespMessage] = useState('');
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     setTimeout(() => {
       setShowResp(false);
-      setRespMessage('');
-      setIsError(false);
+      // setRespMessage('');
+      // setIsError(false);
     }, 4000);
   }, [showResp]);
 
@@ -51,57 +51,66 @@ export default function CustomAutoComplete({ formSubmitHandler }) {
   }, [inputValue, socket, setSearchOptions]);
 
   return (
-    <Box component="form" onSubmit={handleSubmit(formSubmitHandler)}>
-      <Box sx={{ color: `${isError ? 'red' : 'green'}`, textAlign: 'center' }}>
-        {respMessage}
-      </Box>
-      <Box sx={{ width: '400px' }}>
-        <Controller
-          render={({ field: { onChange } }) => (
-            <Autocomplete
-              onChange={(event, item) => {
-                onChange(item);
-              }}
-              inputValue={inputValue}
-              onInputChange={(event, newInputValue) => {
-                setInputValue(newInputValue);
-              }}
-              // format is [{ label: '', id: ''}]
-              options={searchOptions}
-              /*
+    <Controller
+      rules={{ required: 'Missing members. Add at least one member' }}
+      control={control}
+      name={name}
+      defaultValue=""
+      render={({ field: { onChange }, fieldState: { error } }) => (
+        <Autocomplete
+          multiple
+          onChange={(event, item) => {
+            onChange(item);
+          }}
+          inputValue={inputValue}
+          onInputChange={(event, newInputValue) => {
+            setInputValue(newInputValue);
+          }}
+          // format is [{ label: '', id: ''}]
+          options={searchOptions}
+          /*
               renderOption={(option, index) => {
                 console.log('option: ', option);
                 return <span key={option.userId}>{option.label}</span>;
               }}
               */
-              getOptionLabel={(item) => (item.label ? item.label : '')}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="User Name"
-                  margin="normal"
-                  variant="outlined"
-                />
-              )}
+          getOptionLabel={(item) => (item.label ? item.label : '')}
+          renderInput={(params) => (
+            <TextField
+              helperText={error ? error.message : null}
+              error={!!error}
+              {...params}
+              label={label}
+              margin="normal"
+              variant="outlined"
             />
           )}
-          control={control}
-          name="search"
-          defaultValue=""
         />
-      </Box>
-      <Box sx={{ marginTop: '20px' }}>
-        <Button variant="contained" type="submit" fullWidth>
-          Add
-        </Button>
-      </Box>
-    </Box>
+      )}
+    />
   );
-}
-
-CustomAutoComplete.propTypes = {
-  formSubmitHandler: PropTypes.func,
 };
+
+SearchAutoComplete.propTypes = {
+  name: PropTypes.string,
+  control: PropTypes.object,
+  label: PropTypes.string,
+};
+
+/*
+    <Box sx={{ width: '400px' }}>
+    </Box>
+<Box component="form" onSubmit={handleSubmit(formSubmitHandler)}>
+  <Box sx={{ color: `${isError ? 'red' : 'green'}`, textAlign: 'center' }}>
+    {respMessage}
+  </Box>
+  <Box sx={{ marginTop: '20px' }}>
+    <Button variant="contained" type="submit" fullWidth>
+      Add
+    </Button>
+  </Box>
+</Box>
+*/
 
 // https://refine.dev/blog/material-ui-autocomplete-component/#the-useautocomplete-hook
 // https://codesandbox.io/p/sandbox/clever-surf-8dmo7?file=%2Fsrc%2FForm%2FComponents%2FUsers.js%3A27%2C22
