@@ -35,7 +35,7 @@ const MessagePanel = ({ user }) => {
   };
   // console.log('selectedRoom; ', selectedRoom);
   const renderUserMessage = (message) => {
-    console.log('message: ', message);
+    // console.log('message: ', message);
     const isAnImage = message?.hasImage;
 
     return (
@@ -101,7 +101,7 @@ const MessagePanel = ({ user }) => {
     // console.log('message: ', message);
     const username = getUsername(message.userId);
     const isAnImage = message?.hasImage;
-    console.log('isAnImage; ', isAnImage);
+    // console.log('isAnImage; ', isAnImage);
     return (
       <ListItem sx={{ alignItems: 'flex-start' }}>
         <ListItemAvatar>

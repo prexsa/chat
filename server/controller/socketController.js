@@ -412,7 +412,7 @@ module.exports.createGroup = async (socket, data, cb) => {
   const randomId = crypto.randomUUID();
   const hostUserId = socket.user.userId;
   const extractUserId = members.map((member) => member.userId);
-  console.log('extractUserId: ', extractUserId);
+  // console.log('extractUserId: ', extractUserId);
   const groupMembers = [hostUserId, ...extractUserId];
 
   const room = new Room({
@@ -426,7 +426,7 @@ module.exports.createGroup = async (socket, data, cb) => {
     .save()
     .then(async (resp) => {
       // update all members records
-      console.log('resp: ', resp);
+      // console.log('resp: ', resp);
       const addToRooms = await Promise.all(
         groupMembers.map(async (userId) => {
           const user = await User.findOneAndUpdate(
@@ -436,14 +436,16 @@ module.exports.createGroup = async (socket, data, cb) => {
         }),
       );
 
+      const mappedNameToUserId = await mapNameToUserId(groupMembers);
+      resp.mates = mappedNameToUserId;
+
       socket.to(extractUserId).emit('new_group_created', { roomRecord: resp });
       cb({ room });
     })
     .catch((err) => {
       console.log('Saving new group error: ', err);
     });
-
-  return;
+  /*
   const groupId = `group:${randomId}`;
   const created = await redisClient.hset(
     `${groupId}`,
@@ -458,6 +460,7 @@ module.exports.createGroup = async (socket, data, cb) => {
   // const addToMembers = await redisClient.sadd(`grpmembers:${randomId}`)
   console.log({ created, added });
   cb({ roomId: groupId, title: title.name });
+  */
 };
 
 module.exports.addToGroup = async (socket, roomId, userId, cb) => {
@@ -579,6 +582,26 @@ module.exports.searchUsersDb = async (socket, name, cb) => {
   // console.log('resp: searchUsersDb ', resp);
 };
 
+module.exports.deleteGroup = async (socket, roomId, cb) => {
+  const hostUserId = socket.user.userId;
+  const room = await Room.find({ roomId: roomId });
+  const deleteRoomRecord = await Room.deleteOne({ roomId: roomId });
+  const { mates } = room[0];
+  const removeRoomId = await Promise.all(
+    mates.map(async (userId) => {
+      const user = await User.findOneAndUpdate(
+        { userId: userId },
+        { $pull: { rooms: roomId } },
+      );
+    }),
+  );
+
+  const removedHostUserId = mates.filter((userId) => userId !== hostUserId);
+  socket.to(removedHostUserId).emit('remove_room', { roomId });
+
+  cb({ roomId });
+};
+
 module.exports.leaveChatRoom = async (
   socket,
   hostUserId,
@@ -603,9 +626,7 @@ module.exports.leaveChatRoom = async (
   const roomRecordRemoved = await Room.deleteOne({ roomId: roomId });
 
   // notify user to remove connection
-  socket
-    .to(userIdToRemove)
-    .emit('remove_from_chat', { userIdToRemove: hostUserId, roomId });
+  socket.to(userIdToRemove).emit('remove_room', { roomId });
 
   // callback to update host's state
   cb({ userIdToRemove, roomId });

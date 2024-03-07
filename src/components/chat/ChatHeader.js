@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, Typography } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-// import TitleForm from './TitleForm';
 import GroupDetails from './GroupDetails';
 import LeaveChat from './LeaveChat';
 // import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
@@ -12,7 +11,7 @@ const ChatHeader = ({ isGroup, roomName, roomId }) => {
   // console.log('roomDetails: ', roomDetails);
   return (
     <Box sx={{ display: 'flex' }} className="message-panel-header">
-      <LeaveChat isGroup={isGroup} roomId={roomId} />
+      {isGroup ? null : <LeaveChat />}
       <GroupDetails roomId={roomId} isGroup={isGroup} />
       <AccountCircleIcon className="channel-img" />
       <Typography variant="h6">{roomName}</Typography>

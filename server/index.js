@@ -27,6 +27,7 @@ const {
   denyRequest,
   // removeUserFromGroup,
   leaveGroup,
+  deleteGroup,
   // disconnectUserRelationship,
   // getRoomMessages,
   onDisconnect,
@@ -92,6 +93,9 @@ io.on('connection', async (socket) => {
   );
   socket.on('leave_group', ({ userId, roomId }, cb) =>
     leaveGroup(socket, roomId, userId, cb),
+  );
+  socket.on('delete_group', ({ roomId }, cb) =>
+    deleteGroup(socket, roomId, cb),
   );
 
   socket.on('add_to_group', ({ roomId, userId }, cb) =>

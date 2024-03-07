@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Controller } from 'react-hook-form';
-import { SocketContext, FriendContext } from './../Main';
+import { SocketContext, FriendContext } from '../chat/Main';
 import { Autocomplete, TextField } from '@mui/material';
 // Button
 export const SearchAutoComplete = ({ name, control, label }) => {
-  /*const { control } = useForm({
-    defaultValues: { search: null },
-  });*/
   const { socket } = useContext(SocketContext);
   const { selectedRoom, searchOptions, setSearchOptions } =
     useContext(FriendContext);

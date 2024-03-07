@@ -1,22 +1,12 @@
-/* eslint-disable */
 import React, { useContext, useState } from 'react';
-import PropTypes from 'prop-types';
 import { useUserContext } from '../../userContext';
 import { FriendContext, SocketContext } from './Main';
-import CloseIcon from '@mui/icons-material/Close';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Box, Button, IconButton } from '@mui/material';
+import { Modal } from './Modal';
 
-import {
-  Box,
-  Button,
-  IconButton,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@mui/material';
-
-const LeaveChat = ({ isGroup }) => {
+const LeaveChat = () => {
   const { user } = useUserContext();
   const { selectedRoom, setRoomList, setSelectedRoom } =
     useContext(FriendContext);
@@ -52,63 +42,21 @@ const LeaveChat = ({ isGroup }) => {
       <IconButton onClick={handleShow} size="sm">
         <MoreVertIcon />
       </IconButton>
-
-      <Dialog
-        open={show}
-        onClose={handleClose}
-        fullWidth={true}
-        maxWidth={'xs'}
-      >
-        <DialogTitle>Leave Chat</DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent>
-          <div className="leave-icon-container">
-            <Button
-              size="small"
-              onClick={leaveChat}
-              color="error"
-              fullWidth
-              startIcon={<ExitToAppIcon />}
-            >
-              Leave
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <Modal open={show} onClose={handleClose} title={'Leave Chat'}>
+        <Box sx={{ width: '400px' }}>
+          <Button
+            size="small"
+            onClick={leaveChat}
+            color="error"
+            fullWidth
+            startIcon={<ExitToAppIcon />}
+          >
+            Leave
+          </Button>
+        </Box>
+      </Modal>
     </Box>
   );
 };
 
-LeaveChat.propTypes = {
-  isGroup: PropTypes.bool,
-  // userId: PropTypes.string.isRequired,
-};
-
 export default LeaveChat;
-/*
-<div className="message-chanel-actions">
-  <div className="leave-icon-container">
-  {
-    // remove option for owner to leave their own group
-    channel.isGroup &&
-    <span data-text="Leave chat" className="tooltip-text bottom left">
-      <ExitToAppIcon className="leave-icon" onClick={handleLeaveGroup} />
-    </span>
-  }
-    <span data-text="Delete" className="tooltip-text bottom left">
-      <CloseIcon className="leave-icon" onClick={handleRemoveChannel} />
-    </span>
-  </div>
-</div>
-*/

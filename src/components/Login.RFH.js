@@ -169,9 +169,3 @@ const Login = () => {
 };
 
 export default Login;
-/*
-    <NoAuthLayout heading={'Login'} subheading={'Login with your email'}>
-    */
-/*
-    </NoAuthLayout>
-    */

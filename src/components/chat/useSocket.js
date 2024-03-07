@@ -46,10 +46,17 @@ const useSocket = (
       });
     });
 
-    socket.on('new_friend', (newFriend) => {
+    /*socket.on('new_friend', (newFriend) => {
       // console.log('new_friend: ', newFriend)
       setRoomList((prevState) => {
         return [newFriend, ...prevState];
+      });
+    });*/
+
+    socket.on('new_group_created', ({ roomRecord }) => {
+      // console.log('roomRecord: ', roomRecord);
+      setRoomList((prevState) => {
+        return [roomRecord, ...prevState];
       });
     });
 
@@ -65,13 +72,6 @@ const useSocket = (
         if (exist.length === 0) {
           return [roomRecord, ...prevState];
         }
-      });
-    });
-
-    socket.on('new_group_created', ({ roomRecord }) => {
-      // console.log('roomRecord: ', roomRecord);
-      setRoomList((prevState) => {
-        return [roomRecord, ...prevState];
       });
     });
 
@@ -137,8 +137,8 @@ const useSocket = (
       console.log('updatedUserRecord ', updatedUserRecord);
     });
 
-    socket.on('remove_from_chat', ({ roomId, userIdToRemove }) => {
-      console.log('remove_from_chat: ', { roomId, userIdToRemove });
+    socket.on('remove_room', ({ roomId }) => {
+      console.log('remove_room: ', { roomId });
 
       setRoomList((prevState) => {
         const filtered = prevState.filter((room) => room.roomId !== roomId);
@@ -237,10 +237,11 @@ const useSocket = (
       socket.off('current_user');
       socket.off('friends');
       socket.off('connected');
-      socket.off('new_friend');
+      // socket.off('new_friend');
       socket.off('dm');
       socket.off('msg');
-      socket.off('remove_from_chat');
+      socket.off('remove_room');
+      socket.off('new_group_created');
       socket.off('unread-count');
       socket.off('update_group_name');
       socket.off('search_users_db');

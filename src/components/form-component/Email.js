@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useUserContext } from '../../../userContext';
+import { useUserContext } from '../../userContext';
 
 import {
   Box,
@@ -10,7 +10,7 @@ import {
   FormControl,
   FormHelperText,
 } from '@mui/material';
-import Auth from '../../../services/Auth';
+import Auth from '../../services/Auth';
 
 export default function Email() {
   const {

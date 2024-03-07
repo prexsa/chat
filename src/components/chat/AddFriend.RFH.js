@@ -1,18 +1,15 @@
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { SocketContext } from './Main';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import CustomTabPanel from './CustomTabPanel';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { Box, Button, Tabs, Tab, Typography, Tooltip } from '@mui/material';
-import { SearchAutoComplete } from './form-component/SearchAutoComplete';
-import Email from './form-component/Email';
+import { Box, Tabs, Tab, Typography, Tooltip } from '@mui/material';
+import { SearchAutoComplete } from '../form-component/SearchAutoComplete';
+import Email from '../form-component/Email';
 import PulsatingDiv from '../animation/PulsatingDiv';
 import SlideLeft from '../animation/SlideLeft';
+import { Modal } from './Modal';
 
 const AddFriend = ({ roomList }) => {
   const { socket } = useContext(SocketContext);
@@ -75,36 +72,30 @@ const AddFriend = ({ roomList }) => {
           </Box>
         )}
       </Box>
-
-      <Dialog open={show} onClose={handleClose}>
-        <DialogTitle sx={{ textAlign: 'center', textTransform: 'capitalize' }}>
-          Add people you know to your chat
-        </DialogTitle>
-
-        <DialogContent>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={tabPanel} onChange={(e, index) => setTabPanel(index)}>
-              <Tab label="Search" aria-controls="tab-panel-search" />
-              <Tab label="Email" aria-controls="tab-panel-email" />
-            </Tabs>
-          </Box>
-          <CustomTabPanel value={tabPanel} index={0}>
-            <Typography variant="subtitle1">
-              Search for family or friends you may know
-            </Typography>
-            <SearchAutoComplete formSubmitHandler={formSubmitHandler} />
-          </CustomTabPanel>
-          <CustomTabPanel value={tabPanel} index={1}>
-            <Typography variant="subtitle1">
-              Email a family or friend, and add them to your chat
-            </Typography>
-            <Email />
-          </CustomTabPanel>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
+      <Modal
+        open={show}
+        onClose={handleClose}
+        title={'Add people you know to your chat'}
+      >
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={tabPanel} onChange={(e, index) => setTabPanel(index)}>
+            <Tab label="Search" aria-controls="tab-panel-search" />
+            <Tab label="Email" aria-controls="tab-panel-email" />
+          </Tabs>
+        </Box>
+        <CustomTabPanel value={tabPanel} index={0}>
+          <Typography variant="subtitle1">
+            Search for family or friends you may know
+          </Typography>
+          <SearchAutoComplete formSubmitHandler={formSubmitHandler} />
+        </CustomTabPanel>
+        <CustomTabPanel value={tabPanel} index={1}>
+          <Typography variant="subtitle1">
+            Email a family or friend, and add them to your chat
+          </Typography>
+          <Email />
+        </CustomTabPanel>
+      </Modal>
     </div>
   );
 };

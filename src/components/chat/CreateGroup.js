@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { FriendContext, SocketContext } from './Main';
 import GroupIcon from '@mui/icons-material/Group';
 import { Box, Button, Typography } from '@mui/material';
-import { SearchAutoComplete } from './form-component/SearchAutoComplete';
-import { FormInputText } from './form-component/FormInputText';
+import { SearchAutoComplete } from '../form-component/SearchAutoComplete';
+import { FormInputText } from '../form-component/FormInputText';
 import { Modal } from './Modal';
 
 const CreateGroup = () => {
@@ -26,10 +26,6 @@ const CreateGroup = () => {
     });
   };
 
-  /*const formSubmitHandler = (data) => {
-    console.log('formSubmitHandler: ', data);
-  };*/
-
   const handleClickOpen = () => setShow(true);
   const handleClose = () => setShow(false);
 
@@ -49,7 +45,7 @@ const CreateGroup = () => {
       </Button>
       <Modal open={show} onClose={handleClose} title={'Create Group'}>
         <Typography variant="subtitle1" sx={{ textAlign: 'center' }}>
-          Add a group name and add members.
+          Add a group name and members.
         </Typography>
         <Box
           component="form"
