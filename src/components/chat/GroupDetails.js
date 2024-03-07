@@ -21,18 +21,7 @@ const GroupDetails = ({ isGroup, roomId }) => {
   const [show, setShow] = useState(false);
   const [members, setMembers] = useState([]);
   // console.log('members: ', members);
-  /*
-  useEffect(() => {
-    socket.on('exit_group_chat', ({ roomId }) => {
-      // console.log('exit_group_chat: ', { roomId, userId })
-      // remove group chat from user's channel list
-      setRoomList((prevFriends) => {
-        return [...prevFriends].filter((friend) => friend?.roomId !== roomId);
-      });
-    });
-    return () => socket.off('exit_group_chat');
-  }, [socket, setRoomList]);
-*/
+
   const formSubmitHandler = (data) => {
     // console.log('data: ', data);
     const {
@@ -82,7 +71,10 @@ const GroupDetails = ({ isGroup, roomId }) => {
   };
 
   const handleShow = () => setShow(true);
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    reset();
+    setShow(false);
+  };
 
   const onErrors = (errors) => console.error(errors);
 
@@ -119,7 +111,6 @@ const GroupDetails = ({ isGroup, roomId }) => {
             name={'search'}
             control={control}
             label={'Name or email'}
-            // formSubmitHandler={formSubmitHandler}
           />
         </Box>
         <Divider />

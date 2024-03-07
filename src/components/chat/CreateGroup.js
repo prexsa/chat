@@ -27,7 +27,10 @@ const CreateGroup = () => {
   };
 
   const handleClickOpen = () => setShow(true);
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    reset();
+    setShow(false);
+  };
 
   const onErrors = (errors) => {
     console.error(errors);
@@ -58,6 +61,7 @@ const CreateGroup = () => {
               name={'groupName'}
               control={control}
               label={'Group Name'}
+              // reset={reset}
             />
           </Box>
           <Box sx={{ my: '20px' }}>
@@ -66,6 +70,7 @@ const CreateGroup = () => {
               name={'members'}
               control={control}
               label={'Username or email'}
+              // reset={reset}
               // formSubmitHandler={formSubmitHandler}
             />
           </Box>

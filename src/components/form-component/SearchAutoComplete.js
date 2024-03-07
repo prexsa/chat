@@ -8,18 +8,7 @@ export const SearchAutoComplete = ({ name, control, label }) => {
   const { socket } = useContext(SocketContext);
   const { selectedRoom, searchOptions, setSearchOptions } =
     useContext(FriendContext);
-  const [showResp, setShowResp] = useState(false);
-  // const [isError, setIsError] = useState(false);
-  // const [respMessage, setRespMessage] = useState('');
   const [inputValue, setInputValue] = useState('');
-
-  useEffect(() => {
-    setTimeout(() => {
-      setShowResp(false);
-      // setRespMessage('');
-      // setIsError(false);
-    }, 4000);
-  }, [showResp]);
 
   useEffect(() => {
     if (inputValue === '') return;
@@ -56,6 +45,7 @@ export const SearchAutoComplete = ({ name, control, label }) => {
       render={({ field: { onChange }, fieldState: { error } }) => (
         <Autocomplete
           multiple
+          freeSolo
           onChange={(event, item) => {
             onChange(item);
           }}
@@ -66,12 +56,15 @@ export const SearchAutoComplete = ({ name, control, label }) => {
           // format is [{ label: '', id: ''}]
           options={searchOptions}
           /*
-              renderOption={(option, index) => {
-                console.log('option: ', option);
-                return <span key={option.userId}>{option.label}</span>;
-              }}
-              */
-          getOptionLabel={(item) => (item.label ? item.label : '')}
+          renderOption={(option, index) => {
+            console.log('option: ', option);
+            return <span key={option.userId}>{option.label}</span>;
+          }}
+          */
+          // getOptionLabel={(item) => (item.label ? item.label : '')}
+          isOptionEqualToValue={(option, value) =>
+            option.userId === value.userId
+          }
           renderInput={(params) => (
             <TextField
               helperText={error ? error.message : null}
@@ -92,22 +85,8 @@ SearchAutoComplete.propTypes = {
   name: PropTypes.string,
   control: PropTypes.object,
   label: PropTypes.string,
+  reset: PropTypes.func,
 };
-
-/*
-    <Box sx={{ width: '400px' }}>
-    </Box>
-<Box component="form" onSubmit={handleSubmit(formSubmitHandler)}>
-  <Box sx={{ color: `${isError ? 'red' : 'green'}`, textAlign: 'center' }}>
-    {respMessage}
-  </Box>
-  <Box sx={{ marginTop: '20px' }}>
-    <Button variant="contained" type="submit" fullWidth>
-      Add
-    </Button>
-  </Box>
-</Box>
-*/
 
 // https://refine.dev/blog/material-ui-autocomplete-component/#the-useautocomplete-hook
 // https://codesandbox.io/p/sandbox/clever-surf-8dmo7?file=%2Fsrc%2FForm%2FComponents%2FUsers.js%3A27%2C22
