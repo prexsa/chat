@@ -185,10 +185,10 @@ const MessagePanel = ({ user }) => {
 
 MessagePanel.propTypes = {
   user: PropTypes.object,
-  selectedRoom: PropTypes.object,
-  isGroup: PropTypes.bool,
-  setShowModal: PropTypes.func,
-  extractAllImagesFromMessages: PropTypes.func,
+  // selectedRoom: PropTypes.object,
+  // isGroup: PropTypes.bool,
+  // setShowModal: PropTypes.func,
+  // extractAllImagesFromMessages: PropTypes.func,
 };
 
 export default MessagePanel;

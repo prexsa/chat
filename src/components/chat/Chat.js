@@ -15,11 +15,11 @@ const Chat = ({ isGroup }) => {
   const { selectedRoom } = useContext(FriendContext);
   // const [picture, setPicture] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [images, setImages] = useState([]);
-  const [imageIndex, setImageIndex] = useState(0);
+  // const [images, setImages] = useState([]);
+  // const [imageIndex, setImageIndex] = useState(0);
 
   // console.log('selectedRoom: ', selectedRoom);
-  const extractAllImagesFromMessages = async (selectedImgSrc, messages) => {
+  /*const extractAllImagesFromMessages = async (selectedImgSrc, messages) => {
     const images = await messages.filter(
       (message) => message.hasOwn('isImage') === true,
     );
@@ -32,7 +32,7 @@ const Chat = ({ isGroup }) => {
     }
     setImages(images);
     setImageIndex(index);
-  };
+  };*/
   // console.log('selectedRoom: ', selectedRoom);
   if (Object.keys(selectedRoom).length === 0 || selectedRoom.roomId === '') {
     return <EmptyChat />;
@@ -57,8 +57,8 @@ const Chat = ({ isGroup }) => {
       <VerticallyCenteredModal
         show={showModal}
         onHide={() => setShowModal(false)}
-        images={images}
-        activeindex={imageIndex}
+        // images={images}
+        // activeindex={imageIndex}
       />
       <ChatHeader
         isGroup={isGroup}
@@ -82,7 +82,7 @@ const Chat = ({ isGroup }) => {
             // picture={picture}
             isGroup={isGroup}
             setShowModal={setShowModal}
-            extractAllImagesFromMessages={extractAllImagesFromMessages}
+            // extractAllImagesFromMessages={extractAllImagesFromMessages}
           />
           <Chatbox
             roomId={selectedRoom?.userId || selectedRoom?.roomId}
@@ -111,9 +111,15 @@ const Chat = ({ isGroup }) => {
                 paddingBottom: 3,
               }}
             >
-              {Array.from(Array(16)).map((_, index) => (
-                <Grid item xs={6} key={index}>
-                  <Paper sx={{ height: '150px' }}>xs=2</Paper>
+              {selectedRoom?.uploadFiles.map((file) => (
+                <Grid item xs={6} key={file.cloudinaryAssetId}>
+                  <Paper sx={{ height: '150px' }}>
+                    <img
+                      src={file.cloudinaryUrl}
+                      alt={file.name}
+                      style={{ height: '150px' }}
+                    />
+                  </Paper>
                 </Grid>
               ))}
             </Grid>

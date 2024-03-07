@@ -87,6 +87,25 @@ const notifyRooms = async (socket, rooms) => {
   // socket.emit('roomList', rooms);
 };
 
+const mapFileIdToFileObj = async (files) => {
+  // console.log(files);
+  const mapFiles = await Promise.all(
+    files.map(async (fileId) => {
+      const record = await UploadFile.find({
+        _id: fileId.fileId.toString(),
+      });
+      return ({
+        cloudinaryUrl,
+        cloudinarySecureUrl,
+        cloudinaryAssetId,
+        name,
+        createdAt,
+      } = record[0]);
+    }),
+  );
+  return Promise.resolve(mapFiles);
+};
+
 const getRoomDetails = async (socket, rooms) => {
   // console.log('rooms: ', rooms);
   const roomDetails = await Promise.all(
@@ -96,6 +115,11 @@ const getRoomDetails = async (socket, rooms) => {
       const { mates } = details[0];
       const mapped = await mapNameToUserId(mates);
       details[0].mates = mapped;
+      // console.log('details: ', details[0]);
+      if ('uploadFiles' in details[0]) {
+        const mappedFiles = await mapFileIdToFileObj(details[0].uploadFiles);
+        details[0].uploadFiles = mappedFiles;
+      }
       // console.log('details: ', mapped);
       return details[0];
     }),
