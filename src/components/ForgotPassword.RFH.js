@@ -1,34 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Auth from '../services/Auth';
 import NoAuthLayout from './NoAuth.layout';
-import {
-  Box,
-  Button,
-  OutlinedInput,
-  InputLabel,
-  FormControl,
-  FormHelperText,
-} from '@mui/material';
+import { Box, Button } from '@mui/material';
+import { FormInputEmail } from './form-component/FormInputEmail';
 
 function ForgotPassword() {
   const navigate = useNavigate();
-  const { register, watch, handleSubmit } = useForm();
-  const [emailError, setEmailError] = useState({ hasError: false, msg: '' });
-  const [success, setSuccess] = useState({ isSuccessful: false, msg: '' });
+  const { handleSubmit, control, setError } = useForm({
+    defaultValues: { email: '' },
+  });
 
-  useEffect(() => {
-    const subscription = watch((value) => {
-      // console.log({ value, name, type })
-      if (value.username !== '') {
-        // setBtnDisabled(false)
-      } else {
-        // setBtnDisabled(true)
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [watch]);
+  const [success, setSuccess] = useState({ isSuccessful: false, msg: '' });
 
   const handleOnSubmit = async (values) => {
     console.log({ values });
@@ -50,7 +34,7 @@ function ForgotPassword() {
       setSuccess({ isSuccessful: data.isSuccessful, msg: data.message });
       resetForm();
     } else {
-      setEmailError({ hasError: !data.isSuccessful, msg: data.message });
+      setError('email', { type: 'custom', message: data.message });
     }
   };
 
@@ -62,10 +46,6 @@ function ForgotPassword() {
   };
 
   const onErrors = (errors) => console.log({ errors });
-
-  const onFocusHandler = () => {
-    setEmailError({ hasError: false, msg: '' });
-  };
 
   if (success.isSuccessful) {
     return (
@@ -90,29 +70,7 @@ function ForgotPassword() {
       onSubmit={handleSubmit(handleOnSubmit, onErrors)}
     >
       <Box sx={{ margin: '20px 0' }}>
-        <FormControl
-          variant="outlined"
-          fullWidth
-          error={emailError.hasError}
-          name="email"
-          onFocus={onFocusHandler}
-        >
-          <InputLabel
-            htmlFor="outlined-adornment-password"
-            sx={{ top: '-7px' }}
-          >
-            Enter your email...
-          </InputLabel>
-          <OutlinedInput
-            type="text"
-            size="small"
-            label="Enter your email..."
-            {...register('email', { required: true })}
-          />
-          <FormHelperText id="component-error-text">
-            {emailError.hasError ? emailError.msg : ''}
-          </FormHelperText>
-        </FormControl>
+        <FormInputEmail name={'email'} control={control} label={'Email'} />
         <Box sx={{ marginTop: '20px' }}>
           <Button variant="contained" type="submit" fullWidth>
             Send link

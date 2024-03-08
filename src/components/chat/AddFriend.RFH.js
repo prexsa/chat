@@ -6,7 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { Box, Tabs, Tab, Typography, Tooltip } from '@mui/material';
 import { SearchAutoComplete } from '../form-component/SearchAutoComplete';
-import Email from '../form-component/Email';
+import { FormInputEmail } from '../form-component/FormInputEmail';
 import PulsatingDiv from '../animation/PulsatingDiv';
 import SlideLeft from '../animation/SlideLeft';
 import { Modal } from './Modal';
@@ -93,7 +93,7 @@ const AddFriend = ({ roomList }) => {
           <Typography variant="subtitle1">
             Email a family or friend, and add them to your chat
           </Typography>
-          <Email />
+          <FormInputEmail />
         </CustomTabPanel>
       </Modal>
     </div>

@@ -61,7 +61,6 @@ const CreateGroup = () => {
               name={'groupName'}
               control={control}
               label={'Group Name'}
-              // reset={reset}
             />
           </Box>
           <Box sx={{ my: '20px' }}>

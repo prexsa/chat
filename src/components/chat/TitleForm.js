@@ -1,11 +1,10 @@
-/* eslint-disable */
 import React, { useContext, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useForm, Controller } from 'react-hook-form';
-import { Box, Button, TextField } from '@mui/material';
+import { useForm } from 'react-hook-form';
+import { Box, Button } from '@mui/material';
 import { SocketContext, FriendContext } from './Main';
-// title, isGroup, channelId,
-const TitleForm = ({ roomName }) => {
+import { FormInputText } from '../form-component/FormInputText';
+
+const TitleForm = () => {
   const { socket } = useContext(SocketContext);
   const { selectedRoom, setSelectedRoom, setRoomList } =
     useContext(FriendContext);
@@ -53,18 +52,10 @@ const TitleForm = ({ roomName }) => {
       onSubmit={handleSubmit(onSubmit)}
       sx={{ width: '400px' }}
     >
-      <Controller
-        name="name"
-        defaultValue={''}
+      <FormInputText
+        name={'groupName'}
         control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            fullWidth
-            autoComplete="off"
-            label="Group Name"
-          />
-        )}
+        label={'Group Name'}
       />
       <Box sx={{ display: 'flex', mt: '20px', columnGap: '15px' }}>
         <Button variant="contained" type="submit">
@@ -76,10 +67,6 @@ const TitleForm = ({ roomName }) => {
       </Box>
     </Box>
   );
-};
-
-TitleForm.propTypes = {
-  roomName: PropTypes.string,
 };
 
 export default TitleForm;

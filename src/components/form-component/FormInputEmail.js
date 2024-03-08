@@ -3,10 +3,17 @@ import PropTypes from 'prop-types';
 import { Controller } from 'react-hook-form';
 import { TextField } from '@mui/material';
 
-export const FormInputText = ({ name, control, label }) => {
+export const FormInputEmail = ({ name, control, label }) => {
   return (
     <Controller
-      rules={{ required: `${label} is required` }}
+      rules={{
+        required: `${label} is required`,
+        pattern: {
+          value:
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+          message: 'Please enter a valid email',
+        },
+      }}
       name={name}
       control={control}
       render={({
@@ -30,7 +37,7 @@ export const FormInputText = ({ name, control, label }) => {
   );
 };
 
-FormInputText.propTypes = {
+FormInputEmail.propTypes = {
   name: PropTypes.string,
   control: PropTypes.object,
   label: PropTypes.string,
