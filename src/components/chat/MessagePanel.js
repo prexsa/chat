@@ -2,19 +2,15 @@ import React, { useContext, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FriendContext, MessagesContext } from './Main';
 import { Box, Typography, List, ListItem } from '@mui/material';
-// import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 
-const MessagePanel = ({ user }) => {
+const MessagePanel = ({ user, handleImageSelect }) => {
   const bottomRef = useRef(null);
   const { feedback } = useContext(MessagesContext);
   const { selectedRoom } = useContext(FriendContext);
   // console.log('user: ', selectedRoom);
   useEffect(() => {
-    // console.log('picture: ', picture)
-    // bottomRef.current?.scrollIntoView({block: "end", behavior: 'smooth'});
-    // console.log('bottomRef', selectedRoom);
     bottomRef.current?.scrollIntoView({ block: 'end', inline: 'nearest' });
   }, [selectedRoom.messages]);
 
@@ -22,74 +18,15 @@ const MessagePanel = ({ user }) => {
     bottomRef.current?.scrollIntoView({ block: 'end', inline: 'nearest' });
   }, []);
 
-  /*const displayModal = (imgSrc) => {
-    // console.log('displayModal; ')
-    setShowModal(true);
-    // setImages([imgSrc])
-    extractAllImagesFromMessages(imgSrc, messages);
-  };*/
-
   const convertToHumanReadable = (unix) => {
     const date = new Date(unix * 1000);
     return date.toLocaleString([], { timeStyle: 'short' });
   };
   // console.log('selectedRoom; ', selectedRoom);
-  const renderUserMessage = (message) => {
-    // console.log('message: ', message);
-    const isAnImage = message?.hasImage;
-
-    return (
-      <ListItem
-        sx={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-end',
-          // columnGap: '5px',
-        }}
-      >
-        <Box>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'baseline',
-              justifyContent: 'flex-end',
-              columnGap: '5px',
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{ color: '#2196f3', fontSize: '1rem' }}
-            >
-              You
-            </Typography>
-            <Typography variant="body1" sx={{ fontSize: 14, color: '#9e9e9e' }}>
-              at {convertToHumanReadable(message.date)}
-            </Typography>
-          </Box>
-          {isAnImage ? (
-            <img
-              src={message.imageUrl}
-              alt={message.name}
-              style={{ maxWidth: '180px' }}
-            />
-          ) : (
-            <Typography variant="subtitles1" sx={{ color: '#616161' }}>
-              {message.message}
-            </Typography>
-          )}
-        </Box>
-        <ListItemAvatar sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Avatar alt="User" src="/static/images/avatar/2.jpg" />
-        </ListItemAvatar>
-      </ListItem>
-    );
-  };
 
   const getUsername = (userId) => {
     const name = selectedRoom.mates.filter((mate) => mate.userId === userId);
     // console.log('name; ', name);
-
     if (name.length === 0) {
       return 'User was removed';
     } else {
@@ -97,48 +34,68 @@ const MessagePanel = ({ user }) => {
     }
   };
 
-  const renderRoommatesMessage = (message) => {
-    // console.log('message: ', message);
-    const username = getUsername(message.userId);
+  const renderMessage = (message, displayName, isUser) => {
     const isAnImage = message?.hasImage;
-    // console.log('isAnImage; ', isAnImage);
+
     return (
-      <ListItem sx={{ alignItems: 'flex-start' }}>
-        <ListItemAvatar>
-          <Avatar alt={username} src="/static/images/avatar/1.jpg" />
-        </ListItemAvatar>
-        <Box>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'baseline',
-              justifyContent: 'flex-start',
-              columnGap: '5px',
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{ color: '#424242', fontSize: '1rem' }}
-            >
-              {username}
-            </Typography>
-            <Typography variant="body1" sx={{ fontSize: 14, color: '#9e9e9e' }}>
-              at {convertToHumanReadable(message.date)}
-            </Typography>
-          </Box>
-          {isAnImage ? (
+      <Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'baseline',
+            justifyContent: `${isUser ? 'flex-end' : 'flex-start'}`,
+            columnGap: '5px',
+          }}
+        >
+          <Typography variant="h6" sx={{ color: '#2196f3', fontSize: '1rem' }}>
+            {displayName}
+          </Typography>
+          <Typography variant="body1" sx={{ fontSize: 14, color: '#9e9e9e' }}>
+            at {convertToHumanReadable(message.date)}
+          </Typography>
+        </Box>
+        {isAnImage ? (
+          <Box sx={{ '&:hover': { cursor: 'pointer' } }}>
             <img
               src={message.imageUrl}
               alt={message.name}
               style={{ maxWidth: '180px' }}
+              onClick={() => handleImageSelect(message.fileId)}
             />
-          ) : (
-            <Typography variant="subtitles1" sx={{ color: '#616161' }}>
-              {message.message}
-            </Typography>
-          )}
-        </Box>
+          </Box>
+        ) : (
+          <Typography variant="subtitles1" sx={{ color: '#616161' }}>
+            {message.message}
+          </Typography>
+        )}
+      </Box>
+    );
+  };
+
+  const renderListItem = (message) => {
+    const isUser = message.userId === user.userId;
+    const username = getUsername(message.userId);
+
+    return isUser ? (
+      <ListItem
+        sx={{
+          // display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-end',
+        }}
+      >
+        {renderMessage(message, 'You', isUser)}
+        <ListItemAvatar sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Avatar alt="User" src="/static/images/avatar/2.jpg" />
+        </ListItemAvatar>
+      </ListItem>
+    ) : (
+      <ListItem sx={{ alignItems: 'flex-start' }}>
+        <ListItemAvatar>
+          <Avatar alt={username} src="/static/images/avatar/1.jpg" />
+        </ListItemAvatar>
+        {renderMessage(message, username, isUser)}
       </ListItem>
     );
   };
@@ -165,13 +122,8 @@ const MessagePanel = ({ user }) => {
         {selectedRoom.messages.map((message, index) => {
           // console.log('messages: ', message, ' user.userId', user.userId);
           // check if current message is an image
-          return (
-            <Box key={index}>
-              {message.userId === user.userId
-                ? renderUserMessage(message)
-                : renderRoommatesMessage(message)}
-            </Box>
-          );
+          // console.log('message: ', message);
+          return <Box key={index}>{renderListItem(message)}</Box>;
         })}
 
         <ListItem ref={bottomRef} className="feedback-typing">
@@ -185,10 +137,7 @@ const MessagePanel = ({ user }) => {
 
 MessagePanel.propTypes = {
   user: PropTypes.object,
-  // selectedRoom: PropTypes.object,
-  // isGroup: PropTypes.bool,
-  // setShowModal: PropTypes.func,
-  // extractAllImagesFromMessages: PropTypes.func,
+  handleImageSelect: PropTypes.func,
 };
 
 export default MessagePanel;
