@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Carousel } from 'react-bootstrap';
 
-const NoTransitionCarousel = ({ activeIndex, images }) => {
+export const NoTransitionCarousel = ({ imageId, images }) => {
   const [index, setIndex] = useState(0);
   // console.log('activeIndex: ', activeIndex)
   const handleSelect = (selectedIndex) => {
@@ -10,8 +10,9 @@ const NoTransitionCarousel = ({ activeIndex, images }) => {
   };
 
   useEffect(() => {
+    const activeIndex = images.map((image) => image._id).indexOf(imageId);
     setIndex(activeIndex);
-  }, [activeIndex]);
+  }, [imageId]);
   // console.log('images: ', images)
   return (
     <Carousel
@@ -26,11 +27,11 @@ const NoTransitionCarousel = ({ activeIndex, images }) => {
           // console.log('image: ', image)
           return (
             <Carousel.Item key={imgIndex}>
-              <img className="modal-image" src={image.content} alt="" />
-              {/*<Carousel.Caption>
-                  <h3>First slide label</h3>
-                  <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                </Carousel.Caption>*/}
+              <img
+                className="modal-image"
+                src={image.cloudinaryUrl}
+                alt={image.name}
+              />
             </Carousel.Item>
           );
         })}
@@ -39,8 +40,6 @@ const NoTransitionCarousel = ({ activeIndex, images }) => {
 };
 
 NoTransitionCarousel.propTypes = {
-  activeIndex: PropTypes.number,
+  imageId: PropTypes.string,
   images: PropTypes.array,
 };
-
-export default NoTransitionCarousel;

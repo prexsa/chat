@@ -813,6 +813,7 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
 
             const fileMessageObj = {
               userId,
+              roomId,
               imageUrl: cloudinaryUrl,
               hasImage: true,
               name: name,
@@ -822,48 +823,14 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
             const mates = updateRoomMessages.mates;
             // const filterOutSenderUserId = mates.filter(mate => mate.userId !== userId)
             socket.to(mates).emit('dm', fileMessageObj);
+            // cb({ message: fileMessageObj });
           })
           .catch((err) => {
             console.log('File saving error: ', err);
           });
         // console.log('file: ', file)
-        return;
-        // check if channel isGroup
-        /*let roomIds = '';
-        let messageRoomId = '';
-        if (isGroup) {
-          // get all members from group
-          const members = await redisClient.smembers(`grpmembers:${channelId}`);
-          // console.log("members: ", members);
-          roomIds = members;
-          messageRoomId = channelId;
-        } else {
-          // get roomId
-          const { roomId } = await getRoomId(userId, channelId);
-          roomIds = messageRoomId = roomId.id;
-        }
-        // save url to redis
-        const unixDateTime = Date.now();
-        const message = {
-          to: channelId,
-          from: userId,
-          isImage: true,
-          urlLinkWorks: true,
-          content: url,
-          date: unixDateTime,
-          isGroup,
-        };
-        // save message
-        await redisClient.zadd(
-          `messages:${messageRoomId}`,
-          unixDateTime,
-          JSON.stringify(message),
-        );*/
-        // notify
-        socket.to(roomIds).emit('dm', message);
-        cb({ message });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log('Cloudinary upload error', err));
   });
 };
 
@@ -888,14 +855,6 @@ module.exports.onDisconnect = async (socket) => {
   const friendRooms = await rooms.map((room) => room.userId);
   socket.to(friendRooms).emit('connected', false, socket.user.userId);
 };
-
-/*const removeFromFriendList = async (username, friendname, friendId) => {
-  const friendStr = `${friendname}.${friendId}`
-  console.log({ username, friendStr })
-  const resp = await redisClient.lrem(`friends:${username}`, 0, friendStr)
-  console.log('resp: ', resp)
-  // remove roomid connections
-}*/
 
 const removeRoomIdPairing = async (userId, roomId) => {
   // console.log('remove: ', { userId, roomId })
