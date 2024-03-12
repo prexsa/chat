@@ -24,7 +24,6 @@ export const NoTransitionCarousel = ({ imageId, images }) => {
     >
       {images &&
         images.map((image, imgIndex) => {
-          // console.log('image: ', image)
           return (
             <Carousel.Item key={imgIndex}>
               <img
@@ -32,6 +31,7 @@ export const NoTransitionCarousel = ({ imageId, images }) => {
                 src={image.cloudinaryUrl}
                 alt={image.name}
               />
+              <div>Name: {image.name}</div>
             </Carousel.Item>
           );
         })}

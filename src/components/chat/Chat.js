@@ -34,7 +34,7 @@ const Chat = ({ isGroup }) => {
     return <EmptyChat />;
   }
   // console.log('selectedRoom: ', selectedRoom);
-  const displayRoommatesName = (roommates) => {
+  const mapNameToUserId = (roommates) => {
     // console.log('roommates: ', roommates);
     const filtered = roommates.filter((mate) => mate.userId !== user.userId);
     return filtered[0].fullname;
@@ -43,7 +43,7 @@ const Chat = ({ isGroup }) => {
   const getRoomName = () => {
     let name = isGroup
       ? selectedRoom.name
-      : displayRoommatesName(selectedRoom.mates);
+      : mapNameToUserId(selectedRoom.mates);
     return name;
   };
 
@@ -117,7 +117,16 @@ const Chat = ({ isGroup }) => {
                 rowHeight={164}
               >
                 {selectedRoom?.uploadFiles.map((file) => (
-                  <ImageListItem key={file._id}>
+                  <ImageListItem
+                    key={file._id}
+                    onClick={() => handleImageSelect(file._id)}
+                    sx={{
+                      '&:hover': {
+                        cursor: 'pointer',
+                        boxShadow: '0px 0px 2px 1px #2196f3',
+                      },
+                    }}
+                  >
                     <img
                       src={file.cloudinaryUrl}
                       alt={file.name}

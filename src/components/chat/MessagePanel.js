@@ -11,7 +11,9 @@ const MessagePanel = ({ user, handleImageSelect }) => {
   const { selectedRoom } = useContext(FriendContext);
   // console.log('user: ', selectedRoom);
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ block: 'end', inline: 'nearest' });
+    setTimeout(function () {
+      bottomRef.current?.scrollIntoView({ block: 'end', inline: 'nearest' });
+    }, 100);
   }, [selectedRoom.messages]);
 
   useEffect(() => {
