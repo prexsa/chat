@@ -9,7 +9,8 @@ function useAuth() {
 
 function PrivateRoutes() {
   let isAuth = useAuth();
-  isAuth = true;
+  // for developing
+  // isAuth = true;
   return isAuth ? <Outlet /> : <Navigate to="/" />;
 }
 
