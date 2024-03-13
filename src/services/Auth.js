@@ -9,11 +9,15 @@ import axios from 'axios';
 // [context.production];
 const SERVER_ENDPOINT = process.env.REACT_APP_SERVER_URL;
 
-const login = async (values) => {
-  return await axios.post(`${SERVER_ENDPOINT}/api/auth/login`, values, {
+/*
+, {
     withCredentials: true,
     origin: SERVER_ENDPOINT,
-  });
+  }
+*/
+
+const login = async (values) => {
+  return await axios.post(`${SERVER_ENDPOINT}/api/auth/login`, values);
 };
 
 const signup = async (values) => {
