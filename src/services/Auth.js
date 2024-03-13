@@ -1,12 +1,13 @@
 import axios from 'axios';
 
-let SERVER_ENDPOINT = '';
+// let SERVER_ENDPOINT = '';
 
-if (process.env.NODE_ENV === 'development') {
-  SERVER_ENDPOINT = process.env.REACT_APP_SERVER_URL;
+/*if (process.env.NODE_ENV === 'development') {
 } else {
   SERVER_ENDPOINT = process.env.CLIENT_URL;
-}
+}*/
+// [context.production];
+const SERVER_ENDPOINT = process.env.REACT_APP_SERVER_URL;
 
 const login = async (values) => {
   return await axios.post(`${SERVER_ENDPOINT}/api/auth/login`, values, {
