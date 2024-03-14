@@ -8,7 +8,7 @@ import axios from 'axios';
 }*/
 // [context.production];
 const SERVER_ENDPOINT = process.env.REACT_APP_SERVER_URL;
-
+const AC_ALLOW_ORIGIN = process.env.AC_ALLOW_ORIGIN;
 /*
 , {
     withCredentials: true,
@@ -19,7 +19,7 @@ const SERVER_ENDPOINT = process.env.REACT_APP_SERVER_URL;
 const login = async (values) => {
   return await axios.post(`${SERVER_ENDPOINT}/api/auth/login`, values, {
     headers: {
-      'Access-Control-Allow-Origin': 'https://prexsa-chat.netlify.app',
+      'Access-Control-Allow-Origin': AC_ALLOW_ORIGIN,
     },
   });
 };
@@ -27,24 +27,36 @@ const login = async (values) => {
 const signup = async (values) => {
   return await axios.post(`${SERVER_ENDPOINT}/api/auth/signup`, values, {
     withCredentials: true,
+    headers: {
+      'Access-Control-Allow-Origin': AC_ALLOW_ORIGIN,
+    },
   });
 };
 
 const addUsername = async (values) => {
   return await axios.post(`${SERVER_ENDPOINT}/api/auth/add-username`, values, {
     withCredentials: true,
+    headers: {
+      'Access-Control-Allow-Origin': AC_ALLOW_ORIGIN,
+    },
   });
 };
 
 const userExist = async (values) => {
   return await axios.post(`${SERVER_ENDPOINT}/api/auth/pw-reset`, values, {
     withCredentials: true,
+    headers: {
+      'Access-Control-Allow-Origin': AC_ALLOW_ORIGIN,
+    },
   });
 };
 
 const updatePassword = async (values) => {
   return await axios.post(`${SERVER_ENDPOINT}/api/auth/update-pw`, values, {
     withCredentials: true,
+    headers: {
+      'Access-Control-Allow-Origin': AC_ALLOW_ORIGIN,
+    },
   });
 };
 
@@ -55,6 +67,9 @@ const getUserProfile = async (userId) => {
     { userId },
     {
       withCredentials: true,
+      headers: {
+        'Access-Control-Allow-Origin': AC_ALLOW_ORIGIN,
+      },
     },
   );
 };
@@ -65,6 +80,9 @@ const updateUserProfile = async (values) => {
     values,
     {
       withCredentials: true,
+      headers: {
+        'Access-Control-Allow-Origin': AC_ALLOW_ORIGIN,
+      },
     },
   );
 };
@@ -73,6 +91,9 @@ const sendEmail = async (values) => {
   // console.log('values; ', values);
   return await axios.post(`${SERVER_ENDPOINT}/api/auth/send-email`, values, {
     withCredentials: true,
+    headers: {
+      'Access-Control-Allow-Origin': AC_ALLOW_ORIGIN,
+    },
   });
 };
 
