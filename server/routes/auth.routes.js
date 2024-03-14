@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const AuthControl = require('../controller/auth.controller');
-const { rateLimiter } = require('../controller/rateLimiter');
+// const { rateLimiter } = require('../controller/rateLimiter');
 
 router.use(function (req, res, next) {
   res.header(
@@ -10,11 +10,9 @@ router.use(function (req, res, next) {
   );
   next();
 });
+// .post(rateLimiter(60, 10), AuthControl.login);
 
-router
-  .route('/login')
-  .get(AuthControl.verifyToken)
-  .post(rateLimiter(60, 10), AuthControl.login);
+router.route('/login').get(AuthControl.verifyToken).post(AuthControl.login);
 router.route('/signup').post(AuthControl.signup);
 router.route('/pw-reset').post(AuthControl.sendResetLink);
 router.route('/update-pw').post(AuthControl.passwordReset);

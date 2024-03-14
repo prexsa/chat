@@ -1,10 +1,11 @@
-const { redisClient } = require('../redis');
-const JWT_SECRET = process.env.JWT_SECRET;
+// const { redisClient } = require('../redis');
+// const JWT_SECRET = process.env.JWT_SECRET;
 const { jwtVerify } = require('./jwt.controller');
 const crypto = require('crypto');
 const { writeFile, readFile, stat, unlink } = require('fs');
 const path = require('path');
 const { cloudinary } = require('../cloudinary');
+const { JWT_SECRET } = require('../env');
 const axios = require('axios');
 
 const User = require('../model/user.model');
@@ -34,50 +35,6 @@ module.exports.authorizeUser = (socket, next) => {
  * Check if user has unread messages and get count of unread messages
  * Loop through friend's list and add onto object key: 'unreadCount' and value of 'totalCount'
  */
-
-const getRooms = async (socket) => {
-  // get rooms
-  const rooms = await redisClient.smembers(`rooms:${socket.user.userId}`);
-  // console.log('getRooms: ', rooms)
-  const roomList = await Promise.all(
-    rooms.map(async (room) => {
-      const parsed = room.split(':');
-      let details;
-      if (parsed[0] === 'group') {
-        details = await redisClient.hgetall(`${room}`);
-        // isGroup flag is used to identify whether room is group or not
-        details['isGroup'] = true;
-      } else {
-        const socketUserId = socket.user.userId;
-        // check parsed str for roomUserId
-        let userId = parsed[1];
-        if (parsed[0] === socketUserId) {
-          userId = parsed[1];
-        } else {
-          userId = parsed[0];
-        }
-        details = await redisClient.hgetall(`userid:${userId}`);
-        // isGroup flag is used to identify whether room is group or not
-        details['isGroup'] = false;
-      }
-      // console.log('details: ', details)
-      return details;
-    }),
-  );
-
-  // console.log('roomList: ', roomList)
-  return Promise.resolve({ rooms: roomList });
-};
-/*
-const notifyFriends = async (socket) => {
-  const { rooms } = await getRooms(socket);
-  const friendRooms = await rooms.map((room) => room.userId);
-  if (friendRooms.length > 0) {
-    socket.to(friendRooms).emit('connected', 'true', socket.user.userId);
-  }
-  socket.emit('friends', rooms);
-};
-*/
 
 const notifyRooms = async (socket, rooms) => {
   // console.log({ socket, rooms });
@@ -128,98 +85,6 @@ const getRoomDetails = async (socket, rooms) => {
   // console.log('room details: ', roomDetails);
 };
 
-const populateRooms = async (socket) => {
-  const { rooms } = await getRooms(socket);
-  // console.log('rooms; ', rooms)
-  /*
-   * map over parsedFriendList
-   * attach unreadCount and lastestMessage to parsedFriendList
-   */
-  const asyncRes = await Promise.all(
-    rooms.map(async (room) => {
-      // check isGroup flag
-      // if isGroup, roomId is roomId
-      // else, roomId is userId
-      const tempId = room.isGroup ? room.roomId : room.userId;
-      let roomUniqId = '';
-      if (room.isGroup) {
-        roomUniqId = room.roomId;
-        room.unreadCount = await redisClient.hget(
-          `unreadCount:${socket.user.userId}`,
-          roomUniqId,
-        );
-      } else {
-        const { roomId } = await getRoomId(socket.user.userId, room.userId);
-        roomUniqId = roomId.id;
-        room.unreadCount = await redisClient.hget(
-          `unreadCount:${socket.user.userId}`,
-          room.userId,
-        );
-      }
-
-      // room.unreadCount = await redisClient.hget(`unreadCount:${roomId.id}`, "count")
-      // console.log('friend.unreadCount ', { userID: socket.user.userID, friend })
-      // zrevrange returns an []
-      const messages = await redisClient.zrevrange(
-        `messages:${roomUniqId}`,
-        0,
-        -1,
-      );
-      if (messages.length <= 0) {
-        room.latestMessage = '';
-      } else {
-        let latestMessage = '';
-        for (const message of messages) {
-          const parsedJson = JSON.parse(message);
-          // console.log("parsedJson: ", parsedJson);
-          if (latestMessage === '' && parsedJson.from !== socket.user.userId) {
-            latestMessage = parsedJson.content;
-            // check if latest message is an image, if image, attached isImage
-            if (parsedJson.hasOwnProperty('isImage')) {
-              room.isImage = parsedJson.isImage;
-            }
-            break;
-          }
-        }
-        /*messages.map(message => {
-          return parsedJson
-        })*/
-        // console.log('parsedJson: ', parsedJson)
-        room.latestMessage = latestMessage;
-      }
-      return room;
-    }),
-  );
-  // console.log("asyncRes: ", asyncRes);
-  socket.emit('roomList', asyncRes);
-};
-
-const addToAllUsers = async (username, userId) => {
-  const exist = await redisClient.hexists(`allUsers`, userId);
-  // integer reply: 1 === exist, 0 === not-exist
-  // console.log('exist: ', exist)
-  if (exist === 0) {
-    const added = await redisClient.hset(`allUsers`, userId, username);
-    // console.log('added: ', added)
-  }
-};
-
-const lookUpByUsername = async (username) => {
-  const allKeys = await redisClient.hkeys(`allUsers`);
-  const allValues = await redisClient.hvals(`allUsers`);
-  // console.log('allValues: ', allValues)
-  const index = allValues.indexOf(username);
-  if (index >= 0) {
-    return Promise.resolve({ userId: allKeys[index] });
-  }
-  return Promise.resolve({ userId: '' });
-  // console.log('index: ', index)
-};
-
-const isUsernameAvailable = async (username) => {
-  return await redisClient.sismember(`g_a_:`, username);
-};
-
 const mapNameToUserId = async (arrayOfUserIds) => {
   // console.log('arrayOfUserIds: ', arrayOfUserIds);
   const mapped = await Promise.all(
@@ -253,17 +118,8 @@ module.exports.initializeUser = async (socket) => {
   // console.log('user: ', user);
   const { rooms, pendingRequest } = user[0];
   // console.log('rooms: ', rooms);
-  redisClient.hset(
-    `userid:${socket.user.userId}`,
-    'userId',
-    socket.user.userId,
-    'username',
-    socket.user.username,
-    'connected',
-    true,
-  );
 
-  addToAllUsers(socket.user.username, socket.user.userId);
+  //addToAllUsers(socket.user.username, socket.user.userId);
   notifyRooms(socket, rooms);
   getRoomDetails(socket, rooms);
   getRequestsList(socket, pendingRequest);
@@ -272,10 +128,6 @@ module.exports.initializeUser = async (socket) => {
   // updateFriendsList(socket)
   socket.emit('current_user', socket.user.username);
 };
-
-/*const addToActiveUsers = async (username, userId) => {
-  const added = await redisClient.hset(`allUsers`)
-}*/
 
 module.exports.acceptRequest = async (socket, requesterId, cb) => {
   // console.log({ requesterId });
@@ -421,14 +273,6 @@ module.exports.updateGroupName = async (socket, roomId, name, cb) => {
   socket.to(matesToUpdate).emit('update_group_name', { roomId, name });
   // console.log('updateRoomName: ', updateRoomName);
   cb();
-  /*return;
-  if (title === '' || roomId === '') return;
-  const resp = await redisClient.hset(`group:${roomId}`, 'title', title);
-  const members = await redisClient.smembers(`grpmembers:${roomId}`);
-  socket
-    .to(members)
-    .emit('update_group_name', { roomId: roomId, updatedTitle: title });
-  cb({ resp });*/
 };
 
 module.exports.createGroup = async (socket, data, cb) => {
@@ -469,22 +313,6 @@ module.exports.createGroup = async (socket, data, cb) => {
     .catch((err) => {
       console.log('Saving new group error: ', err);
     });
-  /*
-  const groupId = `group:${randomId}`;
-  const created = await redisClient.hset(
-    `${groupId}`,
-    'roomId',
-    randomId,
-    'title',
-    title.name,
-    'owner',
-    socket.user.userId,
-  );
-  const added = await redisClient.sadd(`rooms:${socket.user.userId}`, groupId);
-  // const addToMembers = await redisClient.sadd(`grpmembers:${randomId}`)
-  console.log({ created, added });
-  cb({ roomId: groupId, title: title.name });
-  */
 };
 
 module.exports.addToGroup = async (socket, roomId, userId, cb) => {
@@ -553,30 +381,6 @@ module.exports.leaveGroup = async (socket, roomId, userId, cb) => {
     socket.to(mates).emit('left_group_chat', { roomId, userId });
   }
   cb();
-};
-
-module.exports.getGroupAdminInfo = async (ownerId, cb) => {
-  const user = await redisClient.hgetall(`userid:${ownerId}`);
-  console.log('user: ', user);
-  cb(user);
-};
-
-module.exports.getGroupMembers = async (roomId, cb) => {
-  // console.log('getGroupMembers: ', roomId)
-  const members = await redisClient.smembers(`grpmembers:${roomId}`);
-  const membersDetails = await Promise.all(
-    members.map(async (userId) => {
-      return await redisClient.hgetall(`userid:${userId}`);
-    }),
-  );
-  cb({ members: membersDetails });
-  // console.log('membersDetails: ', membersDetails)
-};
-
-const getGroupTitle = async (roomId) => {
-  return Promise.resolve({
-    title: await redisClient.hget(`group:${roomId}`, 'title'),
-  });
 };
 
 module.exports.searchUsersDb = async (socket, name, cb) => {
@@ -654,45 +458,6 @@ module.exports.leaveChatRoom = async (
 
   // callback to update host's state
   cb({ userIdToRemove, roomId });
-
-  return;
-  if (isGroup) {
-    const removeFromGroupList = await redisClient.srem(
-      `grpmembers:${channelId}`,
-      userId,
-    );
-    const removeFromUserList = await redisClient.srem(
-      `rooms:${userId}`,
-      `group:${channelId}`,
-    );
-    // get remaining userId and emit to users the removed member
-    const members = await redisClient.smembers(`grpmembers:${channelId}`);
-    socket
-      .to(members)
-      .emit('exit_group_chat', { roomId: channelId, userId, isGroup });
-  } else {
-    const { roomId } = await getRoomId(userId, channelId);
-    removeRoomIdPairing(userId, roomId.id);
-    removeRoomIdPairing(channelId, roomId.id);
-    // remove yourself off their friends list
-    socket.to(channelId).emit('remove_from_chat', { roomId: userId, isGroup });
-  }
-  // callback to remove userid
-  cb({ roomId: channelId });
-};
-
-const addIdentityToGroupMsgUserId = async (messages) => {
-  const parsedJson = messages.map((message) => JSON.parse(message));
-  const asyncRes = await Promise.all(
-    parsedJson.map(async (message) => {
-      // console.log('message; ', message.from)
-      const resp = await redisClient.hget(`userid:${message.from}`, 'username');
-      // console.log('message.from: ', resp)
-      message.username = resp;
-      return message;
-    }),
-  );
-  return Promise.resolve({ mapMsgToUsername: asyncRes });
 };
 
 // add flag to img url
@@ -712,39 +477,6 @@ const setFlagForMissingImgUrl = async (messages) => {
   return Promise.resolve(asyncRes);
 };
 
-module.exports.handleRoomSelected = async (socket, channelId, isGroup) => {
-  // reset unread count
-  const userId = socket.user.userId;
-  const { count } = await resetUnreadCount(userId, channelId);
-  // emit to yourself
-  socket.emit('unread-count', { userId: channelId, count });
-  // get messageId
-  let roomIdStr = '';
-  if (isGroup) {
-    roomIdStr = channelId;
-  } else {
-    const { roomId } = await getRoomId(userId, channelId);
-    roomIdStr = roomId.id;
-  }
-  // console.log('handleRoomSelected: ', roomId)
-  // get room message and emit back
-  // zrevrange returns an array[]
-  const messages = await redisClient.zrange(`messages:${roomIdStr}`, 0, -1);
-  // console.log('messages: ', messages)
-  let parsedMessages = [];
-  if (isGroup) {
-    const { mapMsgToUsername } = await addIdentityToGroupMsgUserId(messages);
-    // console.log('groupMessage: ', groupMessage)
-    parsedMessages = mapMsgToUsername;
-  } else {
-    // console.log('messages; ', messages)
-    parsedMessages = messages.map((message) => JSON.parse(message));
-  }
-  // console.log("parsedMessages :", parsedMessages);
-  const updatedMessages = await setFlagForMissingImgUrl(parsedMessages);
-  // console.log('parsedJson: ', parsedJson )
-  socket.emit('room_msgs', updatedMessages);
-};
 // https://www.reddit.com/r/reactjs/comments/w22mag/how_to_handle_sending_images_and_videos_in_a_chat/
 // https://stackskills.com/courses/181862/lectures/2751724
 module.exports.uploadFile = async (socket, fileObj, cb) => {
@@ -849,115 +581,9 @@ const deleteStoredFile = (fileName) => {
 
 module.exports.onDisconnect = async (socket) => {
   console.log('onDisconnect: ');
-  await redisClient.hset(`userid:${socket.user.userId}`, 'connected', false);
-
+  // await redisClient.hset(`userid:${socket.user.userId}`, 'connected', false);
+  /*
   const { rooms } = await getRooms(socket);
   const friendRooms = await rooms.map((room) => room.userId);
-  socket.to(friendRooms).emit('connected', false, socket.user.userId);
-};
-
-const removeRoomIdPairing = async (userId, roomId) => {
-  // console.log('remove: ', { userId, roomId })
-  await redisClient.srem(`rooms:${userId}`, roomId);
-};
-
-const incrementUnreadCount = async (roomId, userId) => {
-  // saved as redis hash
-  // console.log('incrementUnreadCount: ', { roomId, userId })
-  const count = await redisClient.hincrby(`unreadCount:${roomId}`, userId, 1);
-  // const count = await redisClient.hincrby(`unreadCount:${roomId}:${userId}`, 'count', 1)
-  return Promise.resolve({ count });
-  // https://www.tabnine.com/code/javascript/functions/ioredis/Redis/hincrby
-};
-
-const resetUnreadCount = async (roomId, userId) => {
-  // console.log('resetUnreadCount: ', { roomId, userId })
-  const count = await redisClient.hset(`unreadCount:${roomId}`, userId, 0);
-  // const count = await redisClient.hset(`unreadCount:${roomId}:${userId}`, 'count', 0)
-  return Promise.resolve({ count });
-};
-
-const checkForOldRoomIdPairing = async (userId, friendId) => {
-  const keyVariant_1 = `${userId}:${friendId}`;
-  const keyVariant_2 = `${friendId}:${userId}`;
-  // console.log({ keyVariant_1, keyVariant_2})
-  let roomId = {
-    id: '',
-    first: '',
-    second: '',
-  };
-  const messages_1 = await redisClient.zrevrange(
-    `messages:${keyVariant_1}`,
-    0,
-    -1,
-  );
-  const messages_2 = await redisClient.zrevrange(
-    `messages:${keyVariant_2}`,
-    0,
-    -1,
-  );
-  // console.log({ messages_1, messages_2 })
-  if (messages_1.length > 0) {
-    roomId = {
-      id: keyVariant_1,
-      first: userId,
-      second: friendId,
-    };
-  } else if (messages_2.length > 0) {
-    roomId = {
-      id: keyVariant_2,
-      first: friendId,
-      second: userId,
-    };
-  }
-
-  return Promise.resolve({ roomId });
-  // return { roomId }
-};
-
-const restoreRoomIdPairing = async (userId, friendId, roomId) => {
-  // console.log({ userId, friendId, roomId })
-  await redisClient.sadd(`rooms:${userId}`, roomId.id);
-  await redisClient.sadd(`rooms:${friendId}`, roomId.id);
-};
-
-const createRoomId = async (userId, friendId) => {
-  // const roomId = crypto.randomUUID()
-  const { roomId } = await getRoomId(userId, friendId);
-  if (roomId.id == '') {
-    const roomId = `${userId}:${friendId}`;
-    await redisClient.sadd(`rooms:${userId}`, roomId);
-    await redisClient.sadd(`rooms:${friendId}`, roomId);
-  }
-};
-
-const getRoomId = async (userId, friendId) => {
-  // use 'sismember' to check for existence, 1 = true, 0 = false
-  const keyVariant_1 = `${userId}:${friendId}`;
-  const keyVariant_2 = `${friendId}:${userId}`;
-  // console.log({ keyVariant_1, keyVariant_2})
-  let roomId = {
-    id: '',
-    first: '',
-    second: '',
-  };
-  const key_1 = await redisClient.sismember(`rooms:${userId}`, keyVariant_1);
-  const key_2 = await redisClient.sismember(`rooms:${userId}`, keyVariant_2);
-  // console.log({ key_1, key_2 })
-  if (key_1 === 1) {
-    roomId = {
-      id: keyVariant_1,
-      first: userId,
-      second: friendId,
-    };
-  } else if (key_2 === 1) {
-    roomId = {
-      id: keyVariant_2,
-      first: friendId,
-      second: userId,
-    };
-  }
-
-  return Promise.resolve({ roomId });
-  // return { roomId }
+  socket.to(friendRooms).emit('connected', false, socket.user.userId);*/
 };

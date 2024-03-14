@@ -8,7 +8,8 @@ const {
 } = require('./nodemailer.controller');
 
 const RoomUtil = require('./room.util');
-const JWT_SECRET = process.env.JWT_SECRET;
+const { JWT_SECRET } = require('../env');
+// const JWT_SECRET = process.env.JWT_SECRET;
 const { jwtSign, jwtVerify, getJwt } = require('./jwt.controller');
 
 exports.verifyToken = (req, res) => {
