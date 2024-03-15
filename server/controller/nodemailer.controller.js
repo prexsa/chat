@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer');
 
 const { NODEMAILER_AUTH_EMAIL, NODEMAILER_AUTH_PASSWORD } = require('../env');
 
+const CLIENT_URL = process.env.CLIENT_URL;
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -37,7 +39,7 @@ module.exports.sendPasswordResetEmail = (values) => {
     html:
       `<p>Here is the link to reset your password for Chat</p>` +
       '<br />' +
-      `<a href='http://localhost:3000/pw-reset?userId=${userID}&expireTime=${expireTime}'>Reset my password</a>`,
+      `<a href='${CLIENT_URL}/pw-reset?userId=${userID}&expireTime=${expireTime}'>Reset my password</a>`,
   };
 
   return new Promise((resolve, reject) => {
@@ -61,7 +63,7 @@ module.exports.sendEmailRequest = (values) => {
       `<p>${fname} ${lname} wants to connect with you on Chats</p>` +
       `<p>Click the link below, to go to Chats</p>` +
       '<br />' +
-      `<a href='http://localhost:3000/register?userId=${userId}'>Go to Chats</a>`,
+      `<a href='${CLIENT_URL}/register?userId=${userId}'>Go to Chats</a>`,
   };
 
   return new Promise((resolve, reject) => {
