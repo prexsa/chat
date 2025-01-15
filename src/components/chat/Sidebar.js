@@ -5,9 +5,9 @@ import { Box, Button, Menu, MenuItem, Typography } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 // import CreateGroup from './CreateGroup';
-import Logout from '../Logout';
+import Logout from '../Forms/Logout';
 import ChannelList from './ChannelList';
-import { useUserContext } from '../../userContext';
+import { useUserContext } from '../../context/userContext';
 
 const Sidebar = () => {
   const { user } = useUserContext();

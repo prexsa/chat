@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { FriendContext, SocketContext } from './Main';
 import GroupIcon from '@mui/icons-material/Group';
 import { Box, Button, Typography } from '@mui/material';
-import { SearchAutoComplete } from '../form-component/SearchAutoComplete';
-import { FormInputText } from '../form-component/FormInputText';
+import { SearchAutoComplete } from '../Inputs/SearchAutoComplete';
+import { FormInputText } from '../Inputs/FormInputText';
 import { Modal } from './Modal';
 
 const CreateGroup = () => {

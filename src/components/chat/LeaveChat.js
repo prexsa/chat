@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { useUserContext } from '../../userContext';
+import { useUserContext } from '../../context/userContext';
 import { FriendContext, SocketContext } from './Main';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import MoreVertIcon from '@mui/icons-material/MoreVert';

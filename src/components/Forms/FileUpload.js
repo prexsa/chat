@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import { SocketContext, MessagesContext } from './Main';
+import { SocketContext, MessagesContext } from '../chat/Main';
 import { IconButton } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 

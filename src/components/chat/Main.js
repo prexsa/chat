@@ -8,15 +8,15 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+// import EditIcon from '@mui/icons-material/Edit';
+// import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Chat from './Chat';
 import Video from './Video';
 import Sidebar from './Sidebar';
-import Profile from '../Profile.RFH';
+// import Profile from '../Forms/Profile.RFH';
 import './Chat.css';
 import socketConn from '../../socket';
-import useSocket from './useSocket';
+import useSocket from '../../context/useSocket';
 export const FriendContext = createContext();
 export const MessagesContext = createContext();
 export const SocketContext = createContext();

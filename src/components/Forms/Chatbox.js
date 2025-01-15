@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { SocketContext, FriendContext } from './Main';
+import { SocketContext, FriendContext } from '../chat/Main';
 import { Box, Button, TextField, InputAdornment } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import FileUpload from './FileUpload';

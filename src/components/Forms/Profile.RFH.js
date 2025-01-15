@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { useUserContext } from '../userContext';
-import Auth from '../services/Auth';
+import { useUserContext } from '../../userContext';
+import Auth from '../../services/Auth';
 import {
   Box,
   Button,

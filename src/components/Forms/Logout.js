@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
-import { SocketContext } from './chat/Main';
+import { SocketContext } from '../chat/Main';
 
 function Logout({ handleCloseMenu }) {
   const navigate = useNavigate();

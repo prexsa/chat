@@ -1,14 +1,14 @@
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { FriendContext, SocketContext } from './Main';
+import { FriendContext, SocketContext } from '../chat/Main';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { Box, Button, IconButton, Typography, Divider } from '@mui/material';
 import { Modal } from './Modal';
 import List from '../List';
 
-import { SearchAutoComplete } from '../form-component/SearchAutoComplete';
-import TitleForm from './TitleForm';
+import { SearchAutoComplete } from '../Inputs/SearchAutoComplete';
+import TitleForm from '../Forms/TitleForm';
 
 const GroupDetails = ({ isGroup, roomId }) => {
   const { handleSubmit, reset, control } = useForm({

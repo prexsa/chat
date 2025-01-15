@@ -19,7 +19,7 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import AddFriendRFH from './AddFriend.RFH';
+import AddFriendRFH from '../Forms/AddFriend.RFH';
 import RequestToConnect from './RequestToConnect';
 import CreateGroup from './CreateGroup';
 

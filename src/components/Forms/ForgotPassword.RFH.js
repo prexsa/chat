@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import Auth from '../services/Auth';
-import NoAuthLayout from './NoAuth.layout';
+import Auth from '../../services/Auth';
+import NoAuthLayout from '../NoAuth.layout';
 import { Box, Button } from '@mui/material';
-import { FormInputEmail } from './form-component/FormInputEmail';
+import { FormInputEmail } from '../Inputs/FormInputEmail';
 
 function ForgotPassword() {
   const navigate = useNavigate();

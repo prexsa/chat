@@ -1,15 +1,15 @@
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { SocketContext } from './Main';
-import CustomTabPanel from './CustomTabPanel';
+import { SocketContext } from '../chat/Main';
+import CustomTabPanel from '../chat/CustomTabPanel';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { Box, Tabs, Tab, Typography, Tooltip } from '@mui/material';
-import { SearchAutoComplete } from '../form-component/SearchAutoComplete';
-import { FormInputEmail } from '../form-component/FormInputEmail';
+import { SearchAutoComplete } from '../Inputs/SearchAutoComplete';
+import { FormInputEmail } from '../Inputs/FormInputEmail';
 import PulsatingDiv from '../animation/PulsatingDiv';
 import SlideLeft from '../animation/SlideLeft';
-import { Modal } from './Modal';
+import { Modal } from '../chat/Modal';
 
 const AddFriend = ({ roomList }) => {
   const { socket } = useContext(SocketContext);

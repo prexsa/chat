@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import NoAuthLayout from '../components/layout/NoAuth.layout';
 import { Box, Typography } from '@mui/material';
-import PassworResetForm from '../components/PasswordReset.RFH';
+import PassworResetForm from '../components/Forms/PasswordReset.RFH';
 
 const PasswordReset = () => {
   const navigate = useNavigate();

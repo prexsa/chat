@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 // import { FaEyeSlash } from "react-icons/fa";
 import { useForm } from 'react-hook-form';
-import Auth from '../services/Auth';
+import Auth from '../../services/Auth';
 import {
   Box,
   Button,

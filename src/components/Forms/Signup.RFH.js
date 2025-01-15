@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import Auth from '../services/Auth';
+import Auth from '../../services/Auth';
 import { Box, Button } from '@mui/material';
-import { FormInputEmail } from './form-component/FormInputEmail';
-import { FormInputText } from './form-component/FormInputText';
-import { FormInputPassword } from './form-component/FormInputPassword';
+import { FormInputEmail } from '../Inputs/FormInputEmail';
+import { FormInputText } from '../Inputs/FormInputText';
+import { FormInputPassword } from '../Inputs/FormInputPassword';
 
 const Signup = () => {
   const navigate = useNavigate();

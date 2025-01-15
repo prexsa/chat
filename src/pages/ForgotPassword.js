@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import ForgotPasswordForm from '../components/ForgotPassword.RFH';
+import ForgotPasswordForm from '../components/Forms/ForgotPassword.RFH';
 import { Box, Typography } from '@mui/material';
 import NoAuthLayout from '../components/layout/NoAuth.layout';
 

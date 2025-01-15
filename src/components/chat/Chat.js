@@ -1,13 +1,13 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useUserContext } from '../../userContext';
-import { FriendContext } from './Main';
+import { useUserContext } from '../../context/userContext';
+import { FriendContext } from '../chat/Main';
 import { Box, Typography, Divider } from '@mui/material';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { ModalImageCarousel } from '../ModalImageCarousel';
-import Chatbox from './Chatbox';
+import Chatbox from '../Forms/Chatbox';
 import MessagePanel from './MessagePanel';
 import EmptyChat from './EmptyChat';
 import ChatHeader from './ChatHeader';

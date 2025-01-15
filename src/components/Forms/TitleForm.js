@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Box, Button } from '@mui/material';
-import { SocketContext, FriendContext } from './Main';
-import { FormInputText } from '../form-component/FormInputText';
+import { SocketContext, FriendContext } from '../chat/Main';
+import { FormInputText } from '../Inputs/FormInputText';
 
 const TitleForm = () => {
   const { socket } = useContext(SocketContext);

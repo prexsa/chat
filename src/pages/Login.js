@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import ForumIcon from '@mui/icons-material/Forum';
-import LoginForm from '../components/Login.RFH';
+import LoginForm from '../components/Forms/Login.RFH';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
