@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import ForumIcon from '@mui/icons-material/Forum';
-import LoginForm from '../components/Forms/Login.RFH';
+import LoginForm from '../components/Login';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -80,7 +80,7 @@ const Login = () => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            border: '1px solid #fff',
+            // border: '1px solid #fff',
             height: '700px',
             width: '1000px',
             borderRadius: '10px',

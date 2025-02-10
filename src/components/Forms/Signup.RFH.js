@@ -7,7 +7,7 @@ import { FormInputEmail } from '../Inputs/FormInputEmail';
 import { FormInputText } from '../Inputs/FormInputText';
 import { FormInputPassword } from '../Inputs/FormInputPassword';
 
-const Signup = () => {
+const SignupForm = () => {
   const navigate = useNavigate();
   const [queryParameters] = useSearchParams();
   const userId = queryParameters.get('userId');
@@ -23,7 +23,7 @@ const Signup = () => {
      */
     values['userId'] = userId ? userId : '';
     const resp = await Auth.signup(values);
-    console.log('response: ', resp.data);
+    // console.log('response: ', resp.data);
     if (resp.data.isSuccessful) {
       // localStorage.setItem('accessToken', resp.data.accessToken);
       // setUser(resp.data);
@@ -58,7 +58,7 @@ const Signup = () => {
       </Box>
       <Box sx={{ marginTop: '20px' }}>
         <Button variant="contained" type="submit" fullWidth>
-          Register
+          Sign up
         </Button>
         <Button variant="text" type="reset" onClick={() => reset()} fullWidth>
           Reset
@@ -68,4 +68,7 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignupForm;
+
+// https://github.com/codegenixdev/react-hook-form-mui-zod-boilerplate/blob/main/src/users/components/Users.tsx
+// https://elements.envato.com/chat-app-web-app-ui-MQ3C235

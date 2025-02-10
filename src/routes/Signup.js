@@ -5,7 +5,7 @@ import { Box, Typography } from '@mui/material';
 import ForumIcon from '@mui/icons-material/Forum';
 // import NoAuthLayout from '../components/layout/NoAuth.layout';
 
-const Register = () => {
+const Signup = () => {
   return (
     <Box
       sx={{
@@ -79,7 +79,7 @@ const Register = () => {
                 fontWeight: 600,
               }}
             >
-              Register
+              Sign up
             </Typography>
             <Typography
               sx={{
@@ -102,4 +102,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Signup;

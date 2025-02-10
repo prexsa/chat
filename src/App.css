@@ -3,6 +3,7 @@
   display: flex;
   flex-flow: column wrap;
   text-align: center;
+  background-color: #efefef;
 }
 .pnf-container {
   margin: auto;

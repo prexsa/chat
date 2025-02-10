@@ -16,7 +16,7 @@ const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
-    // console.log('accessToken: ', accessToken)
+    // console.log('accessToken: ', accessToken);
     if (accessToken === null) return;
     axios
       .get(`${process.env.REACT_APP_SERVER_URL}/api/auth/login`, {

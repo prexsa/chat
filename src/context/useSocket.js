@@ -12,9 +12,6 @@ const useSocket = (
   setPendingRequests,
   socket,
 ) => {
-  // const { channel } = useContext(FriendContext);
-  // console.log('channel: ', channel)
-  // console.log('socket: ', socket)
   const selectedRoomRef = useRef(selectedRoom);
   selectedRoomRef.current = selectedRoom;
   useEffect(() => {
@@ -45,13 +42,6 @@ const useSocket = (
         });
       });
     });
-
-    /*socket.on('new_friend', (newFriend) => {
-      // console.log('new_friend: ', newFriend)
-      setRoomList((prevState) => {
-        return [newFriend, ...prevState];
-      });
-    });*/
 
     socket.on('new_group_created', ({ roomRecord }) => {
       // console.log('roomRecord: ', roomRecord);
@@ -145,20 +135,6 @@ const useSocket = (
         // console.log('filtered: ', filtered);
         return filtered;
       });
-      /*setRoomList((prevFriends) => {
-        // console.log('prevFriends: ', prevFriends)
-        if (prevFriends === undefined) return;
-        let index = null;
-        for (const [key, { userId, username }] of [...prevFriends].entries()) {
-          if (userId === roomId && username === usernameToRemove) {
-            index = key;
-          }
-        }
-        const updatedFriendsList = prevFriends
-          .slice(0, index)
-          .concat(prevFriends.slice(index + 1));
-        return updatedFriendsList;
-      });*/
     });
 
     socket.on('left_group_chat', ({ roomId, userId }) => {
@@ -258,17 +234,6 @@ const useSocket = (
     selectedRoomRef,
     setSelectedRoom,
   ]);
-
-  /*useEffect(() => {
-    // console.log('channel: ', channel)
-    if(channel !== null) {
-      socket.connect();
-      socket.emit('channel_msgs', channel.userID, ({ msgs }) => {
-        console.log('cb: ', msgs)
-        setMessages(msgs)
-      })
-    }
-  }, [channel])*/
 };
 
 export default useSocket;

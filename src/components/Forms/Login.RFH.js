@@ -1,23 +1,23 @@
 import React from 'react';
-import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useUserContext } from '../../context/userContext';
+import { useNavigate } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
-import Auth from '../../services/Auth';
 import { FormInputText } from '../Inputs/FormInputText';
 import { FormInputPassword } from '../Inputs/FormInputPassword';
+import { useUserContext } from '../../context/userContext';
+import Auth from '../../services/Auth';
 
-const Login = () => {
+const LoginForm = () => {
   const navigate = useNavigate();
   const { setUser } = useUserContext();
-  const { handleSubmit, reset, control, setError } = useForm({
+  const { handleSubmit, control, reset, setError } = useForm({
     defaultValues: { email: '', password: '' },
   });
 
-  const handleOnSubmit = async (values) => {
-    // console.log('onSubmit', values);
+  const onSubmit = async (values) => {
+    console.log('onSubmit', values);
     const resp = await Auth.login(values);
-    // console.log('resp: ', resp)
+    console.log('resp: ', resp);
     const { data } = resp;
     // console.log('data: ', data);
     if (data.isSuccessful) {
@@ -35,13 +35,12 @@ const Login = () => {
       }
     }
   };
-
   return (
     <Box
       component="form"
       noValidate
       autoComplete="off"
-      onSubmit={handleSubmit(handleOnSubmit)}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <Box sx={{ marginTop: '20px' }}>
         <FormInputText name="email" control={control} label={'Email'} />
@@ -59,19 +58,8 @@ const Login = () => {
           Login
         </Button>
       </Box>
-      <Box sx={{ marginTop: '15px' }}>
-        <Link to="/forgot-password">Forgot password?</Link>
-      </Box>
-      <Box
-        sx={{
-          fontSize: '14px',
-          marginTop: '15px',
-        }}
-      >
-        Don&apos;t have an account? <Link to="/register">Sign up here</Link>
-      </Box>
     </Box>
   );
 };
 
-export default Login;
+export default LoginForm;

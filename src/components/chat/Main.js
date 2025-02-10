@@ -117,7 +117,7 @@ const Main = () => {
                 flexGrow: 1,
                 // p: 3,
                 paddingLeft: '10px',
-                height: 'auto',
+                height: '100vh',
                 width: { sm: `calc(100% - ${drawerWidth}px)` },
               }}
             >

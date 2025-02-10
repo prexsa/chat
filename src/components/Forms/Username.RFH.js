@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -15,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 
-const Username = () => {
+const UsernameForm = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { register, handleSubmit } = useForm();
@@ -27,7 +26,7 @@ const Username = () => {
 
   const handleOnSubmit = async (values) => {
     // console.log('onSubmit: ', values)
-    console.log('state: ', state);
+    // console.log('state: ', state);
     values.userId = state.user.userId;
     const resp = await Auth.addUsername(values);
     if (resp.data.isSuccessful) {
@@ -137,4 +136,4 @@ const Username = () => {
   );
 };
 
-export default Username;
+export default UsernameForm;

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import ForgotPassword from './pages/ForgotPassword';
-import Register from './pages/Register';
-import PWReset from './pages/PasswordReset';
+import Login from './routes/Login';
+import ForgotPassword from './routes/ForgotPassword';
+import Signup from './routes/Signup';
+import PWReset from './routes/PasswordReset';
 // import UsernameRFH from './components/Username.RFH';
 import Main from './components/chat/Main';
 import PageNotFound from './components/PageNotFound';
-import PrivateRoutes from './PrivateRoutes';
+import PrivateRoutes from './routes/PrivateRoutes';
 import { UserProvider } from './context/userContext';
 // import Loading from './components/Loading';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -20,7 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           {/*<Route path="/loading" element={<Loading />} />*/}
-          <Route path="/register" element={<Register />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/pw-reset" element={<PWReset />} />
           {/*<Route path="/create-username" element={<UsernameRFH />} />*/}

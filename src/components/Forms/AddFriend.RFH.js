@@ -21,7 +21,7 @@ const AddFriend = ({ roomList }) => {
   // const onErrors = (errors) => console.error(errors);
 
   const formSubmitHandler = (data) => {
-    console.log('data: ', data);
+    // console.log('data: ', data);
     if (data.search.userId.trim() === '') return;
 
     socket.emit('send_request', {
