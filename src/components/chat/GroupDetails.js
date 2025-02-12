@@ -7,7 +7,7 @@ import { Box, Button, IconButton, Typography, Divider } from '@mui/material';
 import { Modal } from './Modal';
 import List from '../List';
 
-import { SearchAutoComplete } from '../Inputs/SearchAutoComplete';
+import SearchAutoComplete from '../Inputs/SearchAutoComplete';
 import TitleForm from '../Forms/TitleForm';
 
 const GroupDetails = ({ isGroup, roomId }) => {

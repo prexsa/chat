@@ -1,34 +1,46 @@
-import React, { useState, useContext } from 'react';
+/* eslint-disable */
+import React, { useState, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useForm, FormProvider } from 'react-hook-form';
 import { SocketContext } from '../chat/Main';
 import CustomTabPanel from '../chat/CustomTabPanel';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { Box, Tabs, Tab, Typography, Tooltip } from '@mui/material';
-import { SearchAutoComplete } from '../Inputs/SearchAutoComplete';
+import { Box, Button, Tabs, Tab, Typography, Tooltip } from '@mui/material';
+import SearchAutoComplete from '../Inputs/SearchAutoComplete';
 import { FormInputEmail } from '../Inputs/FormInputEmail';
 import PulsatingDiv from '../animation/PulsatingDiv';
 import SlideLeft from '../animation/SlideLeft';
 import { Modal } from '../chat/Modal';
 
-const AddFriend = ({ roomList }) => {
+const AddFriendForm = ({ roomList }) => {
   const { socket } = useContext(SocketContext);
+  const searchRef = useRef(null);
   const [show, setShow] = useState(false);
   const [tabPanel, setTabPanel] = useState(0);
+  /*const { handleSubmit, control, reset, clearErrors } = useForm({
+    defaultValues: { search: null },
+  });*/
+  // const { handleSubmit, control } = useForm();
+  const methods = useForm();
 
   const handleClose = () => setShow(false);
 
   // const onErrors = (errors) => console.error(errors);
+  const handleOnSubmit = (data) => {
+    console.log('handleOnSubmit: ', data.search);
+    if (data.search === null) return;
 
-  const formSubmitHandler = (data) => {
-    // console.log('data: ', data);
-    if (data.search.userId.trim() === '') return;
+    // when autocomplete is multiple
+    // socket.emit('send_request', JSON.stringify(data.search));
 
     socket.emit('send_request', {
       email: data.search.email,
       username: data.search.label,
       userId: data.search.userId,
     });
+    // forwardRef is used to clear child component after submit
+    searchRef.current.clearState();
   };
 
   return (
@@ -87,7 +99,22 @@ const AddFriend = ({ roomList }) => {
           <Typography variant="subtitle1">
             Search for family or friends you may know
           </Typography>
-          <SearchAutoComplete formSubmitHandler={formSubmitHandler} />
+          <FormProvider {...methods}>
+            <Box
+              component={'form'}
+              onSubmit={methods.handleSubmit(handleOnSubmit)}
+            >
+              <SearchAutoComplete
+                ref={searchRef}
+                control={methods.control}
+                name={'search'}
+                isMultiple={false}
+              />
+              <Button variant="contained" type="submit" fullWidth>
+                Send Request
+              </Button>
+            </Box>
+          </FormProvider>
         </CustomTabPanel>
         <CustomTabPanel value={tabPanel} index={1}>
           <Typography variant="subtitle1">
@@ -100,11 +127,11 @@ const AddFriend = ({ roomList }) => {
   );
 };
 
-AddFriend.propTypes = {
+AddFriendForm.propTypes = {
   roomList: PropTypes.array,
 };
 
-export default AddFriend;
+export default AddFriendForm;
 
 /*
 #f0f2f6

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { FriendContext, SocketContext } from './Main';
 import GroupIcon from '@mui/icons-material/Group';
 import { Box, Button, Typography } from '@mui/material';
-import { SearchAutoComplete } from '../Inputs/SearchAutoComplete';
+import SearchAutoComplete from '../Inputs/SearchAutoComplete';
 import { FormInputText } from '../Inputs/FormInputText';
 import { Modal } from './Modal';
 

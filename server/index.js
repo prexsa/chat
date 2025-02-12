@@ -59,6 +59,7 @@ io.on('connection', async (socket) => {
   socket.on('send_request', ({ email, userId, username }, cb) =>
     sendRequest(socket, userId, cb),
   );
+
   socket.on('accept_request', (requesterId) =>
     acceptRequest(socket, requesterId),
   );
