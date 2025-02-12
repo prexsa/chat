@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState, useContext, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useForm, FormProvider } from 'react-hook-form';
