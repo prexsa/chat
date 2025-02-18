@@ -1,6 +1,7 @@
+/* eslint-disable */
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { FriendContext, SocketContext } from '../chat/Main';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { Box, Button, IconButton, Typography, Divider } from '@mui/material';
@@ -10,10 +11,13 @@ import List from '../List';
 import SearchAutoComplete from '../Inputs/SearchAutoComplete';
 import TitleForm from '../Forms/TitleForm';
 
+// import CreateGroupForm from '../Forms/CreateGroup.RFH';
+
 const GroupDetails = ({ isGroup, roomId }) => {
-  const { handleSubmit, reset, control } = useForm({
+  /*const { handleSubmit, reset, control } = useForm({
     defaultValues: { search: null },
-  });
+  });*/
+  const methods = useForm();
   const { selectedRoom, setSelectedRoom, setRoomList } =
     useContext(FriendContext);
   const { socket } = useContext(SocketContext);
@@ -72,7 +76,7 @@ const GroupDetails = ({ isGroup, roomId }) => {
 
   const handleShow = () => setShow(true);
   const handleClose = () => {
-    reset();
+    // reset();
     setShow(false);
   };
 
@@ -101,17 +105,25 @@ const GroupDetails = ({ isGroup, roomId }) => {
           <TitleForm />
         </Box>
         <Divider />
+
         <Box sx={{ my: '20px' }}>
           <Typography variant="subtitle1">Add to group</Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit(formSubmitHandler, onErrors)}
-          ></Box>
-          <SearchAutoComplete
-            name={'search'}
-            control={control}
-            label={'Name or email'}
-          />
+          <FormProvider {...methods}>
+            <Box
+              component="form"
+              onSubmit={methods.handleSubmit(formSubmitHandler, onErrors)}
+            ></Box>
+            <SearchAutoComplete
+              name={'search'}
+              control={methods.control}
+              label={'Name or email'}
+            />
+            <Box sx={{ marginTop: '20px' }}>
+              <Button variant="contained" type="submit" fullWidth>
+                Add
+              </Button>
+            </Box>
+          </FormProvider>
         </Box>
         <Divider />
         <Box

@@ -10,7 +10,7 @@ export const FormInputText = ({ name, control, label }) => {
       name={name}
       control={control}
       render={({
-        field: { onChange, value, ref },
+        field: { onChange, onBlur, value, ref },
         fieldState: { error },
         // formState,
       }) => (
@@ -19,11 +19,13 @@ export const FormInputText = ({ name, control, label }) => {
           inputRef={ref}
           size="normal"
           error={!!error}
-          onChange={onChange}
+          onChange={onChange} // send value to hook form
+          onBlur={onBlur} // notify when input is touched
           value={value}
           fullWidth
-          label={label}
+          // label={label}
           variant="outlined"
+          // defaultValue={defaultValue}
         />
       )}
     />
@@ -34,4 +36,5 @@ FormInputText.propTypes = {
   name: PropTypes.string,
   control: PropTypes.object,
   label: PropTypes.string,
+  // defaultValue: PropTypes.string,
 };

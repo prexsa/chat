@@ -1,40 +1,16 @@
-import React, { useState, useContext } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
-import { FriendContext, SocketContext } from './Main';
+import React, { useState } from 'react';
 import GroupIcon from '@mui/icons-material/Group';
-import { Box, Button, Typography } from '@mui/material';
-import SearchAutoComplete from '../Inputs/SearchAutoComplete';
-import { FormInputText } from '../Inputs/FormInputText';
+import { Button, Typography } from '@mui/material';
+import CreateGroupForm from '../Forms/CreateGroup.RFH';
 import { Modal } from './Modal';
 
 const CreateGroup = () => {
-  // { handleSubmit, reset, control }
-  const methods = useForm({
-    defaultValues: { members: null, groupName: '' },
-  });
-  const { setRoomList } = useContext(FriendContext);
-  const { socket } = useContext(SocketContext);
   const [show, setShow] = useState(false);
-
-  const handleOnSubmit = (data) => {
-    socket.connect();
-    socket.emit('create_group', data, (resp) => {
-      methods.reset();
-      setRoomList((prevState) => {
-        return [resp.room, ...prevState];
-      });
-      handleClose();
-    });
-  };
 
   const handleClickOpen = () => setShow(true);
   const handleClose = () => {
-    methods.reset();
+    // methods.reset();
     setShow(false);
-  };
-
-  const onErrors = (errors) => {
-    console.error(errors);
   };
 
   return (
@@ -51,39 +27,7 @@ const CreateGroup = () => {
         <Typography variant="subtitle1" sx={{ textAlign: 'center' }}>
           Add a group name and members.
         </Typography>
-        <FormProvider {...methods}>
-          <Box
-            component="form"
-            noValidate
-            autoComplete="off"
-            onSubmit={methods.handleSubmit(handleOnSubmit, onErrors)}
-          >
-            <Box sx={{ margin: '20px 0', width: '400px' }}>
-              <FormInputText
-                name={'groupName'}
-                control={methods.control}
-                label={'Group Name'}
-              />
-            </Box>
-            <Box sx={{ my: '20px' }}>
-              <Typography variant="subtitle1">Add to group</Typography>
-
-              <SearchAutoComplete
-                name={'members'}
-                control={methods.control}
-                label={'Username or email'}
-                isMultiple={true}
-                // reset={reset}
-                // formSubmitHandler={formSubmitHandler}
-              />
-            </Box>
-            <Box sx={{ marginTop: '20px' }}>
-              <Button variant="contained" type="submit" fullWidth>
-                Create Group
-              </Button>
-            </Box>
-          </Box>
-        </FormProvider>
+        <CreateGroupForm />
       </Modal>
     </div>
   );
