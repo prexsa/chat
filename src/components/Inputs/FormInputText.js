@@ -23,7 +23,7 @@ export const FormInputText = ({ name, control, label }) => {
           onBlur={onBlur} // notify when input is touched
           value={value}
           fullWidth
-          // label={label}
+          label={label}
           variant="outlined"
           // defaultValue={defaultValue}
         />

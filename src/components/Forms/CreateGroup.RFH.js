@@ -1,19 +1,29 @@
 import React, { useContext } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { FriendContext, SocketContext } from '../chat/Main';
-import { Box, Button, Typography } from '@mui/material';
-import SearchAutoComplete from '../Inputs/SearchAutoComplete';
+import { Box, Button, Typography, Stack } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import SearchAutoCompleteNoRef from '../Inputs/SearchAutoCompleteNoRef';
 import { FormInputText } from '../Inputs/FormInputText';
+
+const Item = styled(Button)(({ theme }) => ({
+  padding: theme.spacing(1),
+  margin: '3px 0 3px 0',
+  textAlign: 'center',
+}));
 
 const CreateGroupForm = () => {
   // { handleSubmit, reset, control }
+  // const searchRef = useRef();
   const methods = useForm({
-    defaultValues: { members: null, groupName: '' },
+    defaultValues: { members: [], groupName: '' },
   });
+  // const methods = useForm();
   const { setRoomList } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
 
   const handleOnSubmit = (data) => {
+    // console.log('onSubmit ', data);
     socket.connect();
     socket.emit('create_group', data, (resp) => {
       methods.reset();
@@ -27,40 +37,80 @@ const CreateGroupForm = () => {
     console.error(errors);
   };
 
-  return (
-    <FormProvider {...methods}>
-      <Box
-        component="form"
-        noValidate
-        autoComplete="off"
-        onSubmit={methods.handleSubmit(handleOnSubmit, onErrors)}
-      >
-        <Box sx={{ margin: '20px 0', width: '400px' }}>
-          <FormInputText
-            name={'groupName'}
-            control={methods.control}
-            label={'Group Name'}
-          />
-        </Box>
-        <Box sx={{ my: '20px' }}>
-          <Typography variant="subtitle1">Add to group</Typography>
+  const handleReset = () => {
+    methods.reset();
+  };
 
-          <SearchAutoComplete
-            name={'members'}
-            control={methods.control}
-            label={'Username or email'}
-            isMultiple={true}
-            // reset={reset}
-            // formSubmitHandler={formSubmitHandler}
-          />
+  return (
+    <Box>
+      <FormProvider {...methods}>
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          onSubmit={methods.handleSubmit(handleOnSubmit, onErrors)}
+        >
+          <Box sx={{ my: '20px', width: '400px' }}>
+            <Typography variant="subtitle1" sx={{ my: '10px' }}>
+              Group name
+            </Typography>
+            <FormInputText
+              name="groupName"
+              control={methods.control}
+              label={'Group Name'}
+            />
+          </Box>
+          <Box sx={{ my: '20px' }}>
+            <Typography variant="subtitle1">Add to group</Typography>
+            {/*<AddToGroupForm />*/}
+            {/*
+            <SearchAutoComplete
+              ref={searchRef}
+              name={'members'}
+              control={methods.control}
+              label={'Username or email'}
+              isMultiple={true}
+              // reset={reset}
+              // formSubmitHandler={formSubmitHandler}
+            />
+            */}
+            <SearchAutoCompleteNoRef
+              name="members"
+              label="Username or email"
+              isMultiple={true}
+            />
+          </Box>
+          <Box sx={{ marginTop: '20px' }}>
+            <Stack>
+              <Item variant="contained" type="submit" fullWidth>
+                Create Group
+              </Item>
+              <Item fullWidth onClick={handleReset}>
+                Reset
+              </Item>
+              {/*
+              <Button variant="contained" type="submit" fullWidth>
+                Create Group
+              </Button>
+              <Button variant="contained" fullWidth onClick={handleReset}>
+                Reset
+              </Button>
+              */}
+            </Stack>
+          </Box>
         </Box>
-        <Box sx={{ marginTop: '20px' }}>
-          <Button variant="contained" type="submit" fullWidth>
-            Create Group
-          </Button>
-        </Box>
+      </FormProvider>
+      {/*
+      <Box>
+        <SearchAutoCompleteNoRef
+          name="members"
+          label="Username or email"
+          isMultiple={true}
+        />
       </Box>
-    </FormProvider>
+      <RHFAutoCompleteDemo />
+      */}
+    </Box>
   );
 };
 

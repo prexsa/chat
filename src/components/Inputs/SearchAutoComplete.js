@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, {
   useState,
   useEffect,
@@ -10,14 +11,19 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { SocketContext, FriendContext } from '../chat/Main';
 import { Autocomplete, TextField } from '@mui/material';
 
+// import useAutocomplete from '@mui/material/useAutocomplete';
+
 const SearchAutoComplete = forwardRef(
   ({ name, control, label, isMultiple }, ref) => {
     const { socket } = useContext(SocketContext);
-    const { clearErrors, setError } = useFormContext();
+    const methods = useFormContext();
+    // console.log('methods; ', methods);
+    const { clearErrors, setError } = methods;
+    // console.log('methods: ', methods);
+    // console.log('useAutocomplete ', useAutocomplete);
     const { selectedRoom, searchOptions, setSearchOptions } =
       useContext(FriendContext);
     const [inputValue, setInputValue] = useState('');
-
     useEffect(() => {
       if (inputValue === '') return;
       if (inputValue.length > 0) {
@@ -46,24 +52,34 @@ const SearchAutoComplete = forwardRef(
 
     useImperativeHandle(ref, () => {
       return {
-        clearState() {
+        clearState: () => {
           setInputValue('');
         },
+        resetFields: () => {
+          console.log('getValues ', methods.getValues('members'));
+
+          methods.reset();
+
+          // resetFieldRef.current('members');
+        },
       };
+    }, []);
+
+    useEffect(() => {
+      // console.log('inputValue: ', inputValue);
     }, [inputValue]);
 
     // console.log({ formState, control });
-
     return (
       <Controller
         rules={{ required: 'Field is empty' }}
         control={control}
         name={name}
-        defaultValue=""
+        // defaultValue=""
         render={({ field: { onChange }, fieldState: { error } }) => (
           <Autocomplete
             multiple={isMultiple}
-            freeSolo
+            // freeSolo
             onChange={(_, data) => {
               // console.log('data: ', data);
               onChange(data);

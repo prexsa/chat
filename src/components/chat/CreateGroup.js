@@ -25,7 +25,7 @@ const CreateGroup = () => {
       </Button>
       <Modal open={show} onClose={handleClose} title={'Create Group'}>
         <Typography variant="subtitle1" sx={{ textAlign: 'center' }}>
-          Add a group name and members.
+          Create a group and add members
         </Typography>
         <CreateGroupForm />
       </Modal>

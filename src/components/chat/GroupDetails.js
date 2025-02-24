@@ -1,4 +1,5 @@
 /* eslint-disable */
+
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -26,8 +27,10 @@ const GroupDetails = ({ isGroup, roomId }) => {
   const [members, setMembers] = useState([]);
   // console.log('members: ', members);
 
-  const formSubmitHandler = (data) => {
-    // console.log('data: ', data);
+  const handleOnSubmit = (data) => {
+    console.log('data: ', data);
+
+    return;
     const {
       search: { userId },
     } = data;
@@ -41,7 +44,7 @@ const GroupDetails = ({ isGroup, roomId }) => {
           const member = { fullname, userId };
           setMembers((prev) => [...prev, member]);
         }
-        reset();
+        methods.reset();
       },
     );
   };
@@ -111,17 +114,18 @@ const GroupDetails = ({ isGroup, roomId }) => {
           <FormProvider {...methods}>
             <Box
               component="form"
-              onSubmit={methods.handleSubmit(formSubmitHandler, onErrors)}
-            ></Box>
-            <SearchAutoComplete
-              name={'search'}
-              control={methods.control}
-              label={'Name or email'}
-            />
-            <Box sx={{ marginTop: '20px' }}>
-              <Button variant="contained" type="submit" fullWidth>
-                Add
-              </Button>
+              onSubmit={methods.handleSubmit(handleOnSubmit, onErrors)}
+            >
+              <SearchAutoComplete
+                name={'search'}
+                control={methods.control}
+                label={'Name or email'}
+              />
+              <Box sx={{ marginTop: '20px' }}>
+                <Button variant="contained" type="submit" fullWidth>
+                  Add
+                </Button>
+              </Box>
             </Box>
           </FormProvider>
         </Box>
