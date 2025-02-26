@@ -19,7 +19,7 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import AddFriendRFH from '../Forms/AddFriend.RFH';
+import AddFriend from '../AddFriend';
 import RequestToConnect from './RequestToConnect';
 import CreateGroup from './CreateGroup';
 
@@ -148,7 +148,7 @@ function ChannelList({ user }) {
             />
           </>
         ) : null}
-        <AddFriendRFH roomList={roomList} />
+        <AddFriend roomList={roomList} />
       </Box>
       <Button className="btn btn-link" onClick={clearRoomSelected}>
         Clear Message Panel

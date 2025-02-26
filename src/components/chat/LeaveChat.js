@@ -4,7 +4,7 @@ import { FriendContext, SocketContext } from './Main';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Box, Button, IconButton } from '@mui/material';
-import { Modal } from './Modal';
+import { Modal } from '../Modal';
 
 const LeaveChat = () => {
   const { user } = useUserContext();
@@ -14,7 +14,7 @@ const LeaveChat = () => {
   const [show, setShow] = useState(false);
 
   const leaveChat = () => {
-    console.log({ user, selectedRoom });
+    // console.log({ user, selectedRoom });
     socket.connect();
     socket.emit(
       'leave_chat',

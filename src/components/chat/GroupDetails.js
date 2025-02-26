@@ -6,7 +6,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { FriendContext, SocketContext } from '../chat/Main';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { Box, Button, IconButton, Typography, Divider } from '@mui/material';
-import { Modal } from './Modal';
+import { Modal } from '../Modal';
 import List from '../List';
 
 import SearchAutoComplete from '../Inputs/SearchAutoComplete';

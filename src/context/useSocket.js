@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useEffect, useRef } from 'react';
 
 const useSocket = (
@@ -65,29 +64,27 @@ const useSocket = (
       });
     });
 
-    socket.on(
-      'new_member_added_to_group',
-      ({ roomId, newMemberProfile: { userId, fullname } }) => {
-        // check if room is active
-        // console.log('new_member_added_to_group: ', { userId, fullname });
-        if (selectedRoom.roomId === roomId) {
-          // console.log('is it selected');
-          setSelectedRoom((prevState) => {
-            // console.log((prevState.messages = [...prevState.messages, msg]));
-            return (prevState.mates = [...prevState.mates, newMemberProfile]);
-          });
-        }
-        // update roomlist
-        setRoomList((prevState) => {
-          return [...prevState].map((room) => {
-            if (room.roomId === roomId) {
-              room.mates.push(newMemberProfile);
-            }
-            return room;
-          });
+    // ({ roomId, newMemberProfile: { userId, fullname } }) => {
+    socket.on('new_member_added_to_group', ({ roomId, newMemberProfile }) => {
+      // check if room is active
+      // console.log('new_member_added_to_group: ', { userId, fullname });
+      if (selectedRoom.roomId === roomId) {
+        // console.log('is it selected');
+        setSelectedRoom((prevState) => {
+          // console.log((prevState.messages = [...prevState.messages, msg]));
+          return (prevState.mates = [...prevState.mates, newMemberProfile]);
         });
-      },
-    );
+      }
+      // update roomlist
+      setRoomList((prevState) => {
+        return [...prevState].map((room) => {
+          if (room.roomId === roomId) {
+            room.mates.push(newMemberProfile);
+          }
+          return room;
+        });
+      });
+    });
 
     socket.on('update_group_name', ({ roomId, name }) => {
       // update channel title, if active
@@ -167,8 +164,7 @@ const useSocket = (
             room.messages.push({ date, message, userId });
             room.hasNewMessage = true;
             const unreadCount =
-              room.hasOwnProperty('unreadCount') &&
-              room.unreadCount !== undefined
+              room.hasOwn('unreadCount') && room.unreadCount !== undefined
                 ? room.unreadCount + 1
                 : 1;
             room.unreadCount = unreadCount;

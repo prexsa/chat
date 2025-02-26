@@ -23,7 +23,9 @@ const CreateGroupForm = () => {
   const { socket } = useContext(SocketContext);
 
   const handleOnSubmit = (data) => {
-    // console.log('onSubmit ', data);
+    console.log('onSubmit ', data);
+    methods.reset();
+
     socket.connect();
     socket.emit('create_group', data, (resp) => {
       methods.reset();

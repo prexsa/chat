@@ -17,20 +17,22 @@ export const FormInputEmail = ({ name, control, label }) => {
       name={name}
       control={control}
       render={({
-        field: { onChange, value, ref },
-        fieldState: { error },
+        field,
+        fieldState,
         // formState,
       }) => (
         <TextField
-          helperText={error ? error.message : null}
-          inputRef={ref}
+          {...field}
+          helperText={fieldState.error ? fieldState.error.message : null}
+          inputRef={field.ref}
           size="normal"
-          error={!!error}
-          onChange={onChange}
-          value={value}
+          error={!!fieldState.error}
+          onChange={field.onChange}
+          value={field.value}
           fullWidth
           label={label}
           variant="outlined"
+          sx={{ margin: '16px 0 8px 0' }}
         />
       )}
     />

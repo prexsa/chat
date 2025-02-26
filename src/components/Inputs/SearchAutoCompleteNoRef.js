@@ -1,23 +1,25 @@
-/* eslint-disable */
 import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Controller, useFormContext } from 'react-hook-form';
 import { SocketContext, FriendContext } from '../chat/Main';
 import { Autocomplete, TextField } from '@mui/material';
+// import Socket from '../../services/Socket';
 
-const SearchAutoCompleteNoRef = ({ name, label, isMultiple }, ref) => {
+const SearchAutoCompleteNoRef = ({ name, label, isMultiple }) => {
   const { socket } = useContext(SocketContext);
-  // console.log('methods; ', methods);
-  const methods = useFormContext();
-  const { clearErrors, setError, control } = methods;
+  // selectedRoom, setSearchOptions
   const { selectedRoom, searchOptions, setSearchOptions } =
     useContext(FriendContext);
+  const methods = useFormContext();
+  const { clearErrors, setError, control } = methods;
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     if (inputValue === '') return;
     if (inputValue.length > 0) {
+      // Socket.populateSearchOptions(inputValue);
       // fetchHandler(socket, inputValue);
+
       socket.connect();
 
       socket.emit('search_users_db', inputValue, ({ errorMsg, resp }) => {
@@ -38,7 +40,7 @@ const SearchAutoCompleteNoRef = ({ name, label, isMultiple }, ref) => {
     return () => {
       socket.off('search_users_db');
     };
-  }, [inputValue, socket, setSearchOptions]);
+  }, [inputValue, socket]);
 
   // console.log({ formState, control });
   return (

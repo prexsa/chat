@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import GroupIcon from '@mui/icons-material/Group';
 import { Button, Typography } from '@mui/material';
 import CreateGroupForm from '../Forms/CreateGroup.RFH';
-import { Modal } from './Modal';
+import { Modal } from '../Modal';
 
 const CreateGroup = () => {
   const [show, setShow] = useState(false);
