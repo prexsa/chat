@@ -17,12 +17,11 @@ const AddByNameForm = () => {
   // const onErrors = (errors) => console.error(errors);
   const handleOnSubmit = (data) => {
     console.log('handleOnSubmit: ', data.search);
-    if (data.search === null) return;
-
+    // if (data.search === null) return;
     // when autocomplete is multiple
     // socket.emit('send_request', JSON.stringify(data.search));
 
-    socket.emit('send_request', {
+    socket.emit('send_request_by_name', {
       email: data.search.email,
       username: data.search.label,
       userId: data.search.userId,

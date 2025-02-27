@@ -13,6 +13,8 @@ const Room = require('../model/room.model');
 const UploadFile = require('../model/file.model');
 // const Message = require('../model/message.model');
 
+const { sendEmailRequest } = require('./nodemailer.controller');
+
 const RoomUtil = require('./room.util');
 
 module.exports.authorizeUser = (socket, next) => {
@@ -173,7 +175,7 @@ module.exports.denyRequest = async (socket, requesterId, cb) => {
   cb({ isSuccessful: true });
 };
 
-module.exports.sendRequest = async (socket, userId, cb) => {
+module.exports.sendRequestByName = async (socket, userId, cb) => {
   // socket.user.userId
   // update your requesting record
   const addUserIdToRequestedArr = await User.findOneAndUpdate(
@@ -202,6 +204,28 @@ module.exports.sendRequest = async (socket, userId, cb) => {
   socket
     .to(userId)
     .emit('requests_to_connect', { mappedNameToUserId: userInfo });
+};
+
+module.exports.sendRequestByEmail = async (
+  socket,
+  email,
+  senderDetails,
+  cb,
+) => {
+  // console.log('sendRequestByEmail: ', email);
+  const values = {
+    userId: senderDetails.userId,
+    email,
+    fname: senderDetails.fname,
+    lname: senderDetails.lname,
+  };
+  const resp = await sendEmailRequest(values);
+
+  if (resp) {
+    cb({ message: 'Email has been sent' });
+  } else {
+    console.error('sendEmailRequest Err:', resp);
+  }
 };
 
 module.exports.clearUnreadCount = async (socket, roomId) => {

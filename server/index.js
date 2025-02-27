@@ -9,7 +9,8 @@ const httpServer = require('http').createServer(app);
 const { corsConfig } = require('./session');
 const {
   authorizeUser,
-  sendRequest,
+  sendRequestByName,
+  sendRequestByEmail,
   createGroup,
   initializeUser,
   dm,
@@ -56,8 +57,12 @@ io.on('connection', async (socket) => {
   // console.log('connection')
   initializeUser(socket);
   socket.on('dm', (message) => dm(socket, message));
-  socket.on('send_request', ({ email, userId, username }, cb) =>
-    sendRequest(socket, userId, cb),
+  socket.on('send_request_by_name', ({ email, userId, username }, cb) =>
+    sendRequestByName(socket, userId, cb),
+  );
+
+  socket.on('send_request_by_email', ({ email, senderDetails }, cb) =>
+    sendRequestByEmail(socket, email, senderDetails, cb),
   );
 
   socket.on('accept_request', (requesterId) =>

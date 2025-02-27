@@ -1,6 +1,7 @@
 /* eslint-disable */
 import React, { useContext } from 'react';
 // import PropTypes from 'prop-types';
+import { useUserContext } from '../../context/userContext';
 import { useForm, FormProvider } from 'react-hook-form';
 import { SocketContext } from '../chat/Main';
 import { Box, Button } from '@mui/material';
@@ -8,6 +9,7 @@ import { FormInputEmail } from '../Inputs/FormInputEmail';
 
 const AddByEmailForm = () => {
   const { socket } = useContext(SocketContext);
+  const { user } = useUserContext();
   // const searchRef = useRef(null);
   /*const { handleSubmit, control, reset, clearErrors } = useForm({
     defaultValues: { search: null },
@@ -18,13 +20,21 @@ const AddByEmailForm = () => {
   // const onErrors = (errors) => console.error(errors);
   const handleOnSubmit = (data) => {
     console.log('handleOnSubmit: ', data.email);
-    if (data.search === null) return;
-
-    socket.emit('send_request_by_email', {
-      email: data.search.email,
-      username: data.search.label,
-      userId: data.search.userId,
-    });
+    // if (data.email === null) return;
+    // console.log('User: ', user);
+    const userDetails = {
+      fname: user.fname,
+      lname: user.lname,
+      userId: user.userId,
+    };
+    socket.emit(
+      'send_request_by_email',
+      {
+        email: data.email,
+        senderDetails: userDetails,
+      },
+      ({ message }) => console.log('cb send_request_by_email: ', message),
+    );
     methods.reset();
   };
 
