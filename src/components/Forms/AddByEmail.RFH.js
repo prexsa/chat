@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useContext } from 'react';
 // import PropTypes from 'prop-types';
 import { useUserContext } from '../../context/userContext';
@@ -19,7 +18,7 @@ const AddByEmailForm = () => {
 
   // const onErrors = (errors) => console.error(errors);
   const handleOnSubmit = (data) => {
-    console.log('handleOnSubmit: ', data.email);
+    // console.log('handleOnSubmit: ', data.email);
     // if (data.email === null) return;
     // console.log('User: ', user);
     const userDetails = {

@@ -5,7 +5,9 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Badge from '@mui/material/Badge';
 import CustomSnackbar from './CustomSnackbar';
+// import NotificationAdd from '@mui/icons-material/NotificationAdd';
 
 const RequestToConnect = () => {
   const { pendingRequests, setPendingRequests } = useContext(FriendContext);
@@ -13,6 +15,7 @@ const RequestToConnect = () => {
   const [show, setShow] = useState(false);
   const [showBtn, setShowBtn] = useState(false);
   const [openSnackBar, setOpenSnackbar] = useState(false);
+  const [currentPendingRequestCount, setPendingRequestCount] = useState(0);
 
   const handleClose = () => setShow(false);
 
@@ -42,24 +45,38 @@ const RequestToConnect = () => {
   });
 
   useEffect(() => {
-    if (pendingRequests.length > 0) {
-      displayPendingBtn();
+    if (
+      pendingRequests.length > 0
+      // pendingRequests.length === currentPendingRequestCount
+    ) {
+      if (pendingRequests.length === currentPendingRequestCount) return;
+      if (pendingRequests.length > currentPendingRequestCount) {
+        displayPendingBtn();
+        setPendingRequestCount(pendingRequests.length);
+      }
     }
     if (pendingRequests.length === 0) {
+      setPendingRequestCount(0);
       closeModal();
     }
   }, [pendingRequests, displayPendingBtn, closeModal]);
+
+  const handleSnackBarClose = () => setOpenSnackbar(false);
 
   // console.log('pending: ', pendingRequests);
   return (
     <Box>
       {showBtn ? (
-        <Button onClick={() => setShow(true)}>Request to connect</Button>
+        <Box>
+          <Button onClick={() => setShow(true)}>Request to connect</Button>
+          <Badge
+            badgeContent={pendingRequests.length}
+            color="primary"
+            sx={{ mx: '7px' }}
+          />
+        </Box>
       ) : null}
-      <CustomSnackbar
-        open={openSnackBar}
-        handleClose={() => setOpenSnackbar(false)}
-      />
+      <CustomSnackbar open={openSnackBar} handleClose={handleSnackBarClose} />
       <Dialog open={show} onClose={handleClose}>
         <DialogTitle sx={{ textAlign: 'center', textTransform: 'capitalize' }}>
           Are you ready to connect?
