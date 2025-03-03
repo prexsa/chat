@@ -6,6 +6,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Badge from '@mui/material/Badge';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import CustomSnackbar from './CustomSnackbar';
 // import NotificationAdd from '@mui/icons-material/NotificationAdd';
 
@@ -78,9 +80,22 @@ const RequestToConnect = () => {
       ) : null}
       <CustomSnackbar open={openSnackBar} handleClose={handleSnackBarClose} />
       <Dialog open={show} onClose={handleClose}>
-        <DialogTitle sx={{ textAlign: 'center', textTransform: 'capitalize' }}>
+        <DialogTitle sx={{ textTransform: 'capitalize' }}>
           Are you ready to connect?
         </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+
         <DialogContent>
           <Box
             sx={{
@@ -88,7 +103,6 @@ const RequestToConnect = () => {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              my: 5,
             }}
           >
             {pendingRequests.map((pending, index) => {
@@ -102,25 +116,33 @@ const RequestToConnect = () => {
                     justifyContent: 'space-between',
                     width: '100%',
                     margin: '10px',
+                    backgroundColor: '#F5F5F5',
+                    border: '1px solid #E8E9EB',
+                    borderRadius: '5px',
+                    padding: '15px 10px',
                   }}
                   key={index}
                 >
-                  <Typography variant="subtitle1">
-                    {pending.fullname} wants to connect
+                  <Typography variant="subtitle1" sx={{ display: 'flex' }}>
+                    <Box sx={{ color: 'blue', fontWeight: 500 }}>
+                      {pending.fullname}&nbsp;
+                    </Box>
+                    wants to connect
                   </Typography>
                   <Box sx={{ display: 'flex', columnGap: '10px' }}>
                     <Button
                       variant="contained"
                       onClick={() => acceptRequestHandler(pending.userId)}
                     >
-                      Yes
+                      Accept
                     </Button>
                     <Button
                       variant="outlined"
-                      color="error"
+                      //color="error"
+                      sx={{ backgroundColor: 'white' }}
                       onClick={() => denyRequestHandler(pending.userId)}
                     >
-                      No
+                      Reject
                     </Button>
                   </Box>
                 </Box>

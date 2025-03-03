@@ -10,7 +10,7 @@ import {
   Button,
   Typography,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
   ListItemAvatar,
   Avatar,
@@ -34,7 +34,7 @@ function ChannelList({ user }) {
   const [tabValue, setTabValue] = useState(0);
 
   const handleChannelSelect = (room) => {
-    // console.log('handleChannelSelect, ', room);
+    console.log('handleChannelSelect, ', room);
     setIsActive(room.roomId);
     setSelectedRoom(room);
 
@@ -174,9 +174,10 @@ function ChannelList({ user }) {
             // check if room is active, clear out unreadCount
             room.unreadCount =
               room.roomId === selectedRoom.roomId ? 0 : room.unreadCount;
-
+            console.log({ isActive, room });
+            console.log(isActive === room.roomId);
             return (
-              <ListItem
+              <ListItemButton
                 key={room.roomId}
                 onClick={() => handleChannelSelect(room)}
                 sx={{
@@ -194,10 +195,10 @@ function ChannelList({ user }) {
                     backgroundColor: '#dcdcdc',
                     boxShadow: '2px 6px 15px -2px rgba(0,0,0,0.75);',
                   },
-                  '&:active': {
+                  /*'&:active': {
                     backgroundColor: 'fbfbf9',
                     boxShadow: '2px 6px 15px -2px rgba(0,0,0,0.75);',
-                  },
+                  },*/
                 }}
                 selected={isActive === room.roomId}
               >
@@ -264,7 +265,7 @@ function ChannelList({ user }) {
                     )}
                   </Typography>
                 </Box>
-              </ListItem>
+              </ListItemButton>
             );
           })}
       </List>
