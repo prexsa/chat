@@ -16,7 +16,7 @@ import {
   Tab,
 } from '@mui/material';
 import AddFriend from '../AddFriend';
-import RequestToConnect from './RequestToConnect';
+import PendingRequests from './PendingRequests';
 import CreateGroup from './CreateGroup';
 import SearchChat from './SearchChat';
 
@@ -79,7 +79,7 @@ function ChannelList({ user }) {
       <Button className="btn btn-link" onClick={clearRoomSelected}>
         Clear Message Panel
       </Button>
-      <RequestToConnect />
+      <PendingRequests />
       <CreateGroup />
       <SearchChat roomList={roomList} setList={setList} />
 

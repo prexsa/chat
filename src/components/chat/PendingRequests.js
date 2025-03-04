@@ -11,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import CustomSnackbar from './CustomSnackbar';
 // import NotificationAdd from '@mui/icons-material/NotificationAdd';
 
-const RequestToConnect = () => {
+const PendingRequests = () => {
   const { pendingRequests, setPendingRequests } = useContext(FriendContext);
   const { socket } = useContext(SocketContext);
   const [show, setShow] = useState(false);
@@ -160,4 +160,4 @@ const RequestToConnect = () => {
   );
 };
 
-export default RequestToConnect;
+export default PendingRequests;
