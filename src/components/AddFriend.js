@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import AddIcon from '@mui/icons-material/Add';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { Box, Tabs, Tab, Typography, Tooltip } from '@mui/material';
+import { Box, Button, Tabs, Tab, Typography } from '@mui/material';
 import CustomTabPanel from './chat/CustomTabPanel';
-import PulsatingDiv from './animation/PulsatingDiv';
-import SlideLeft from './animation/SlideLeft';
 import { Modal } from './Modal';
-
 import AddByNameForm from './Forms/AddByName.RFH';
 import AddByEmailForm from './Forms/AddByEmail.RFH';
+// import PropTypes from 'prop-types';
+// import AddIcon from '@mui/icons-material/Add';
+// import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+// import PulsatingDiv from './animation/PulsatingDiv';
+// import SlideLeft from './animation/SlideLeft';
 
-const AddFriendForm = ({ roomList }) => {
+const AddFriendForm = () => {
   const [show, setShow] = useState(false);
   const [tabPanel, setTabPanel] = useState(0);
 
@@ -20,6 +19,10 @@ const AddFriendForm = ({ roomList }) => {
   return (
     <div>
       <Box sx={{ display: 'flex' }}>
+        <Button size="small" onClick={() => setShow(true)} fullWidth>
+          Send invite
+        </Button>
+        {/*
         <Tooltip title="Add to chat">
           <AddIcon
             sx={{
@@ -57,6 +60,7 @@ const AddFriendForm = ({ roomList }) => {
             </PulsatingDiv>
           </Box>
         )}
+      */}
       </Box>
       <Modal
         open={show}
@@ -88,9 +92,11 @@ const AddFriendForm = ({ roomList }) => {
   );
 };
 
+/*
 AddFriendForm.propTypes = {
   roomList: PropTypes.array,
 };
+*/
 
 export default AddFriendForm;
 

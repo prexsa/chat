@@ -70,7 +70,9 @@ const RequestToConnect = () => {
     <Box>
       {showBtn ? (
         <Box>
-          <Button onClick={() => setShow(true)}>Request to connect</Button>
+          <Button onClick={() => setShow(true)}>
+            Pending {pendingRequests.length > 1 ? 'requests' : 'request'}
+          </Button>
           <Badge
             badgeContent={pendingRequests.length}
             color="primary"

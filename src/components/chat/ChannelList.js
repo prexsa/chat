@@ -1,10 +1,8 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FriendContext } from './Main';
-import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
@@ -14,22 +12,19 @@ import {
   ListItemText,
   ListItemAvatar,
   Avatar,
-  InputAdornment,
-  TextField,
   Tabs,
   Tab,
 } from '@mui/material';
 import AddFriend from '../AddFriend';
 import RequestToConnect from './RequestToConnect';
 import CreateGroup from './CreateGroup';
+import SearchChat from './SearchChat';
 
 function ChannelList({ user }) {
   const { roomList, setRoomList, selectedRoom, setSelectedRoom } =
     useContext(FriendContext);
-  // const { socket } = useContext(SocketContext);
-  // const [activeIndex, setActiveIndex] = useState(null);
   const [isActive, setIsActive] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+
   const [list, setList] = useState([]);
   const [tabValue, setTabValue] = useState(0);
 
@@ -47,20 +42,6 @@ function ChannelList({ user }) {
         return room;
       });
     });
-  };
-
-  const handleInputChange = (e) => {
-    const term = e.target.value;
-    setSearchTerm(term);
-
-    const filteredRoomsByTermFound = roomList.filter((room) => {
-      const found = room.mates.filter((mate) => {
-        return mate.fullname.toLowerCase().includes(searchTerm.toLowerCase());
-      });
-      if (found.length > 0) return room;
-    });
-
-    setList([...filteredRoomsByTermFound]);
   };
 
   const clearRoomSelected = () => {
@@ -91,70 +72,17 @@ function ChannelList({ user }) {
     setTabValue(newValue);
   };
 
-  useEffect(() => {
-    if (roomList.length > 0) {
-      setList([...roomList]);
-    }
-  }, [roomList]);
-
-  useEffect(() => {
-    if (searchTerm === '') {
-      setList([...roomList]);
-    }
-  }, [searchTerm]);
-
   // console.log('roomList; ', list);
   return (
     <div className="channel-list-cntr">
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          padding: '15px 10px',
-          // boxShadow: '1px 1px 4px 1px rgba(192,192,192,0.5)',
-          backgroundColor: '#fdfdfe',
-        }}
-      >
-        {roomList && roomList.length > 0 ? (
-          <>
-            <SearchIcon
-              sx={{
-                color: 'action.active',
-                mr: 1,
-                my: 0.5,
-              }}
-            />
-            <TextField
-              variant="standard"
-              label="Type to search"
-              onChange={handleInputChange}
-              value={searchTerm}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <CloseIcon
-                      sx={{
-                        '&:hover': {
-                          cursor: 'pointer',
-                          boxShadow: '0 0 5px 0 rgba(0,0,0,0.5)',
-                          borderRadius: '50%',
-                        },
-                      }}
-                      onClick={() => setSearchTerm('')}
-                    />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </>
-        ) : null}
-        <AddFriend roomList={roomList} />
-      </Box>
+      <AddFriend />
       <Button className="btn btn-link" onClick={clearRoomSelected}>
         Clear Message Panel
       </Button>
       <RequestToConnect />
       <CreateGroup />
+      <SearchChat roomList={roomList} setList={setList} />
+
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
           value={tabValue}
@@ -174,8 +102,7 @@ function ChannelList({ user }) {
             // check if room is active, clear out unreadCount
             room.unreadCount =
               room.roomId === selectedRoom.roomId ? 0 : room.unreadCount;
-            console.log({ isActive, room });
-            console.log(isActive === room.roomId);
+
             return (
               <ListItemButton
                 key={room.roomId}
