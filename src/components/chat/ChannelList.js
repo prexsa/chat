@@ -81,8 +81,9 @@ function ChannelList({ user }) {
       </Button>
       <PendingRequests />
       <CreateGroup />
-      <SearchChat roomList={roomList} setList={setList} />
-
+      {roomList.length > 0 && (
+        <SearchChat roomList={roomList} setList={setList} />
+      )}
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
           value={tabValue}

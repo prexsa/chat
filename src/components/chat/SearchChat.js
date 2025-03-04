@@ -38,41 +38,51 @@ const SearchChat = ({ roomList, setList }) => {
       sx={{
         display: 'flex',
         alignItems: 'flex-end',
-        padding: '15px 10px',
+        padding: '0px 10px',
         // boxShadow: '1px 1px 4px 1px rgba(192,192,192,0.5)',
         backgroundColor: '#fdfdfe',
       }}
     >
       {roomList && roomList.length > 0 ? (
         <>
-          <SearchIcon
-            sx={{
-              color: 'action.active',
-              mr: 1,
-              my: 0.5,
-            }}
-          />
           <TextField
             variant="standard"
-            label="Type to search"
+            // label="Type to search"
             onChange={handleInputChange}
+            placeholder="Search"
             value={searchTerm}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <CloseIcon
-                    sx={{
-                      '&:hover': {
-                        cursor: 'pointer',
-                        boxShadow: '0 0 5px 0 rgba(0,0,0,0.5)',
-                        borderRadius: '50%',
-                      },
-                    }}
-                    onClick={() => setSearchTerm('')}
-                  />
-                </InputAdornment>
-              ),
+            inputProps={{
+              sx: { '&::placeholder': { color: '#636363', opacity: 1 } },
             }}
+            sx={{ width: '100%' }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <SearchIcon
+                    sx={{
+                      color: 'action.active',
+                      mr: 1,
+                      my: 0.5,
+                    }}
+                  />
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <CloseIcon
+                      sx={{
+                        '&:hover': {
+                          cursor: 'pointer',
+                          boxShadow: '0 0 5px 0 rgba(0,0,0,0.5)',
+                          borderRadius: '50%',
+                        },
+                      }}
+                      onClick={() => setSearchTerm('')}
+                    />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            // InputProps={{}}
           />
         </>
       ) : null}
