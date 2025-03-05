@@ -4,7 +4,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, InputAdornment, TextField } from '@mui/material';
 
-const SearchChat = ({ roomList, setList }) => {
+const SearchChat = ({ roomList, setList, user }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleInputChange = (e) => {
@@ -13,7 +13,11 @@ const SearchChat = ({ roomList, setList }) => {
 
     const filteredRoomsByTermFound = roomList.filter((room) => {
       const found = room.mates.filter((mate) => {
-        return mate.fullname.toLowerCase().includes(searchTerm.toLowerCase());
+        // filter out auth user
+        return (
+          mate.userId !== user.userId &&
+          mate.fullname.toLowerCase().includes(searchTerm.toLowerCase())
+        );
       });
       if (found.length > 0) return room;
     });
@@ -93,6 +97,7 @@ const SearchChat = ({ roomList, setList }) => {
 SearchChat.propTypes = {
   roomList: PropTypes.array,
   setList: PropTypes.func,
+  user: PropTypes.object,
 };
 
 export default SearchChat;

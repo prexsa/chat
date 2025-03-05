@@ -29,7 +29,7 @@ function ChannelList({ user }) {
   const [tabValue, setTabValue] = useState(0);
 
   const handleChannelSelect = (room) => {
-    console.log('handleChannelSelect, ', room);
+    // console.log('handleChannelSelect, ', room);
     setIsActive(room.roomId);
     setSelectedRoom(room);
 
@@ -82,7 +82,7 @@ function ChannelList({ user }) {
       <PendingRequests />
       <CreateGroup />
       {roomList.length > 0 && (
-        <SearchChat roomList={roomList} setList={setList} />
+        <SearchChat roomList={roomList} setList={setList} user={user} />
       )}
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
