@@ -4,7 +4,6 @@ import Login from './routes/Login';
 import ForgotPassword from './routes/ForgotPassword';
 import Signup from './routes/Signup';
 import PWReset from './routes/PasswordReset';
-// import UsernameRFH from './components/Username.RFH';
 import Main from './components/chat/Main';
 import PageNotFound from './components/PageNotFound';
 import PrivateRoutes from './routes/PrivateRoutes';
