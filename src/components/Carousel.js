@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Carousel } from 'react-bootstrap';
 
-export const NoTransitionCarousel = ({ imageId, images }) => {
-  const [index, setIndex] = useState(0);
+export const NoTransitionCarousel = ({ imageIndex, images }) => {
+  // console.log('imageIndex: ', imageIndex);
+  const [index, setIndex] = useState(imageIndex);
   // console.log('activeIndex: ', activeIndex)
   const handleSelect = (selectedIndex) => {
     setIndex(selectedIndex);
   };
 
+  /*
   useEffect(() => {
-    const activeIndex = images.map((image) => image._id).indexOf(imageId);
+    const activeIndex = images.map((image) => image._id).indexOf(imageIndex);
     setIndex(activeIndex);
-  }, [imageId]);
+  }, [imageIndex]);
+*/
   // console.log('images: ', images)
   return (
     <Carousel
@@ -40,6 +43,6 @@ export const NoTransitionCarousel = ({ imageId, images }) => {
 };
 
 NoTransitionCarousel.propTypes = {
-  imageId: PropTypes.string,
+  imageIndex: PropTypes.string,
   images: PropTypes.array,
 };

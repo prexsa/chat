@@ -98,7 +98,6 @@ const Main = () => {
         <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
           <Box sx={{ display: 'flex' }}>
             <Box
-              id="testing"
               sx={{
                 display: { xs: 'none', sm: 'block' },
                 width: `${drawerWidth / 16}rem`,
@@ -143,11 +142,11 @@ export default Main;
 
 {
   /*<Box
-              component="nav"
-              sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-              aria-label="mailbox folders"
-            >
-            </Box>*/
+    component="nav"
+    sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+    aria-label="mailbox folders"
+  >
+  </Box>*/
 }
 {
   /* The implementation can be swapped with js to avoid SEO duplication of links. */
@@ -155,34 +154,34 @@ export default Main;
 
 {
   /*
-            <Drawer
-              onMouseDown={() => (isResized.current = true)}
-              variant="permanent"
-              sx={{
-                display: { xs: 'none', sm: 'block' },
-                '& .MuiDrawer-paper': {
-                  boxSizing: 'border-box',
-                  // width: '300px',
-                  width: `${drawerWidth / 16}rem`,
-                  borderRight: '5px solid blue',
-                  '&:hover': {
-                    cursor: 'ew-resize',
-                  },
-                },
-              }}
-              open
-            >
-              <Box
-                ref={draggerRef}
-                // onMouseDown={() => (isResized.current = true)}
-              >
-                <Sidebar
-                  showDrawer={showDrawer}
-                  setShowDrawer={setShowDrawer}
-                />
-              </Box>
-            </Drawer>
-            */
+    <Drawer
+      onMouseDown={() => (isResized.current = true)}
+      variant="permanent"
+      sx={{
+        display: { xs: 'none', sm: 'block' },
+        '& .MuiDrawer-paper': {
+          boxSizing: 'border-box',
+          // width: '300px',
+          width: `${drawerWidth / 16}rem`,
+          borderRight: '5px solid blue',
+          '&:hover': {
+            cursor: 'ew-resize',
+          },
+        },
+      }}
+      open
+    >
+      <Box
+        ref={draggerRef}
+        // onMouseDown={() => (isResized.current = true)}
+      >
+        <Sidebar
+          showDrawer={showDrawer}
+          setShowDrawer={setShowDrawer}
+        />
+      </Box>
+    </Drawer>
+    */
 }
 // https://codesandbox.io/p/sandbox/zen-silence-njx9xx?file=%2Fsrc%2FDemo.js%3A33%2C25
 // https://stackademic.com/blog/building-a-resizable-sidebar-component-with-persisting-width-using-react-tailwindcss

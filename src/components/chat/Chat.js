@@ -1,25 +1,25 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useUserContext } from '../../context/userContext';
 import { FriendContext } from '../chat/Main';
 import { Box, Typography, Divider } from '@mui/material';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
+import { ModalImageViewer } from '../ModalImageViewer';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { ModalImageCarousel } from '../ModalImageCarousel';
+
 import Chatbox from '../Forms/Chatbox';
 import MessagePanel from './MessagePanel';
 import EmptyChat from './EmptyChat';
 import ChatHeader from './ChatHeader';
+import ChatAttachments from './ChatAttachments';
 
 const Chat = ({ isGroup }) => {
-  const gridRef = useRef(null);
-  const parRef = useRef(null);
+  // const gridRef = useRef(null);
+  // const parRef = useRef(null);
   const { user } = useUserContext();
   const { selectedRoom } = useContext(FriendContext);
   const [showModal, setShowModal] = useState(false);
   const [selectedImageId, setSelectedImageId] = useState('');
-
+  /*
   useEffect(() => {
     if (gridRef.current !== null) {
       console.log('gridRef: ', gridRef.current);
@@ -29,6 +29,7 @@ const Chat = ({ isGroup }) => {
       console.log('parRef: ', parRef.current.clientHeight);
     }
   }, [gridRef, parRef]);
+  */
 
   if (Object.keys(selectedRoom).length === 0 || selectedRoom.roomId === '') {
     return <EmptyChat />;
@@ -54,8 +55,7 @@ const Chat = ({ isGroup }) => {
 
   return (
     <div className="message-panel-container">
-      {/* The Modal */}
-      <ModalImageCarousel
+      <ModalImageViewer
         open={showModal}
         onClose={() => setShowModal(false)}
         images={selectedRoom?.uploadFiles}
@@ -100,46 +100,7 @@ const Chat = ({ isGroup }) => {
             </Typography>
           </Box>
           <Divider />
-          <Box>
-            <Typography variant="h6" sx={{ mt: '10px' }}>
-              {selectedRoom?.uploadFiles.length === 0
-                ? 'No files to share'
-                : 'Shared Photos'}
-            </Typography>
-            <Box sx={{ height: '75vh', overflowY: 'auto' }}>
-              <ImageList
-                sx={{
-                  width: '100%',
-
-                  padding: '5px',
-                }}
-                cols={2}
-                rowHeight={164}
-              >
-                {selectedRoom?.uploadFiles.map((file) => (
-                  <ImageListItem
-                    key={file._id}
-                    onClick={() => handleImageSelect(file._id)}
-                    sx={{
-                      '&:hover': {
-                        cursor: 'pointer',
-                        boxShadow: '0px 0px 2px 1px #2196f3',
-                      },
-                    }}
-                  >
-                    <img
-                      src={file.cloudinaryUrl}
-                      alt={file.name}
-                      loading="lazy"
-                      style={{
-                        height: '150px',
-                      }}
-                    />
-                  </ImageListItem>
-                ))}
-              </ImageList>
-            </Box>
-          </Box>
+          <ChatAttachments selectedRoom={selectedRoom} />
         </Box>
       </Box>
     </div>
