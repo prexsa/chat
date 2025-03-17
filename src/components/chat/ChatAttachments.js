@@ -28,7 +28,7 @@ const textBtn = {
 
 const ChatAttachments = ({ selectedRoom }) => {
   const [showModal, setShowModal] = useState(false);
-  const [imgIndex, setImgIndex] = useState(null);
+  const [imgIndex, setImgIndex] = useState(0);
 
   const handleImageSelect = (imageId) => {
     setShowModal(true);

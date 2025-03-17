@@ -34,18 +34,6 @@
   transform-origin: 50%;
   animation: circle 0.5s alternate infinite ease;
 }
-.custom-modal-style {
-  /*max-height: calc(100vh - 200px);*/
-}
-.custom-modal-body {
-  margin: 0 auto; /* center div */
-}
-.modal-image {
-  max-width: 100%;
-  max-height: calc(100vh - 450px); /* to reduce the img size to fit screen */
-  margin: 15px 0;
-  display: block;
-}
 @keyframes circle {
   0% {
     top: 60px;
@@ -116,4 +104,48 @@
   color: #000;
   left: 15%;
 }
-/*  Modal */
+/*************************
+ * 
+ * Modal 
+ * 
+**************************/
+.custom-modal-style {
+  /*max-height: calc(100vh - 200px);*/
+}
+.custom-modal-body {
+  margin: 0 auto; /* center div */
+}
+.modal-image {
+  max-width: 100%;
+  max-height: calc(100vh - 450px); /* to reduce the img size to fit screen */
+  margin: 0 auto;
+  display: block;
+}
+
+/*************************
+ * 
+ * React bootstrap carousel
+ * Adjust the next/prev arrow positions for react-bootstrap carousel 
+ * 
+**************************/
+.carousel-control-prev {
+  position: absolute;
+  left: 10px; /*Adjust as needed */ /*10px*/
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carousel-control-next {
+  position: absolute;
+  right: 10px; /* Adjust as needed */
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  background-color: black;
+  height: 8%;
+  width: 11%;
+  border-radius: 50%;
+}

@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Carousel } from 'react-bootstrap';
+import { Box } from '@mui/system';
 
-export const NoTransitionCarousel = ({ imageIndex, images }) => {
-  // console.log('imageIndex: ', imageIndex);
-  const [index, setIndex] = useState(imageIndex);
-  // console.log('activeIndex: ', activeIndex)
-  const handleSelect = (selectedIndex) => {
-    setIndex(selectedIndex);
+/*********************
+ * 
+  CSS File: App.css
+  Next/Prev arrow positioning are adjusted to sit outside the borders
+  of the image, instead of on the image
+ * 
+***********************/
+
+export const NoTransitionCarousel = ({
+  imageIndex,
+  images,
+  handleActiveState,
+}) => {
+  const handleSelect = (nextIndex) => {
+    handleActiveState(nextIndex);
   };
 
   /*
@@ -20,10 +30,11 @@ export const NoTransitionCarousel = ({ imageIndex, images }) => {
   return (
     <Carousel
       interval={null}
-      activeIndex={index}
+      activeIndex={imageIndex}
       slide={false}
       onSelect={handleSelect}
       indicators={false}
+      // onSlide={(eventkey, e) => console.log({ eventkey, e })}
     >
       {images &&
         images.map((image, imgIndex) => {
@@ -34,7 +45,9 @@ export const NoTransitionCarousel = ({ imageIndex, images }) => {
                 src={image.cloudinaryUrl}
                 alt={image.name}
               />
-              <div>Name: {image.name}</div>
+              <Box sx={{ textAlign: 'center', my: 1, fontSize: '18px' }}>
+                {image.name}
+              </Box>
             </Carousel.Item>
           );
         })}
@@ -43,6 +56,7 @@ export const NoTransitionCarousel = ({ imageIndex, images }) => {
 };
 
 NoTransitionCarousel.propTypes = {
-  imageIndex: PropTypes.string,
+  imageIndex: PropTypes.number,
   images: PropTypes.array,
+  handleActiveState: PropTypes.func,
 };

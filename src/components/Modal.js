@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, IconButton } from '@mui/material';
@@ -7,9 +8,23 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CloseIcon from '@mui/icons-material/Close';
 
+//import useMediaQuery from '@mui/material/useMediaQuery';
+// import { useTheme } from '@mui/material/styles';
+
 export const Modal = ({ open, onClose, title, children }) => {
+  // const theme = useTheme();
+  // const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  // const widths = ['xs', 'sm', 'md', 'lg', 'xl'];
+
+  /***********************
+   *
+   * When the fullWidth prop is true, the dialog will adapt based on the maxWidth value.
+   *
+   ************************/
+
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth={'lg'}>
       <DialogTitle>{title}</DialogTitle>
       <IconButton
         aria-label="close"
