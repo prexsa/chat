@@ -55,21 +55,19 @@ export const ModalImageViewer = ({ open, onClose, images, imgIndex }) => {
     setImageIndex(index);
   };
 
-  const multiple = [...images, ...images, ...images, ...images, ...images];
-
   return (
     <Modal open={open} onClose={onClose} title={'Images'}>
       <Box sx={{ display: 'flex' }}>
         <Box sx={{ px: '5px', mx: '10px' }}>
           <StandardImageList
-            images={multiple}
+            images={images}
             selectImage={handleImageSelect}
             index={imageIndex}
           />
         </Box>
         <NoTransitionCarousel
           imageIndex={imageIndex}
-          images={multiple}
+          images={images}
           handleActiveState={handleImageSelect}
         />
       </Box>

@@ -9,6 +9,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import { ModalImageViewer } from '../ModalImageViewer';
+import { ModalFileViewer } from '../ModalFileViewer';
 
 const attachmentBox = {
   textAlign: 'center',
@@ -27,32 +28,33 @@ const textBtn = {
 };
 
 const ChatAttachments = ({ selectedRoom }) => {
-  const [showModal, setShowModal] = useState(false);
+  const [showImages, setShowImages] = useState(false);
+  const [showFiles, setShowFiles] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
 
   const handleImageSelect = (imageId) => {
-    setShowModal(true);
+    setShowImages(true);
     setImgIndex(imageId);
   };
 
   const handleModalClose = () => {
-    setShowModal(false);
-    setImgIndex(null);
+    setShowImages(false);
+    setShowFiles(false);
+    setImgIndex(0);
   };
 
-  const handleViewAllMedia = () => {
-    setShowModal(true);
-  };
+  const handleViewAllMedia = () => setShowImages(true);
   // console.log('imgIndex: ', imgIndex);
-  const handleViewAllFiles = () => {};
+  const handleViewAllFiles = () => setShowFiles(true);
   return (
     <>
       <ModalImageViewer
-        open={showModal}
+        open={showImages}
         onClose={handleModalClose}
         images={selectedRoom?.uploadFiles}
         imgIndex={imgIndex}
       />
+      <ModalFileViewer open={showFiles} onClose={handleModalClose} />
       <Box>
         <Typography variant="h6" sx={{ mt: '10px' }}>
           {selectedRoom?.uploadFiles.length === 0
