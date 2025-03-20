@@ -4,6 +4,7 @@ import { FriendContext, MessagesContext } from './Main';
 import { Box, Typography, List, ListItem } from '@mui/material';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 
 const MessagePanel = ({ user, handleImageSelect }) => {
   const bottomRef = useRef(null);
@@ -36,9 +37,62 @@ const MessagePanel = ({ user, handleImageSelect }) => {
     }
   };
 
-  const renderMessage = (message, displayName, isUser) => {
-    const isAnImage = message?.hasImage;
+  const renderMessageType = (message) => {
+    // console.log(message);
+    const isMedia = message?.isMedia;
+    // console.log({ isMedia });
+    // message is plain text
+    if (!isMedia)
+      return (
+        <Typography variant="subtitles1" sx={{ color: '#616161' }}>
+          {message.message}
+        </Typography>
+      );
 
+    const fileType = message?.name.split('.').pop();
+    const mediaType = ['jpg', 'jpeg', 'png'];
+
+    if (isMedia && mediaType.indexOf(fileType) === -1) {
+      return (
+        <Box sx={{ '&:hover': { cursor: 'pointer' } }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignContent: 'space-between',
+              flexWrap: 'wrap',
+            }}
+          >
+            <ArticleOutlinedIcon />
+            <Box
+              sx={{ ml: '5px', color: 'blue' }}
+              onClick={() => alert('view pdf')}
+            >
+              {message.name}
+            </Box>
+          </Box>
+          {/*<img
+          src={message.imageUrl}
+          alt={message.name}
+          style={{ maxWidth: '180px' }}
+          onClick={() => handleImageSelect(message.fileId)}
+        />*/}
+        </Box>
+      );
+    } else {
+      return (
+        <Box sx={{ '&:hover': { cursor: 'pointer' } }}>
+          <img
+            src={message.imageUrl}
+            alt={message.name}
+            style={{ maxWidth: '180px' }}
+            onClick={() => handleImageSelect(message.fileId)}
+          />
+        </Box>
+      );
+    }
+  };
+
+  const renderMessage = (message, displayName, isUser) => {
     return (
       <Box>
         <Box
@@ -57,20 +111,7 @@ const MessagePanel = ({ user, handleImageSelect }) => {
             at {convertToHumanReadable(message.date)}
           </Typography>
         </Box>
-        {isAnImage ? (
-          <Box sx={{ '&:hover': { cursor: 'pointer' } }}>
-            <img
-              src={message.imageUrl}
-              alt={message.name}
-              style={{ maxWidth: '180px' }}
-              onClick={() => handleImageSelect(message.fileId)}
-            />
-          </Box>
-        ) : (
-          <Typography variant="subtitles1" sx={{ color: '#616161' }}>
-            {message.message}
-          </Typography>
-        )}
+        {renderMessageType(message)}
       </Box>
     );
   };

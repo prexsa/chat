@@ -20,6 +20,12 @@ const FileSchema = new mongoose.Schema({
   userId: {
     type: String,
   },
+  type: {
+    type: String,
+  },
+  size: {
+    type: String,
+  },
 });
 
 const UploadFile = mongoose.model('UploadFile', FileSchema);

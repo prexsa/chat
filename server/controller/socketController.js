@@ -503,13 +503,16 @@ const setFlagForMissingImgUrl = async (messages) => {
 
 // https://www.reddit.com/r/reactjs/comments/w22mag/how_to_handle_sending_images_and_videos_in_a_chat/
 // https://stackskills.com/courses/181862/lectures/2751724
+
 module.exports.uploadFile = async (socket, fileObj, cb) => {
-  const { roomId, userId, fileName, file, isGroup } = fileObj;
-  console.log('fileObj: ', fileObj);
+  const { roomId, userId, fileName, file, size, type } = fileObj;
+  // console.log('fileObj: ', fileObj);
   const tmpFileDir = path.join(__dirname, '../tmp/upload');
+  /**
+   * Check file type base
+   */
   // write file to tmp/upload folder
   writeFile(tmpFileDir + '/' + `${fileName}`, file, (err) => {
-    // console.log('err: ', err)
     if (err) console.error('upload write file error: ', err);
     // write file success
     // upload file to cloudinary
@@ -532,6 +535,8 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
           cloudinaryAssetId: asset_id,
           name: public_id,
           userId: userId,
+          type: type,
+          size: size,
         });
 
         // now save the file
@@ -554,7 +559,8 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
                   messages: {
                     userId,
                     imageUrl: cloudinaryUrl,
-                    hasImage: true,
+                    isMedia: true,
+                    type: type,
                     name: name,
                     date: unixDateTime,
                     fileId: _id,
@@ -571,7 +577,8 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
               userId,
               roomId,
               imageUrl: cloudinaryUrl,
-              hasImage: true,
+              isMedia: true,
+              type: type,
               name: name,
               date: unixDateTime,
               fileId: _id,

@@ -9,22 +9,26 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
   Might be a better idea load file via "http post" request instead
 */
 
-const FileUpload = ({ roomId, from, isGroup }) => {
+const FileUpload = ({ roomId, from }) => {
   const { socket } = useContext(SocketContext);
   const { setMessages } = useContext(MessagesContext);
 
   const handleFileUpload = (file) => {
     console.log('file; ', file);
+
+    const fileType = file.type.split('/').pop();
     const fileObj = {
       roomId: roomId,
       userId: from,
       fileName: file.name,
       file: file,
-      isGroup,
+      type: fileType,
+      size: file.size,
+      // isGroup,
     };
-    console.log('fileObj: ', file);
+    // console.log('fileObj: ', file);
     socket.emit('upload_file', fileObj, (resp) => {
-      console.log('file upload cb: ', { resp });
+      // console.log('file upload cb: ', { resp });
       const { message } = resp;
       // console.log('msg; ', message)
       setMessages((prevMsg) => {
@@ -34,7 +38,7 @@ const FileUpload = ({ roomId, from, isGroup }) => {
   };
 
   const onChangeUpload = (e) => {
-    console.log('e: ', e.target.files[0]);
+    // console.log('e: ', e.target.files[0]);
     const file = e.target.files[0];
     // handleSetPicture(URL.createObjectURL(file));
     handleFileUpload(file);
@@ -47,7 +51,7 @@ const FileUpload = ({ roomId, from, isGroup }) => {
       <input
         style={{ display: 'none' }}
         type="file"
-        accept="image/png, image/jpeg"
+        accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         name="upload_file"
         id="upload"
         onChange={onChangeUpload}
@@ -65,7 +69,7 @@ const FileUpload = ({ roomId, from, isGroup }) => {
 FileUpload.propTypes = {
   roomId: PropTypes.string,
   from: PropTypes.string,
-  isGroup: PropTypes.bool,
+  // isGroup: PropTypes.bool,
 };
 
 export default FileUpload;

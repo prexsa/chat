@@ -91,7 +91,7 @@ const Chatbox = ({ roomId, from, isGroup, picture }) => {
         <FileUpload
           roomId={roomId}
           from={from}
-          isGroup={isGroup}
+          // isGroup={isGroup}
           picture={picture}
         />
         <Box
