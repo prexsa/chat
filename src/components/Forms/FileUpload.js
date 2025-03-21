@@ -14,7 +14,7 @@ const FileUpload = ({ roomId, from }) => {
   const { setMessages } = useContext(MessagesContext);
 
   const handleFileUpload = (file) => {
-    console.log('file; ', file);
+    // console.log('file; ', file);
 
     const fileType = file.type.split('/').pop();
     const fileObj = {
