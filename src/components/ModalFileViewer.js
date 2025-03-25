@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
@@ -10,65 +11,64 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Modal } from './Modal';
 
-const rows = [
-  { id: 1, filename: 'Snow', type: 'text', size: '35 MB', date: '02-Feb-2025' },
-  {
-    id: 2,
-    filename: 'Lannister',
-    type: 'pdf',
-    size: '42 MB',
-    date: '12-Feb-2025',
-  },
-  {
-    id: 3,
-    filename: 'Lannister',
-    type: 'pdf',
-    size: '45 MB',
-    date: '22-Feb-2025',
-  },
-  {
-    id: 4,
-    filename: 'Stark',
-    type: 'text',
-    size: '16 MB',
-    date: '22-Feb-2025',
-  },
-  {
-    id: 5,
-    filename: 'Targaryen',
-    type: 'text',
-    size: '2.9 MB',
-    date: '02-Mar-2025',
-  },
-  {
-    id: 6,
-    filename: 'Melisandre',
-    type: 'text',
-    size: '150 KB',
-    date: '12-Feb-2025',
-  },
-  {
-    id: 7,
-    filename: 'Clifford',
-    type: 'pdf',
-    size: '44 KB',
-    date: '22-Feb-2025',
-  },
-  {
-    id: 8,
-    filename: 'Frances',
-    type: 'text',
-    size: '36 MB',
-    date: '22-Feb-2025',
-  },
-  { id: 9, filename: 'Roxie', type: 'pdf', size: '65 KB', date: '30-Feb-2025' },
-];
-
 const Headings = {
   color: '#2c84f7',
 };
 
-export const ModalFileViewer = ({ open, onClose }) => {
+const formatDate = (date) => {
+  let day = date.getDate();
+  if (day < 10) {
+    day = '0' + day;
+  }
+  let month = date.getMonth() + 1;
+  if (month < 10) {
+    month = '0' + month;
+  }
+  let year = date.getFullYear();
+  return day + '.' + month + '.' + year;
+};
+
+const formatTime = (date) => {
+  const hours = date.getHours() + 1; // hours variables is 0 - 23
+  const minutes = date.getMinutes() + 1;
+  const seconds = date.getSeconds() + 1;
+  return hours + 'H:' + minutes + 'M:' + seconds + 'S';
+};
+
+const parseDate = (str) => {
+  const date = new Date(str);
+  return formatDate(date) + ' ' + formatTime(date);
+};
+
+/**
+ *
+ * 1 KB (kilobyte) is roughly 1,024 bytes.
+ * 1 MB (megabyte) is roughly 1,024 kilobytes.
+ * 1 GB (gigabyte) is roughly 1,024 megabytes.
+ *
+ */
+const formatSize = (str) => {
+  const kb = 1024;
+  const mb = kb * kb;
+  const gb = mb * mb;
+  // console.log({ kb, mb, gb });
+  if (str !== undefined) {
+    const num = Number(str);
+    if (num < kb) {
+      return Math.round(num / kb);
+    } else if (num > kb && num < mb) {
+      return (num / kb).toFixed(2) + ' KB';
+    } else if (num > mb && num < gb) {
+      return (num / mb).toFixed(2) + ' MB';
+    } else if (num > gb) {
+      return (num / gb).toFixed(2) + ' GB';
+    }
+    return (Number(str) / 1024).toFixed(1);
+  }
+};
+
+export const ModalFileViewer = ({ open, onClose, files }) => {
+  // console.log({ files });
   return (
     <Modal open={open} onClose={onClose} title={'Files'}>
       <TableContainer component={Paper}>
@@ -88,7 +88,7 @@ export const ModalFileViewer = ({ open, onClose }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row, index) => (
+            {files.map((row, index) => (
               <TableRow
                 key={index}
                 onClick={() => console.log('file onclick: ', row)}
@@ -101,11 +101,11 @@ export const ModalFileViewer = ({ open, onClose }) => {
                 }}
               >
                 <TableCell component="th" scope="row">
-                  <Box>{row.filename}</Box>
+                  <Box>{row.name}</Box>
                 </TableCell>
                 <TableCell align="right">{row.type}</TableCell>
-                <TableCell align="right">{row.size}</TableCell>
-                <TableCell align="right">{row.date}</TableCell>
+                <TableCell align="right">{formatSize(row.size)}</TableCell>
+                <TableCell align="right">{parseDate(row.createdAt)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

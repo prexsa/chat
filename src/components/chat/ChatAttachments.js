@@ -79,10 +79,14 @@ const ChatAttachments = ({ selectedRoom }) => {
       <ModalImageViewer
         open={showImages}
         onClose={handleModalClose}
-        images={selectedRoom?.uploadFiles}
+        images={images}
         imgIndex={imgIndex}
       />
-      <ModalFileViewer open={showFiles} onClose={handleModalClose} />
+      <ModalFileViewer
+        open={showFiles}
+        onClose={handleModalClose}
+        files={files}
+      />
       <Box>
         {images.length === 0 ? null : (
           <Box sx={attachmentBox}>
