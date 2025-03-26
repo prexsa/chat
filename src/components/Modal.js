@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, IconButton } from '@mui/material';
@@ -38,7 +37,7 @@ export const Modal = ({ open, onClose, title, children }) => {
       >
         <CloseIcon />
       </IconButton>
-      <DialogContent>{children}</DialogContent>
+      <DialogContent sx={{ height: '900px' }}>{children}</DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
       </DialogActions>
