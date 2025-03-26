@@ -1,7 +1,6 @@
-/* eslint-disable */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -10,6 +9,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Modal } from './Modal';
+// import { Button } from 'bootstrap';
 
 const Headings = {
   color: '#2c84f7',
@@ -68,49 +68,78 @@ const formatSize = (str) => {
 };
 
 export const ModalFileViewer = ({ open, onClose, files }) => {
-  // console.log({ files });
+  const [selected, setSelected] = useState('');
+
+  const handleOnModalClose = () => {
+    setSelected('');
+    onClose();
+  };
+
   return (
-    <Modal open={open} onClose={onClose} title={'Files'}>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell sx={Headings}>Name</TableCell>
-              <TableCell sx={Headings} align="right">
-                Type
-              </TableCell>
-              <TableCell sx={Headings} align="right">
-                Size
-              </TableCell>
-              <TableCell sx={Headings} align="right">
-                Date Modified
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {files.map((row, index) => (
-              <TableRow
-                key={index}
-                onClick={() => console.log('file onclick: ', row)}
-                sx={{
-                  '&:last-child td, &:last-child th': { border: 0 },
-                  '&:hover': {
-                    backgroundColor: 'rgba(25,118,210,0.12)',
-                    cursor: 'pointer',
-                  },
-                }}
-              >
-                <TableCell component="th" scope="row">
-                  <Box>{row.name}</Box>
+    <Modal open={open} onClose={handleOnModalClose} title={'Files'}>
+      {selected !== '' ? (
+        <Box
+          className="testing"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+          }}
+        >
+          <Button onClick={() => setSelected('')}>back</Button>
+          <Box sx={{ margin: '0 auto' }}>
+            <object
+              className="pdf"
+              data={selected}
+              width="1000"
+              height="1000"
+            ></object>
+          </Box>
+        </Box>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={Headings}>Name</TableCell>
+                <TableCell sx={Headings} align="right">
+                  Type
                 </TableCell>
-                <TableCell align="right">{row.type}</TableCell>
-                <TableCell align="right">{formatSize(row.size)}</TableCell>
-                <TableCell align="right">{parseDate(row.createdAt)}</TableCell>
+                <TableCell sx={Headings} align="right">
+                  Size
+                </TableCell>
+                <TableCell sx={Headings} align="right">
+                  Date Modified
+                </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {files.map((row, index) => (
+                <TableRow
+                  key={index}
+                  onClick={() => setSelected(row.cloudinaryUrl)}
+                  sx={{
+                    '&:last-child td, &:last-child th': { border: 0 },
+                    '&:hover': {
+                      backgroundColor: 'rgba(25,118,210,0.12)',
+                      cursor: 'pointer',
+                    },
+                  }}
+                >
+                  <TableCell component="th" scope="row">
+                    <Box>{row.name}</Box>
+                  </TableCell>
+                  <TableCell align="right">{row.type}</TableCell>
+                  <TableCell align="right">{formatSize(row.size)}</TableCell>
+                  <TableCell align="right">
+                    {parseDate(row.createdAt)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Modal>
   );
 };
