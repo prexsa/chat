@@ -7,6 +7,8 @@ const path = require('path');
 const { cloudinary } = require('../cloudinary');
 const { JWT_SECRET } = require('../env');
 const axios = require('axios');
+// const { ObjectId } = require('mongodb');
+const mongoose = require('mongoose');
 
 const User = require('../model/user.model');
 const Room = require('../model/room.model');
@@ -53,6 +55,7 @@ const mapFileIdToFileObj = async (files) => {
       const record = await UploadFile.find({
         _id: fileId.fileId.toString(),
       });
+      // console.log({ record });
       return ({
         cloudinaryUrl,
         cloudinarySecureUrl,
@@ -595,6 +598,41 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
       })
       .catch((err) => console.log('Cloudinary upload error', err));
   });
+};
+
+module.exports.deleteFile = async (socket, fileId, roomId, cb) => {
+  // console.log('deleteFile :', fileId);
+  const file = await UploadFile.findById(fileId);
+  const fileName = file.name;
+
+  // create mongoose ObjectId
+  const _fileId = new mongoose.Types.ObjectId(fileId);
+  // console.log('ID: ', _fileId);
+  // remove from room record
+  try {
+    await Room.findOneAndUpdate(
+      { roomId: roomId },
+      { $pull: { uploadFiles: { fileId: _fileId } } },
+    );
+  } catch (e) {
+    console.log('Delete file Room Doc Error: ', e);
+  }
+
+  // delete document
+  try {
+    await UploadFile.deleteOne({ _id: fileId });
+    // console.log('resp: ', resp);
+  } catch (e) {
+    console.log('Delete MongoDB File Error: ', e);
+  }
+
+  // remove file from cloudinary
+  cloudinary.uploader.destroy(fileName, function (result) {
+    console.log(result);
+  });
+
+  // console.log('file: ', file);
+  cb(file);
 };
 
 const deleteStoredFile = (fileName) => {

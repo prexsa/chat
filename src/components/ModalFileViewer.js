@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Box, Button } from '@mui/material';
+import { SocketContext, FriendContext } from './chat/Main';
+import { Box } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,6 +10,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Modal } from './Modal';
+import IconButton from '@mui/material/IconButton';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DeleteIcon from '@mui/icons-material/Delete';
 // import { Button } from 'bootstrap';
 
 const Headings = {
@@ -67,32 +71,116 @@ const formatSize = (str) => {
   }
 };
 
-export const ModalFileViewer = ({ open, onClose, files }) => {
+export const ModalFileViewer = ({
+  open,
+  onClose,
+  files,
+  updateParentFileState,
+}) => {
+  const { socket } = useContext(SocketContext);
+  const { selectedRoom, setSelectedRoom } = useContext(FriendContext);
   const [selected, setSelected] = useState('');
+  const [file, setFile] = useState(null);
+
+  useEffect(() => {
+    // close modal if files don't exist
+    if (files.length === 0) onClose();
+  }, [files]);
 
   const handleOnModalClose = () => {
-    setSelected('');
+    handleClearComponentState();
     onClose();
   };
 
+  const handleClearComponentState = () => {
+    setSelected('');
+    // setFileName('');
+    setFile(null);
+  };
+
+  const handleFileSelect = (file) => {
+    setFile(file);
+    setSelected(file.cloudinaryUrl);
+    // setFileName(file.name);
+  };
+
+  const removeFileFromChat = (fileId) => {
+    setSelectedRoom((prevState) => {
+      // console.log('prevState: ', prevState);
+      const filteredFiles = prevState.uploadFiles.filter(
+        (file) => file._id !== fileId,
+      );
+      prevState.uploadFiles = filteredFiles;
+      return prevState;
+    });
+
+    // update component state
+    updateParentFileState(fileId);
+    handleClearComponentState();
+  };
+
+  const handleDeleteFile = () => {
+    if (file === null) return;
+    // const fileId = file._id;
+    socket.connect();
+    socket.emit(
+      'delete_file',
+      { fileId: file._id, roomId: selectedRoom.roomId },
+      (file) => {
+        // console.log('cb file: ', file);
+        removeFileFromChat(file._id);
+      },
+    );
+  };
+
   return (
-    <Modal open={open} onClose={handleOnModalClose} title={'Files'}>
+    <Modal
+      open={open}
+      onClose={handleOnModalClose}
+      title={file === null ? 'Files' : file.name}
+    >
       {selected !== '' ? (
         <Box
-          className="testing"
           sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-start',
           }}
         >
-          <Button onClick={() => setSelected('')}>back</Button>
-          <Box sx={{ margin: '0 auto' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              // border: '1px solid blue',
+              width: '100%',
+              my: 1,
+            }}
+          >
+            <IconButton aria-label="back" onClick={() => setSelected('')}>
+              <ArrowBackIcon />
+            </IconButton>
+
+            <Box sx={{ margin: '0 auto' }}>
+              <IconButton
+                aria-label="delete"
+                onClick={handleDeleteFile}
+                color="error"
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              margin: '0 auto',
+              height: 'inherit',
+            }}
+          >
             <object
               className="pdf"
               data={selected}
-              width="1000"
-              height="1000"
+              width="1024"
+              height="900"
+              // style={{ aspectRatio: 1 / 1, objectFit: 'contain' }}
             ></object>
           </Box>
         </Box>
@@ -117,7 +205,6 @@ export const ModalFileViewer = ({ open, onClose, files }) => {
               {files.map((row, index) => (
                 <TableRow
                   key={index}
-                  onClick={() => setSelected(row.cloudinaryUrl)}
                   sx={{
                     '&:last-child td, &:last-child th': { border: 0 },
                     '&:hover': {
@@ -127,7 +214,17 @@ export const ModalFileViewer = ({ open, onClose, files }) => {
                   }}
                 >
                   <TableCell component="th" scope="row">
-                    <Box>{row.name}</Box>
+                    <Box
+                      onClick={() => handleFileSelect(row)}
+                      sx={{
+                        '&: hover': {
+                          color: 'blue',
+                          textDecoration: 'underline',
+                        },
+                      }}
+                    >
+                      {row.name}
+                    </Box>
                   </TableCell>
                   <TableCell align="right">{row.type}</TableCell>
                   <TableCell align="right">{formatSize(row.size)}</TableCell>
@@ -148,4 +245,5 @@ ModalFileViewer.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   files: PropTypes.array,
+  updateParentFileState: PropTypes.func,
 };

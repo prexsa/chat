@@ -37,7 +37,7 @@ export const Modal = ({ open, onClose, title, children }) => {
       >
         <CloseIcon />
       </IconButton>
-      <DialogContent sx={{ height: '900px' }}>{children}</DialogContent>
+      <DialogContent sx={{ height: '1000px' }}>{children}</DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
       </DialogActions>

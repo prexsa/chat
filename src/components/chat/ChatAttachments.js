@@ -33,7 +33,7 @@ const ChatAttachments = ({ selectedRoom }) => {
   const [imgIndex, setImgIndex] = useState(0);
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
-
+  // console.log('selectedRoom: ', selectedRoom);
   useEffect(() => {
     // parse message for images/files
     const newImages = [];
@@ -71,6 +71,10 @@ const ChatAttachments = ({ selectedRoom }) => {
     setImgIndex(0);
   };
 
+  const updateFileState = (fileId) => {
+    setFiles((prevState) => prevState.filter((file) => file._id !== fileId));
+  };
+
   const handleViewAllMedia = () => setShowImages(true);
   // console.log('imgIndex: ', imgIndex);
   const handleViewAllFiles = () => setShowFiles(true);
@@ -86,6 +90,7 @@ const ChatAttachments = ({ selectedRoom }) => {
         open={showFiles}
         onClose={handleModalClose}
         files={files}
+        updateParentFileState={updateFileState}
       />
       <Box>
         {images.length === 0 ? null : (
