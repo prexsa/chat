@@ -15,7 +15,7 @@ const RoomSchema = new mongoose.Schema({
         message: String,
         date: String,
         imageUrl: String,
-        hasImage: Boolean,
+        isMedia: Boolean,
         name: String,
         fileId: String,
       },
