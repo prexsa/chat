@@ -38,7 +38,7 @@ const MessagePanel = ({ user, handleImageSelect }) => {
   };
 
   const renderMessageType = (message) => {
-    console.log(message);
+    // console.log(message);
     const isMedia = message?.isMedia;
     // console.log({ isMedia });
     // message is plain text

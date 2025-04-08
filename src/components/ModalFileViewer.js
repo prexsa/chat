@@ -19,7 +19,12 @@ const Headings = {
   color: '#2c84f7',
 };
 
-const formatDate = (date) => {
+const parseDate = (str) => {
+  return new Date(str);
+};
+
+export const formatDate = (strDate) => {
+  const date = parseDate(strDate);
   let day = date.getDate();
   if (day < 10) {
     day = '0' + day;
@@ -32,16 +37,12 @@ const formatDate = (date) => {
   return day + '.' + month + '.' + year;
 };
 
-const formatTime = (date) => {
+const formatTime = (strDate) => {
+  const date = parseDate(strDate);
   const hours = date.getHours() + 1; // hours variables is 0 - 23
   const minutes = date.getMinutes() + 1;
   const seconds = date.getSeconds() + 1;
   return hours + 'H:' + minutes + 'M:' + seconds + 'S';
-};
-
-const parseDate = (str) => {
-  const date = new Date(str);
-  return formatDate(date) + ' ' + formatTime(date);
 };
 
 /**
@@ -51,7 +52,7 @@ const parseDate = (str) => {
  * 1 GB (gigabyte) is roughly 1,024 megabytes.
  *
  */
-const formatSize = (str) => {
+export const formatSize = (str) => {
   const kb = 1024;
   const mb = kb * kb;
   const gb = mb * mb;
@@ -75,6 +76,7 @@ export const ModalFileViewer = ({
   open,
   onClose,
   files,
+  fileIndex,
   updateParentFileState,
 }) => {
   const { socket } = useContext(SocketContext);
@@ -86,6 +88,12 @@ export const ModalFileViewer = ({
     // close modal if files don't exist
     if (files.length === 0) onClose();
   }, [files]);
+
+  useEffect(() => {
+    if (files.length > 0) {
+      handleFileSelect(files[fileIndex]);
+    }
+  }, [fileIndex]);
 
   const handleOnModalClose = () => {
     handleClearComponentState();
@@ -155,7 +163,7 @@ export const ModalFileViewer = ({
               my: 1,
             }}
           >
-            <IconButton aria-label="back" onClick={() => setSelected('')}>
+            <IconButton aria-label="back" onClick={handleClearComponentState}>
               <ArrowBackIcon />
             </IconButton>
 
@@ -229,7 +237,9 @@ export const ModalFileViewer = ({
                   <TableCell align="right">{row.type}</TableCell>
                   <TableCell align="right">{formatSize(row.size)}</TableCell>
                   <TableCell align="right">
-                    {parseDate(row.createdAt)}
+                    {formatDate(row.createdAt) +
+                      ' ' +
+                      formatTime(row.createdAt)}
                   </TableCell>
                 </TableRow>
               ))}
@@ -245,5 +255,6 @@ ModalFileViewer.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   files: PropTypes.array,
+  fileIndex: PropTypes.number,
   updateParentFileState: PropTypes.func,
 };

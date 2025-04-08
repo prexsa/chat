@@ -9,7 +9,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import { ModalImageViewer } from '../ModalImageViewer';
-import { ModalFileViewer } from '../ModalFileViewer';
+import { ModalFileViewer, formatDate, formatSize } from '../ModalFileViewer';
 
 const attachmentBox = {
   textAlign: 'center',
@@ -29,8 +29,9 @@ const textBtn = {
 
 const ChatAttachments = ({ selectedRoom }) => {
   const [showImages, setShowImages] = useState(false);
-  const [showFiles, setShowFiles] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
+  const [showFiles, setShowFiles] = useState(false);
+  const [fileIndex, setFileIndex] = useState(0);
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
   // console.log('selectedRoom: ', selectedRoom);
@@ -65,12 +66,18 @@ const ChatAttachments = ({ selectedRoom }) => {
     setImgIndex(imageId);
   };
 
+  const handleFileSelect = (index) => {
+    setShowFiles(true);
+    setFileIndex(index);
+  };
+
   const handleModalClose = () => {
     setShowImages(false);
     setShowFiles(false);
     setImgIndex(0);
   };
 
+  // filters out files that have been deleted
   const updateFileState = (fileId) => {
     setFiles((prevState) => prevState.filter((file) => file._id !== fileId));
   };
@@ -90,6 +97,7 @@ const ChatAttachments = ({ selectedRoom }) => {
         open={showFiles}
         onClose={handleModalClose}
         files={files}
+        fileIndex={fileIndex}
         updateParentFileState={updateFileState}
       />
       <Box>
@@ -109,7 +117,7 @@ const ChatAttachments = ({ selectedRoom }) => {
               cols={2}
               rowHeight={164}
             >
-              {images.map((file, index) => (
+              {images.slice(0, 3).map((file, index) => (
                 <ImageListItem
                   key={file._id}
                   onClick={() => handleImageSelect(index)}
@@ -143,9 +151,9 @@ const ChatAttachments = ({ selectedRoom }) => {
               </Typography>
             </Box>
             <List>
-              {files.map((item, i) => (
+              {files.slice(0, 3).map((file, index) => (
                 <ListItem
-                  key={i}
+                  key={index}
                   sx={{
                     '&:hover': {
                       cursor: 'pointer',
@@ -153,6 +161,7 @@ const ChatAttachments = ({ selectedRoom }) => {
                       backgroundColor: '#F8F8F8',
                     },
                   }}
+                  onClick={() => handleFileSelect(index)}
                 >
                   <ListItemAvatar>
                     <Avatar></Avatar>
@@ -165,7 +174,7 @@ const ChatAttachments = ({ selectedRoom }) => {
                         fontWeight: '600',
                       }}
                     >
-                      {item.name}
+                      {file.name}
                     </Box>
                     <Box
                       sx={{
@@ -175,8 +184,8 @@ const ChatAttachments = ({ selectedRoom }) => {
                         color: '#9e9e9e',
                       }}
                     >
-                      <Box>file size</Box>
-                      <Box>date</Box>
+                      <Box>{formatSize(file.size)}</Box>
+                      <Box>{formatDate(file.createdAt)}</Box>
                     </Box>
                   </Box>
                 </ListItem>
