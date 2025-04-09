@@ -93,7 +93,7 @@ export const ModalFileViewer = ({
     if (files.length > 0) {
       handleFileSelect(files[fileIndex]);
     }
-  }, [fileIndex]);
+  }, [fileIndex, files]);
 
   const handleOnModalClose = () => {
     handleClearComponentState();
