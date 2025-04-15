@@ -43,33 +43,64 @@ const StandardImageList = ({ images, selectImage, index }) => {
   );
 };
 
-export const ModalImageViewer = ({ open, onClose, images, imgIndex }) => {
+export const ModalImageViewer = ({
+  open,
+  onClose,
+  images,
+  imgIndex,
+  isMultiple = true,
+}) => {
   const [imageIndex, setImageIndex] = useState(imgIndex);
+  const [title, setTitle] = useState('');
 
   useEffect(() => {
     setImageIndex(imgIndex);
+    // console.log({ images, imgIndex });
   }, [imgIndex]);
+
+  useEffect(() => {
+    setTitle(images[imageIndex]?.name);
+  }, [images[imageIndex]?.name]);
 
   const handleImageSelect = (index) => {
     // console.log('imageIndex: ', index);
     setImageIndex(index);
   };
 
+  const handleOnClose = () => {
+    setImageIndex('');
+    setTitle('');
+    onClose();
+  };
+  // console.log({ images, imgIndex });
   return (
-    <Modal open={open} onClose={onClose} title={'Images'}>
+    <Modal
+      open={open}
+      onClose={handleOnClose}
+      title={title === '' ? 'Images' : title}
+    >
       <Box sx={{ display: 'flex' }}>
-        <Box sx={{ px: '5px', mx: '10px' }}>
-          <StandardImageList
-            images={images}
-            selectImage={handleImageSelect}
-            index={imageIndex}
-          />
-        </Box>
-        <NoTransitionCarousel
-          imageIndex={imageIndex}
-          images={images}
-          handleActiveState={handleImageSelect}
-        />
+        {isMultiple ? (
+          <>
+            <Box sx={{ px: '5px', mx: '10px' }}>
+              <StandardImageList
+                images={images}
+                selectImage={handleImageSelect}
+                index={imageIndex}
+              />
+            </Box>
+            <NoTransitionCarousel
+              imageIndex={imageIndex}
+              images={images}
+              handleActiveState={handleImageSelect}
+            />
+          </>
+        ) : (
+          <Box sx={{ margin: '0 auto' }}>
+            <img src={images[imageIndex]?.cloudinaryUrl} loading="lazy" />
+            <p>{title}</p>
+          </Box>
+        )}
       </Box>
     </Modal>
   );
@@ -80,6 +111,7 @@ ModalImageViewer.propTypes = {
   onClose: PropTypes.func,
   images: PropTypes.array,
   imgIndex: PropTypes.number,
+  isMultiple: PropTypes.bool,
 };
 
 StandardImageList.propTypes = {

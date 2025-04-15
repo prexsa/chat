@@ -78,6 +78,7 @@ export const ModalFileViewer = ({
   files,
   fileIndex,
   updateParentFileState,
+  // isMultiple = true,
 }) => {
   const { socket } = useContext(SocketContext);
   const { selectedRoom, setSelectedRoom } = useContext(FriendContext);
@@ -90,7 +91,7 @@ export const ModalFileViewer = ({
   }, [files]);
 
   useEffect(() => {
-    if (files.length > 0) {
+    if (files.length > 0 && fileIndex !== null) {
       handleFileSelect(files[fileIndex]);
     }
   }, [fileIndex, files]);
@@ -257,4 +258,5 @@ ModalFileViewer.propTypes = {
   files: PropTypes.array,
   fileIndex: PropTypes.number,
   updateParentFileState: PropTypes.func,
+  // isMultiple: PropTypes.bool,
 };

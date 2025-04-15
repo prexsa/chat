@@ -29,9 +29,9 @@ const textBtn = {
 
 const ChatAttachments = ({ selectedRoom }) => {
   const [showImages, setShowImages] = useState(false);
-  const [imgIndex, setImgIndex] = useState(0);
+  const [imgIndex, setImgIndex] = useState(null);
   const [showFiles, setShowFiles] = useState(false);
-  const [fileIndex, setFileIndex] = useState(0);
+  const [fileIndex, setFileIndex] = useState(null);
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
   // console.log('selectedRoom: ', selectedRoom);
@@ -87,19 +87,23 @@ const ChatAttachments = ({ selectedRoom }) => {
   const handleViewAllFiles = () => setShowFiles(true);
   return (
     <>
-      <ModalImageViewer
-        open={showImages}
-        onClose={handleModalClose}
-        images={images}
-        imgIndex={imgIndex}
-      />
-      <ModalFileViewer
-        open={showFiles}
-        onClose={handleModalClose}
-        files={files}
-        fileIndex={fileIndex}
-        updateParentFileState={updateFileState}
-      />
+      {showFiles && (
+        <ModalFileViewer
+          open={showFiles}
+          onClose={handleModalClose}
+          files={files}
+          fileIndex={fileIndex}
+          updateParentFileState={updateFileState}
+        />
+      )}
+      {showImages && (
+        <ModalImageViewer
+          open={showImages}
+          onClose={handleModalClose}
+          images={images}
+          imgIndex={imgIndex}
+        />
+      )}
       <Box>
         {images.length === 0 ? null : (
           <Box sx={attachmentBox}>

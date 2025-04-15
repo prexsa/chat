@@ -28,9 +28,6 @@ const GroupDetails = ({ isGroup, roomId }) => {
   // console.log('members: ', members);
 
   const handleOnSubmit = (data) => {
-    console.log('data: ', data);
-
-    return;
     const {
       search: { userId },
     } = data;

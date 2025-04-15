@@ -6,7 +6,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 
-const MessagePanel = ({ user, handleImageSelect }) => {
+const MessagePanel = ({ user, handleImageSelected, handleFileSelected }) => {
   const bottomRef = useRef(null);
   const { feedback } = useContext(MessagesContext);
   const { selectedRoom } = useContext(FriendContext);
@@ -37,6 +37,13 @@ const MessagePanel = ({ user, handleImageSelect }) => {
     }
   };
 
+  /*const handleFileSelected = (message) => {
+    const isAvailable = selectedRoom.uploadFiles.filter(
+      (file) => file._id === message._id,
+    );
+    console.log({ isAvailable });
+  };*/
+
   const renderMessageType = (message) => {
     // console.log(message);
     const isMedia = message?.isMedia;
@@ -65,7 +72,7 @@ const MessagePanel = ({ user, handleImageSelect }) => {
             <ArticleOutlinedIcon />
             <Box
               sx={{ ml: '5px', color: 'blue' }}
-              onClick={() => alert('view pdf')}
+              onClick={() => handleFileSelected(message.fileId)}
             >
               {message.name}
             </Box>
@@ -85,7 +92,7 @@ const MessagePanel = ({ user, handleImageSelect }) => {
             src={message.imageUrl}
             alt={message.name}
             style={{ maxWidth: '180px' }}
-            onClick={() => handleImageSelect(message.fileId)}
+            onClick={() => handleImageSelected(message.fileId)}
           />
         </Box>
       );
@@ -180,7 +187,8 @@ const MessagePanel = ({ user, handleImageSelect }) => {
 
 MessagePanel.propTypes = {
   user: PropTypes.object,
-  handleImageSelect: PropTypes.func,
+  handleImageSelected: PropTypes.func,
+  handleFileSelected: PropTypes.func,
 };
 
 export default MessagePanel;

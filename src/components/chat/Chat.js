@@ -1,11 +1,12 @@
+/* eslint-disable */
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useUserContext } from '../../context/userContext';
 import { FriendContext } from '../chat/Main';
 import { Box, Typography, Divider } from '@mui/material';
-import { ModalImageViewer } from '../ModalImageViewer';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-
+import { ModalImageViewer } from '../ModalImageViewer';
+import { ModalFileViewer } from '../ModalFileViewer';
 import Chatbox from '../Forms/Chatbox';
 import MessagePanel from './MessagePanel';
 import EmptyChat from './EmptyChat';
@@ -17,8 +18,10 @@ const Chat = ({ isGroup }) => {
   // const parRef = useRef(null);
   const { user } = useUserContext();
   const { selectedRoom } = useContext(FriendContext);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedImageId, setSelectedImageId] = useState('');
+  const [showImage, setShowImage] = useState(false);
+  const [showFile, setShowFile] = useState(false);
+  const [image, setImage] = useState([]);
+  const [file, setFile] = useState([]);
   /*
   useEffect(() => {
     if (gridRef.current !== null) {
@@ -48,18 +51,38 @@ const Chat = ({ isGroup }) => {
     return name;
   };
 
-  const handleImageSelect = (imageId) => {
-    setShowModal(true);
-    setSelectedImageId(imageId);
+  const filterFiles = (id) =>
+    selectedRoom.uploadFiles.filter((file) => file._id === id);
+
+  const handleImageSelect = (fileId) => {
+    const file = filterFiles(fileId);
+    // console.log({ file });
+    setShowImage(true);
+    setImage(file);
+  };
+
+  const handleFileSelect = (fileId) => {
+    const file = filterFiles(fileId);
+
+    setShowFile(true);
+    setFile(file);
   };
 
   return (
     <div className="message-panel-container">
       <ModalImageViewer
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        images={selectedRoom?.uploadFiles}
-        selectedImageId={selectedImageId}
+        open={showImage}
+        onClose={() => setShowImage(false)}
+        images={image}
+        imgIndex={0}
+        isMultiple={false}
+      />
+      <ModalFileViewer
+        open={showFile}
+        onClose={() => setShowFile(false)}
+        files={file}
+        fileIndex={0}
+        isMultiple={false}
       />
       <ChatHeader
         isGroup={isGroup}
@@ -80,8 +103,9 @@ const Chat = ({ isGroup }) => {
             user={user}
             selectedRoom={selectedRoom}
             isGroup={isGroup}
-            setShowModal={setShowModal}
-            handleImageSelect={handleImageSelect}
+            // setShowModal={setShowModal}
+            handleImageSelected={handleImageSelect}
+            handleFileSelected={handleFileSelect}
           />
           <Chatbox
             roomId={selectedRoom?.userId || selectedRoom?.roomId}
