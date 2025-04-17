@@ -510,3 +510,19 @@ main footer #submit:hover {
   display: flex;
   justify-content: space-between;
 }
+
+.speech-bubble-right,
+.speech-bubble-left {
+  position: relative;
+  padding: 10px 15px;
+}
+
+.speech-bubble-right {
+  border-radius: 0.4em 0.4em 0 0.4em;
+  background: #ecf2fe;
+}
+
+.speech-bubble-left {
+  border-radius: 0.4em 0.4em 0.4em 0;
+  background: #f5f8fb;
+}

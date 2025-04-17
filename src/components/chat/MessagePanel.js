@@ -37,13 +37,6 @@ const MessagePanel = ({ user, handleImageSelected, handleFileSelected }) => {
     }
   };
 
-  /*const handleFileSelected = (message) => {
-    const isAvailable = selectedRoom.uploadFiles.filter(
-      (file) => file._id === message._id,
-    );
-    console.log({ isAvailable });
-  };*/
-
   const renderMessageType = (message) => {
     // console.log(message);
     const isMedia = message?.isMedia;
@@ -51,7 +44,7 @@ const MessagePanel = ({ user, handleImageSelected, handleFileSelected }) => {
     // message is plain text
     if (!isMedia)
       return (
-        <Typography variant="subtitles1" sx={{ color: '#616161' }}>
+        <Typography variant="subtitles1" sx={{ color: '#212f3d' }}>
           {message.message}
         </Typography>
       );
@@ -77,12 +70,6 @@ const MessagePanel = ({ user, handleImageSelected, handleFileSelected }) => {
               {message.name}
             </Box>
           </Box>
-          {/*<img
-          src={message.imageUrl}
-          alt={message.name}
-          style={{ maxWidth: '180px' }}
-          onClick={() => handleImageSelect(message.fileId)}
-        />*/}
         </Box>
       );
     } else {
@@ -102,23 +89,36 @@ const MessagePanel = ({ user, handleImageSelected, handleFileSelected }) => {
   const renderMessage = (message, displayName, isUser) => {
     return (
       <Box>
+        <Box className={isUser ? 'speech-bubble-right' : 'speech-bubble-left'}>
+          {renderMessageType(message)}
+        </Box>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'baseline',
             justifyContent: `${isUser ? 'flex-end' : 'flex-start'}`,
-            columnGap: '5px',
+            columnGap: '15px',
           }}
         >
-          <Typography variant="h6" sx={{ color: '#2196f3', fontSize: '1rem' }}>
+          <Typography
+            variant="h6"
+            sx={{ color: '#1b2631', fontSize: '0.9rem', fontWeight: 600 }}
+          >
             {displayName}
           </Typography>
-          <Typography variant="body1" sx={{ fontSize: 14, color: '#9e9e9e' }}>
-            at {convertToHumanReadable(message.date)}
+          <Typography
+            variant="body1"
+            sx={{
+              fontSize: '0.8rem',
+              fontWeight: 500,
+              color: '#839192',
+              textAlign: isUser ? 'right' : 'left',
+            }}
+          >
+            {convertToHumanReadable(message.date)}
           </Typography>
         </Box>
-        {renderMessageType(message)}
       </Box>
     );
   };
@@ -131,17 +131,17 @@ const MessagePanel = ({ user, handleImageSelected, handleFileSelected }) => {
       <ListItem
         sx={{
           // display: 'flex',
-          alignItems: 'flex-start',
+          alignItems: 'flex-end',
           justifyContent: 'flex-end',
         }}
       >
-        {renderMessage(message, 'You', isUser)}
+        {renderMessage(message, '', isUser)}
         <ListItemAvatar sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Avatar alt="User" src="/static/images/avatar/2.jpg" />
         </ListItemAvatar>
       </ListItem>
     ) : (
-      <ListItem sx={{ alignItems: 'flex-start' }}>
+      <ListItem sx={{ alignItems: 'flex-end' }}>
         <ListItemAvatar>
           <Avatar alt={username} src="/static/images/avatar/1.jpg" />
         </ListItemAvatar>
@@ -192,3 +192,5 @@ MessagePanel.propTypes = {
 };
 
 export default MessagePanel;
+
+// https://dribbble.com/shots/25125233-Message-Education-Management-System-LMS
