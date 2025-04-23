@@ -1,17 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-/*import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';*/
 import Snackbar from '@mui/material/Snackbar';
 import Slide from '@mui/material/Slide';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import Alert from '@mui/material/Alert';
+/*
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+*/
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;
 }
 
-export default function CustomSnackbar({ open, handleClose }) {
+/**
+ * severity props: 'success', 'info', 'warning', 'error'
+ * colors can be overridened with 'color' attribute
+ * variant props: 'filled', 'outlined'
+ */
+
+export default function CustomSnackbar({
+  open,
+  handleClose,
+  message,
+  severity = 'success',
+  variant = 'filled',
+}) {
   const action = (
     <React.Fragment>
       <IconButton
@@ -24,6 +39,7 @@ export default function CustomSnackbar({ open, handleClose }) {
       </IconButton>
     </React.Fragment>
   );
+
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -31,14 +47,25 @@ export default function CustomSnackbar({ open, handleClose }) {
       TransitionComponent={SlideTransition}
       autoHideDuration={5000}
       onClose={handleClose}
-      message="You have a new request"
       key={'topcenter'}
       action={action}
-    />
+    >
+      <Alert
+        onClose={handleClose}
+        severity={severity}
+        variant={variant}
+        sx={{ width: '100%' }}
+      >
+        {message}
+      </Alert>
+    </Snackbar>
   );
 }
 
 CustomSnackbar.propTypes = {
   open: PropTypes.bool,
   handleClose: PropTypes.func,
+  message: PropTypes.string,
+  severity: PropTypes.string,
+  variant: PropTypes.string,
 };

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useUserContext } from '../../context/userContext';
@@ -12,27 +11,16 @@ import MessagePanel from './MessagePanel';
 import EmptyChat from './EmptyChat';
 import ChatHeader from './ChatHeader';
 import ChatAttachments from './ChatAttachments';
+import CustomSnackbar from './CustomSnackbar';
 
 const Chat = ({ isGroup }) => {
-  // const gridRef = useRef(null);
-  // const parRef = useRef(null);
   const { user } = useUserContext();
   const { selectedRoom } = useContext(FriendContext);
   const [showImage, setShowImage] = useState(false);
   const [showFile, setShowFile] = useState(false);
   const [image, setImage] = useState([]);
   const [file, setFile] = useState([]);
-  /*
-  useEffect(() => {
-    if (gridRef.current !== null) {
-      console.log('gridRef: ', gridRef.current);
-    }
-
-    if (parRef.current !== null) {
-      console.log('parRef: ', parRef.current.clientHeight);
-    }
-  }, [gridRef, parRef]);
-  */
+  const [openSnackBar, setOpenSnackBar] = useState(false);
 
   if (Object.keys(selectedRoom).length === 0 || selectedRoom.roomId === '') {
     return <EmptyChat />;
@@ -63,13 +51,28 @@ const Chat = ({ isGroup }) => {
 
   const handleFileSelect = (fileId) => {
     const file = filterFiles(fileId);
-
-    setShowFile(true);
-    setFile(file);
+    // if file doesn't exit alert
+    if (file.length === 0) {
+      setOpenSnackBar(true);
+      // return;
+    } else {
+      setShowFile(true);
+      setFile(file);
+    }
   };
+
+  const handleCloseSnackbar = () => setOpenSnackBar(false);
 
   return (
     <div className="message-panel-container">
+      <Box sx={{ width: 500 }}>
+        <CustomSnackbar
+          open={openSnackBar}
+          handleClose={handleCloseSnackbar}
+          message="File has been removed"
+          severity={'error'}
+        />
+      </Box>
       <ModalImageViewer
         open={showImage}
         onClose={() => setShowImage(false)}
@@ -103,7 +106,6 @@ const Chat = ({ isGroup }) => {
             user={user}
             selectedRoom={selectedRoom}
             isGroup={isGroup}
-            // setShowModal={setShowModal}
             handleImageSelected={handleImageSelect}
             handleFileSelected={handleFileSelect}
           />

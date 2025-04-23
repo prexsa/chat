@@ -9,7 +9,6 @@ import Badge from '@mui/material/Badge';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import CustomSnackbar from './CustomSnackbar';
-// import NotificationAdd from '@mui/icons-material/NotificationAdd';
 
 const PendingRequests = () => {
   const { pendingRequests, setPendingRequests } = useContext(FriendContext);
@@ -63,7 +62,7 @@ const PendingRequests = () => {
     }
   }, [pendingRequests, displayPendingBtn, closeModal]);
 
-  const handleSnackBarClose = () => setOpenSnackbar(false);
+  const handleCloseSnackbar = () => setOpenSnackbar(false);
 
   // console.log('pending: ', pendingRequests);
   return (
@@ -80,7 +79,13 @@ const PendingRequests = () => {
           />
         </Box>
       ) : null}
-      <CustomSnackbar open={openSnackBar} handleClose={handleSnackBarClose} />
+      <CustomSnackbar
+        open={openSnackBar}
+        handleClose={handleCloseSnackbar}
+        message="You have a new request"
+        severity={'info'}
+        icon="add-person"
+      />
       <Dialog open={show} onClose={handleClose}>
         <DialogTitle sx={{ textTransform: 'capitalize' }}>
           Are you ready to connect?
