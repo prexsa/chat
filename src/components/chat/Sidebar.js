@@ -1,26 +1,14 @@
-/* eslint-disable */
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { Box, Button, Menu, MenuItem, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 // import CreateGroup from './CreateGroup';
-import Logout from '../Forms/Logout';
 import ChannelList from './ChannelList';
-import { useUserContext } from '../../context/userContext';
+// import { useUserContext } from '../../context/userContext';
 
-const Sidebar = () => {
-  const { user } = useUserContext();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+const Sidebar = ({ user }) => {
+  // const { user } = useUserContext();
 
   return (
     <Box
@@ -59,23 +47,10 @@ const Sidebar = () => {
           aria-controls={open ? 'basic-menu' : undefined}
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
-          onClick={handleClick}
+          // onClick={handleClick}
         >
           <MoreVertIcon sx={{ marginLeft: 'auto' }} />
         </Button>
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          MenuListProps={{
-            'aria-labelledby': 'basic-button',
-          }}
-        >
-          <MenuItem>
-            <Logout handleCloseMenu={handleClose} />
-          </MenuItem>
-        </Menu>
       </Box>
       <ChannelList user={user} />
     </Box>
@@ -83,12 +58,7 @@ const Sidebar = () => {
 };
 
 Sidebar.propTypes = {
-  showDrawer: PropTypes.bool,
-  setShowDrawer: PropTypes.func,
+  user: PropTypes.object,
 };
 
 export default Sidebar;
-
-// https://bashooka.com/inspiration/chat-ui-designs/
-// https://dribbble.com/shots/3407020-Messenger-Redesign/attachments/744131?mode=media
-// https://www.google.com/search?sca_esv=c8404836621fa050&rlz=1C1CHBF_enUS1056US1056&sxsrf=ACQVn08rRo3-Swk-6_liY9VZhYTFQ8YMmA:1706737299588&q=chat+desktop+designs+register+page&tbm=isch&source=lnms&sa=X&ved=2ahUKEwir4N3zy4iEAxUUMEQIHYAiBPcQ0pQJegQIDBAB&biw=1974&bih=1331&dpr=1#imgrc=rEGh0ln3B7hS3M&imgdii=9mUUjVIE-RBI_M

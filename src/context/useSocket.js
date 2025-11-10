@@ -164,7 +164,8 @@ const useSocket = (
             room.messages.push({ date, message, userId });
             room.hasNewMessage = true;
             const unreadCount =
-              room.hasOwn('unreadCount') && room.unreadCount !== undefined
+              Object.prototype.hasOwnProperty.call(room, 'unreadCount') &&
+              room.unreadCount !== undefined
                 ? room.unreadCount + 1
                 : 1;
             room.unreadCount = unreadCount;

@@ -1,10 +1,12 @@
-import React from 'react';
+/* eslint-disable */
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Snackbar from '@mui/material/Snackbar';
 import Slide from '@mui/material/Slide';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Alert from '@mui/material/Alert';
+
 /*
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
@@ -23,10 +25,23 @@ function SlideTransition(props) {
 export default function CustomSnackbar({
   open,
   handleClose,
+  // handleReopen,
   message,
   severity = 'success',
   variant = 'filled',
 }) {
+  //const [isOpen, setIsOpen] = useState(open);
+
+  /*
+  useEffect(() => {
+    // check state of open prop, if true
+    console.log({ open });
+    if (open) {
+      setIsOpen(false);
+    }
+  }, [open]);
+  */
+
   const action = (
     <React.Fragment>
       <IconButton
@@ -65,6 +80,7 @@ export default function CustomSnackbar({
 CustomSnackbar.propTypes = {
   open: PropTypes.bool,
   handleClose: PropTypes.func,
+  handleReopen: PropTypes.func,
   message: PropTypes.string,
   severity: PropTypes.string,
   variant: PropTypes.string,

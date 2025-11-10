@@ -1,4 +1,5 @@
-import React, { useContext, useState } from 'react';
+/* eslint-disable */
+import React, { Fragment, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FriendContext } from './Main';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -9,15 +10,18 @@ import {
   Typography,
   List,
   ListItemButton,
-  ListItemText,
+  // ListItemText,
   ListItemAvatar,
   Avatar,
   Tabs,
   Tab,
+  Divider,
 } from '@mui/material';
+/*
 import AddFriend from '../AddFriend';
 import PendingRequests from './PendingRequests';
 import CreateGroup from './CreateGroup';
+*/
 import SearchChat from './SearchChat';
 
 function ChannelList({ user }) {
@@ -75,12 +79,10 @@ function ChannelList({ user }) {
   // console.log('roomList; ', list);
   return (
     <div className="channel-list-cntr">
-      <AddFriend />
       <Button className="btn btn-link" onClick={clearRoomSelected}>
         Clear Message Panel
       </Button>
-      <PendingRequests />
-      <CreateGroup />
+
       {roomList.length > 0 && (
         <SearchChat roomList={roomList} setList={setList} user={user} />
       )}
@@ -96,7 +98,15 @@ function ChannelList({ user }) {
         </Tabs>
       </Box>
 
-      <List dense={false} sx={{ mt: 2 }}>
+      <List
+        dense={false}
+        sx={{
+          mt: 2,
+          width: '100%',
+
+          bgcolor: 'background.paper',
+        }}
+      >
         {list &&
           list.map((room) => {
             // console.log('room: ', room);
@@ -105,95 +115,124 @@ function ChannelList({ user }) {
               room.roomId === selectedRoom.roomId ? 0 : room.unreadCount;
 
             return (
-              <ListItemButton
-                key={room.roomId}
-                onClick={() => handleChannelSelect(room)}
-                sx={{
-                  alignItems: 'center',
-                  padding: '18px 10px',
-                  // textWrap: 'nowrap',
-                  color: '#2c333d',
-                  '&.Mui-selected': {
-                    backgroundColor: '#f8fbfc',
-                    boxShadow: '1px 1px 4px -2px rgba(0,0,0,0.75);',
-                    borderRight: '3px solid #2c84f7',
-                  },
-                  '&:hover': {
-                    cursor: 'pointer',
-                    backgroundColor: '#dcdcdc',
-                    boxShadow: '2px 6px 15px -2px rgba(0,0,0,0.75);',
-                  },
-                  /*'&:active': {
-                    backgroundColor: 'fbfbf9',
-                    boxShadow: '2px 6px 15px -2px rgba(0,0,0,0.75);',
-                  },*/
-                }}
-                selected={isActive === room.roomId}
-              >
-                <ListItemAvatar>
-                  <Avatar>
-                    <AccountCircleIcon />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  sx={{ paddingRight: '10px' }}
-                  primary={
-                    <Typography
-                      sx={{
-                        textOverflow: 'clip',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {room.isGroup
-                        ? room.name
-                        : displayRoommatesName(room.mates)}
-                    </Typography>
-                  }
-                  secondary={
-                    <Typography
-                      variant="subtitle2"
-                      sx={{
-                        textOverflow: 'clip',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {room.messages.length > 0
-                        ? room.messages[room.messages.length - 1].message
-                        : null}
-                    </Typography>
-                  }
-                />
-                <Box
+              <Fragment key={room.roomId}>
+                <ListItemButton
+                  // key={room.roomId}
+                  onClick={() => handleChannelSelect(room)}
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-end',
-                    // padding: '5px',
-                    // marginTop: '5px',
+                    alignItems: 'center',
+                    padding: '18px 10px',
+                    // textWrap: 'nowrap',
+                    color: '#2c333d',
+                    '&.Mui-selected': {
+                      backgroundColor: '#f6f6f6',
+                      boxShadow: '1px 1px 4px -2px rgba(0,0,0,0.75);',
+                    },
+                    '&:hover': {
+                      cursor: 'pointer',
+                      backgroundColor: '#dcdcdc',
+                      boxShadow: '2px 6px 15px -2px rgba(0,0,0,0.75);',
+                    },
                   }}
+                  selected={isActive === room.roomId}
                 >
-                  <Typography
-                    variant="caption"
-                    sx={{ textWrap: 'nowrap', margin: '5px 0' }}
+                  <ListItemAvatar>
+                    <Avatar>
+                      <AccountCircleIcon />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <Box
+                    className="channel-list-message-container"
+                    sx={{
+                      display: 'flex',
+                      width: '100%',
+                      justifyContent: 'space-between',
+                    }}
                   >
-                    {room.messages.length > 0
-                      ? convertToHumanReadable(
-                          room.messages[room.messages.length - 1].date,
-                        )
-                      : null}
-                  </Typography>
-                  <Typography variant="caption">
-                    {room.unreadCount > 0 ? (
-                      room.unreadCount
-                    ) : (
-                      <CheckIcon sx={{ color: '#0d6efd' }} fontSize="small" />
-                    )}
-                  </Typography>
-                </Box>
-              </ListItemButton>
+                    <Box className="left-side-div name-and-latest-message">
+                      <Typography
+                        sx={{
+                          textOverflow: 'clip',
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          color: 'text.primary',
+                          display: 'inline',
+                          fontWeight: 'bold',
+                          letterSpacing: '0.4px',
+                        }}
+                      >
+                        {room.isGroup
+                          ? room.name
+                          : displayRoommatesName(room.mates)}
+                      </Typography>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          textOverflow: 'clip',
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {room.messages.length > 0 ? (
+                          room.messages[room.messages.length - 1].message
+                        ) : (
+                          <Box
+                            sx={{
+                              visibility: 'hidden',
+                              color: '#8C8C8C',
+                              fontWeight: 500,
+                              fontSize: 14,
+                            }}
+                          >
+                            Empty
+                          </Box>
+                        )}
+                      </Typography>
+                    </Box>
+
+                    <Box
+                      className="right-side-div"
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-end',
+                        // width: '30%',
+                      }}
+                    >
+                      <Typography
+                        className="time-container"
+                        variant="caption"
+                        sx={{
+                          textWrap: 'nowrap',
+                          fontSize: 14,
+                          fontWeight: 500,
+                          color: '#8C8C8C',
+                        }}
+                      >
+                        {room.messages.length > 0
+                          ? convertToHumanReadable(
+                              room.messages[room.messages.length - 1].date,
+                            )
+                          : null}
+                      </Typography>
+                      <Typography
+                        className="message-indicator"
+                        variant="caption"
+                      >
+                        {room.unreadCount > 0 ? (
+                          room.unreadCount
+                        ) : (
+                          <CheckIcon
+                            sx={{ color: '#0d6efd' }}
+                            fontSize="small"
+                          />
+                        )}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </ListItemButton>
+                <Divider component="li" />
+              </Fragment>
             );
           })}
       </List>
@@ -207,4 +246,4 @@ ChannelList.propTypes = {
 
 export default ChannelList;
 
-// https://www.uplabs.com/posts/chat-ui-design-0b930711-4cfd-4ab4-b686-6e7785624b16
+// https://dribbble.com/shots/22135190-Floakly-Messaging

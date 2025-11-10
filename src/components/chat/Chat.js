@@ -7,11 +7,13 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { ModalImageViewer } from '../ModalImageViewer';
 import { ModalFileViewer } from '../ModalFileViewer';
 import Chatbox from '../Forms/Chatbox';
-import MessagePanel from './MessagePanel';
+import Messages from './Messages';
 import EmptyChat from './EmptyChat';
 import ChatHeader from './ChatHeader';
 import ChatAttachments from './ChatAttachments';
 import CustomSnackbar from './CustomSnackbar';
+// import ChannelList from './ChannelList';
+import Sidebar from './Sidebar';
 
 const Chat = ({ isGroup }) => {
   const { user } = useUserContext();
@@ -22,9 +24,6 @@ const Chat = ({ isGroup }) => {
   const [file, setFile] = useState([]);
   const [openSnackBar, setOpenSnackBar] = useState(false);
 
-  if (Object.keys(selectedRoom).length === 0 || selectedRoom.roomId === '') {
-    return <EmptyChat />;
-  }
   // console.log('selectedRoom: ', selectedRoom);
   const mapNameToUserId = (roommates) => {
     // console.log('roommates: ', roommates);
@@ -51,7 +50,8 @@ const Chat = ({ isGroup }) => {
 
   const handleFileSelect = (fileId) => {
     const file = filterFiles(fileId);
-    // if file doesn't exit alert
+    // if file doesn't exist alert
+
     if (file.length === 0) {
       setOpenSnackBar(true);
       // return;
@@ -87,47 +87,66 @@ const Chat = ({ isGroup }) => {
         fileIndex={0}
         isMultiple={false}
       />
-      <ChatHeader
-        isGroup={isGroup}
-        roomId={selectedRoom.roomId}
-        roomName={getRoomName()}
-      />
-      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+      <Box sx={{ display: 'flex' }}>
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '97vh',
-            width: '100%',
-            borderRight: '1px solid #eaeef2',
+            display: { xs: 'none', sm: 'block' },
+            // width: `${drawerWidth / 16}rem`,
+            maxWidth: 360,
           }}
         >
-          <MessagePanel
-            user={user}
-            selectedRoom={selectedRoom}
-            isGroup={isGroup}
-            handleImageSelected={handleImageSelect}
-            handleFileSelected={handleFileSelect}
-          />
-          <Chatbox
-            roomId={selectedRoom?.userId || selectedRoom?.roomId}
-            from={user.userId}
-            isGroup={selectedRoom?.isGroup}
-          />
+          <Sidebar user={user} />
         </Box>
-        <Box sx={{ width: 500 }}>
-          <Box sx={{ my: 5, flexDirection: 'column' }}>
-            <AccountCircleIcon sx={{ fontSize: 100 }} />
-            <Typography
-              variant="subtitle2"
-              sx={{ fontSize: '18px', mt: '10px' }}
-            >
-              {getRoomName()}
-            </Typography>
+        {Object.keys(selectedRoom).length === 0 ||
+        selectedRoom.roomId === '' ? (
+          <EmptyChat />
+        ) : (
+          <Box>
+            <ChatHeader
+              isGroup={isGroup}
+              roomId={selectedRoom.roomId}
+              roomName={getRoomName()}
+            />
+
+            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '97vh',
+                  width: '100%',
+                  borderRight: '1px solid #eaeef2',
+                }}
+              >
+                <Messages
+                  user={user}
+                  selectedRoom={selectedRoom}
+                  isGroup={isGroup}
+                  handleImageSelected={handleImageSelect}
+                  handleFileSelected={handleFileSelect}
+                />
+                <Chatbox
+                  roomId={selectedRoom?.userId || selectedRoom?.roomId}
+                  from={user.userId}
+                  isGroup={selectedRoom?.isGroup}
+                />
+              </Box>
+              <Box sx={{ width: 500 }}>
+                <Box sx={{ my: 5, flexDirection: 'column' }}>
+                  <AccountCircleIcon sx={{ fontSize: 100 }} />
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontSize: '18px', mt: '10px' }}
+                  >
+                    {getRoomName()}
+                  </Typography>
+                </Box>
+                <Divider />
+                <ChatAttachments selectedRoom={selectedRoom} />
+              </Box>
+            </Box>
           </Box>
-          <Divider />
-          <ChatAttachments selectedRoom={selectedRoom} />
-        </Box>
+        )}
       </Box>
     </div>
   );

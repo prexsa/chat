@@ -1,7 +1,19 @@
+/* eslint-disable */
 import React, { createContext, useState, useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
+import List from '@mui/material/List';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined';
+import MessageOutlinedIcon from '@mui/icons-material/MessageOutlined';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import Chat from './Chat';
 import Sidebar from './Sidebar';
+import AddFriend from '../AddFriend';
+import PendingRequests from './PendingRequests';
+import CreateGroup from './CreateGroup';
 import './Chat.css';
 import socketConn from '../../socket';
 import useSocket from '../../context/useSocket';
@@ -9,11 +21,21 @@ export const FriendContext = createContext();
 export const MessagesContext = createContext();
 export const SocketContext = createContext();
 
+import Logout from '../Forms/Logout';
+
+const Switch = ({ value, children }) => {
+  const matchingChild = children.find((child) => child.props.when === value);
+  return matchingChild || null;
+};
+
+const Case = ({ children }) => children;
+const Default = ({ children }) => children;
+
 const Main = () => {
   const draggerRef = useRef();
   const isResized = useRef(false);
-  const [minWidth, maxWidth, defaultWidth] = [200, 500, 350];
-  const [drawerWidth, setDrawerWidth] = useState(defaultWidth);
+  // const [minWidth, maxWidth, defaultWidth] = [200, 500, 350];
+  // const [drawerWidth, setDrawerWidth] = useState(defaultWidth);
   const [roomList, setRoomList] = useState([]);
   const [messages, setMessages] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState({
@@ -31,11 +53,25 @@ const Main = () => {
   // const [editProfile, setEditProfile] = useState(false);
   const [searchOptions, setSearchOptions] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
+  const [activeListItem, setActiveListItem] = useState('dashboard');
 
+  // const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClose = () => {
+    // setAnchorEl(null);
+  };
+
+  // const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    // setAnchorEl(event.currentTarget);
+  };
   // const user = JSON.parse(localStorage.getItem('user'))
   const accessToken = localStorage.getItem('accessToken');
 
   const [socket, setSocket] = useState(() => socketConn(accessToken));
+
+  const handleOnClick = (name) => setActiveListItem(name);
 
   useEffect(() => {
     // console.log('roomList: ', roomList)
@@ -59,6 +95,7 @@ const Main = () => {
   );
 
   // listener to resize sidebar
+  /*
   useEffect(() => {
     window.addEventListener('mousemove', (e) => {
       // console.log(e.movementX);
@@ -77,9 +114,11 @@ const Main = () => {
       isResized.current = false;
     });
   }, []);
+  */
 
   // const editToggleHandler = () => setEditProfile(!editProfile);
   // const drawerWidth = 300;
+
   return (
     <FriendContext.Provider
       value={{
@@ -96,39 +135,112 @@ const Main = () => {
     >
       <SocketContext.Provider value={{ socket }}>
         <MessagesContext.Provider value={{ messages, setMessages, feedback }}>
-          <Box sx={{ display: 'flex' }}>
+          <Box
+            style={{
+              padding: '15px',
+              backgroundColor: '#fcfbfc',
+              height: '100%',
+              // maxWidth: 360,
+              width: 300,
+              textAlign: 'left',
+              borderRight: '2px solid #dedede',
+            }}
+          >
             <Box
+              component={'section'}
+              sx={{ borderBottom: '2px solid #dedede', padding: '10px 0' }}
+            >
+              <h2>Chat App</h2>
+            </Box>
+            <Box
+              component={'section'}
+              sx={{ borderBottom: '2px solid #dedede', padding: 2 }}
+            >
+              <h5>Menu</h5>
+              <List component="nav" aria-labelledby="sidebar-nav" dense="true">
+                <ListItemButton onClick={() => handleOnClick('people')}>
+                  <ListItemIcon>
+                    <PeopleAltOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="People" />
+                </ListItemButton>
+                <ListItemButton onClick={() => handleOnClick('groups')}>
+                  <ListItemIcon>
+                    <GroupAddOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Groups" />
+                </ListItemButton>
+                <ListItemButton onClick={() => handleOnClick('messages')}>
+                  <ListItemIcon>
+                    <MessageOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Messages" />
+                </ListItemButton>
+              </List>
+            </Box>
+            <Box
+              component={'section'}
               sx={{
-                display: { xs: 'none', sm: 'block' },
-                width: `${drawerWidth / 16}rem`,
+                // borderBottom: '2px solid #dedede',
+                padding: 2,
               }}
             >
-              <Sidebar showDrawer={showDrawer} setShowDrawer={setShowDrawer} />
+              <List component="nav" aria-labelledby="sidebar-nav" dense="true">
+                <ListItemButton onClick={() => handleOnClick('profile')}>
+                  <ListItemIcon>
+                    <AccountCircleOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="My Profile" />
+                </ListItemButton>
+              </List>
             </Box>
-            {/*  A div used as a right-side border to resize the sidebar */}
             <Box
-              ref={draggerRef}
-              onMouseDown={() => (isResized.current = true)}
-              sx={{
-                width: '5px',
-                height: '100%',
-                backgroundColor: '#ededed',
-                '&:hover': {
-                  cursor: 'ew-resize',
-                  backgroundColor: '#1976d2',
-                },
+              id="basic-menu"
+              // anchorEl={anchorEl}
+              // open={open}
+              // onClose={handleClose}
+              /*
+              MenuListProps={{
+                'aria-labelledby': 'basic-button',
               }}
-            ></Box>
+              */
+            >
+              <Logout handleCloseMenu={handleClose} />
+            </Box>
+          </Box>
+
+          <Box sx={{ display: 'flex', width: '100%' }}>
             <Box
               component="main"
               sx={{
                 flexGrow: 1,
                 paddingLeft: '10px',
                 height: '100vh',
-                width: { sm: `calc(100% - ${drawerWidth}px)` },
+                // width: { sm: `calc(100% - ${drawerWidth}px)` },
               }}
             >
-              <Chat isGroup={selectedRoom.isGroup} />
+              <Switch value={activeListItem}>
+                <Case when="people">
+                  <div>
+                    <AddFriend />
+                    <PendingRequests />
+                  </div>
+                </Case>
+                <Case when="groups">
+                  <CreateGroup />
+                </Case>
+                <Case when="messages">
+                  <Chat isGroup={selectedRoom.isGroup} />
+                </Case>
+                <Case when="profile">
+                  <div>Profile</div>
+                </Case>
+
+                <Default>
+                  <div>dashboard</div>
+                </Default>
+              </Switch>
+
               {/*{true ?  : <Video />}*/}
             </Box>
           </Box>
@@ -139,50 +251,3 @@ const Main = () => {
 };
 
 export default Main;
-
-{
-  /*<Box
-    component="nav"
-    sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-    aria-label="mailbox folders"
-  >
-  </Box>*/
-}
-{
-  /* The implementation can be swapped with js to avoid SEO duplication of links. */
-}
-
-{
-  /*
-    <Drawer
-      onMouseDown={() => (isResized.current = true)}
-      variant="permanent"
-      sx={{
-        display: { xs: 'none', sm: 'block' },
-        '& .MuiDrawer-paper': {
-          boxSizing: 'border-box',
-          // width: '300px',
-          width: `${drawerWidth / 16}rem`,
-          borderRight: '5px solid blue',
-          '&:hover': {
-            cursor: 'ew-resize',
-          },
-        },
-      }}
-      open
-    >
-      <Box
-        ref={draggerRef}
-        // onMouseDown={() => (isResized.current = true)}
-      >
-        <Sidebar
-          showDrawer={showDrawer}
-          setShowDrawer={setShowDrawer}
-        />
-      </Box>
-    </Drawer>
-    */
-}
-// https://codesandbox.io/p/sandbox/zen-silence-njx9xx?file=%2Fsrc%2FDemo.js%3A33%2C25
-// https://stackademic.com/blog/building-a-resizable-sidebar-component-with-persisting-width-using-react-tailwindcss
-// https://stackblitz.com/edit/react-2h1g6x?file=ResponsiveDrawer.js

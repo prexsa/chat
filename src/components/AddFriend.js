@@ -4,11 +4,6 @@ import CustomTabPanel from './chat/CustomTabPanel';
 import { Modal } from './Modal';
 import AddByNameForm from './Forms/AddByName.RFH';
 import AddByEmailForm from './Forms/AddByEmail.RFH';
-// import PropTypes from 'prop-types';
-// import AddIcon from '@mui/icons-material/Add';
-// import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-// import PulsatingDiv from './animation/PulsatingDiv';
-// import SlideLeft from './animation/SlideLeft';
 
 const AddFriendForm = () => {
   const [show, setShow] = useState(false);

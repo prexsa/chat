@@ -1,9 +1,10 @@
 .app {
   height: 100%;
   display: flex;
-  flex-flow: column wrap;
+  /*flex-flow: column wrap;*/
   text-align: center;
   background-color: #efefef;
+  font-family: Montserrat, sans-serif;
 }
 .pnf-container {
   margin: auto;
