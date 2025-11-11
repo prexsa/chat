@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { createContext, useState, useEffect, useRef } from 'react';
-import { Box } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -53,7 +53,7 @@ const Main = () => {
   // const [editProfile, setEditProfile] = useState(false);
   const [searchOptions, setSearchOptions] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
-  const [activeListItem, setActiveListItem] = useState('dashboard');
+  const [activeListItem, setActiveListItem] = useState('contacts');
 
   // const [anchorEl, setAnchorEl] = useState(null);
 
@@ -158,11 +158,11 @@ const Main = () => {
             >
               <h5>Menu</h5>
               <List component="nav" aria-labelledby="sidebar-nav" dense="true">
-                <ListItemButton onClick={() => handleOnClick('people')}>
+                <ListItemButton onClick={() => handleOnClick('add')}>
                   <ListItemIcon>
                     <PeopleAltOutlinedIcon />
                   </ListItemIcon>
-                  <ListItemText primary="People" />
+                  <ListItemText primary="Add" />
                 </ListItemButton>
                 <ListItemButton onClick={() => handleOnClick('groups')}>
                   <ListItemIcon>
@@ -194,17 +194,7 @@ const Main = () => {
                 </ListItemButton>
               </List>
             </Box>
-            <Box
-              id="basic-menu"
-              // anchorEl={anchorEl}
-              // open={open}
-              // onClose={handleClose}
-              /*
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-              */
-            >
+            <Box id="basic-menu">
               <Logout handleCloseMenu={handleClose} />
             </Box>
           </Box>
@@ -220,11 +210,22 @@ const Main = () => {
               }}
             >
               <Switch value={activeListItem}>
-                <Case when="people">
-                  <div>
-                    <AddFriend />
-                    <PendingRequests />
-                  </div>
+                <Case when="add">
+                  <Box sx={{ padding: 5 }}>
+                    <h2>Add</h2>
+                    <Box sx={{ textAlign: 'left' }}>
+                      <Box sx={{ margin: '25px 0' }}>
+                        <h4>Requests</h4>
+                        <PendingRequests />
+                      </Box>
+                      <Box sx={{ margin: '25px 0' }}>
+                        <h4>Add to contacts</h4>
+                        <AddFriend />
+                      </Box>
+                      <Divider />
+                      <Box>List of contacts</Box>
+                    </Box>
+                  </Box>
                 </Case>
                 <Case when="groups">
                   <CreateGroup />
