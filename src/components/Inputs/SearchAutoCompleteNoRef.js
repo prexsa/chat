@@ -5,7 +5,7 @@ import { SocketContext, FriendContext } from '../chat/Main';
 import { Autocomplete, TextField } from '@mui/material';
 // import Socket from '../../services/Socket';
 
-const SearchAutoCompleteNoRef = ({ name, label, isMultiple }) => {
+const SearchAutoCompleteNoRef = ({ name, label, isMultiple, disabled = false }) => {
   const { socket } = useContext(SocketContext);
   // selectedRoom, setSearchOptions
   const { selectedRoom, searchOptions, setSearchOptions } =
@@ -33,7 +33,7 @@ const SearchAutoCompleteNoRef = ({ name, label, isMultiple }) => {
               (mate) => mate.userId === n.userId && mate.label === n.fullname,
             ),
         );
-        // console.log('filterOutExistedMates: ', filterOutExistedMates);
+        console.log('filterOutExistedMates: ', filterOutExistedMates);
         setSearchOptions(filterOutExistedMates);
       });
     }
@@ -48,6 +48,7 @@ const SearchAutoCompleteNoRef = ({ name, label, isMultiple }) => {
       rules={{ required: 'Field is empty' }}
       control={control}
       name={name}
+      disabled={disabled}
       // defaultValue=""
       render={({ field, fieldState }) => (
         <Autocomplete
@@ -69,15 +70,7 @@ const SearchAutoCompleteNoRef = ({ name, label, isMultiple }) => {
             }
             setInputValue(newInputValue);
           }}
-          // format is [{ label: '', id: ''}]
           options={searchOptions}
-          /*
-          renderOption={(option, index) => {
-            console.log('option: ', option);
-            return <span key={option.userId}>{option.label}</span>;
-          }}
-          */
-          // getOptionLabel={(item) => (item.label ? item.label : '')}
           isOptionEqualToValue={(option, value) =>
             option.userId === value.userId
           }
@@ -103,6 +96,7 @@ SearchAutoCompleteNoRef.propTypes = {
   label: PropTypes.string,
   reset: PropTypes.func,
   isMultiple: PropTypes.boolean,
+  disabled: PropTypes.boolean,
 };
 
 SearchAutoCompleteNoRef.displayName = 'SearchAutoCompleteNoRef';

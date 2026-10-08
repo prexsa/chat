@@ -11,7 +11,7 @@ const {
   authorizeUser,
   sendRequestByName,
   sendRequestByEmail,
-  createGroup,
+  createGroupName,
   initializeUser,
   dm,
   // removeRoomId,
@@ -32,6 +32,7 @@ const {
   deleteGroup,
   // disconnectUserRelationship,
   // getRoomMessages,
+  getUserConnections,
   onDisconnect,
 } = require('./controller/socketController');
 const auth = require('./routes/auth.routes');
@@ -82,7 +83,9 @@ io.on('connection', async (socket) => {
   socket.on('delete_file', ({ fileId, roomId }, cb) =>
     deleteFile(socket, fileId, roomId, cb),
   );
-  socket.on('create_group', (data, cb) => createGroup(socket, data, cb));
+  socket.on('create_group_name', (data, cb) =>
+    createGroupName(socket, data, cb),
+  );
   socket.on('update_group_name', ({ roomId, name }, cb) =>
     updateGroupName(socket, roomId, name, cb),
   );
@@ -117,6 +120,7 @@ io.on('connection', async (socket) => {
     /*io.to(to).emit('typingResp', {toggleState, to})
     // socket.broadcast.emit('typingResp', toggleState);*/
   });
+  socket.on('test', (cb) => getUserConnections(socket, cb));
   socket.on('logoff', () => onDisconnect(socket));
   socket.on('disconnect', () => onDisconnect(socket));
 });

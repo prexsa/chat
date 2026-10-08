@@ -1,34 +1,36 @@
 import React, { useState } from 'react';
-import GroupIcon from '@mui/icons-material/Group';
-import { Button, Typography } from '@mui/material';
-import CreateGroupForm from '../Forms/CreateGroup.RFH';
-import { Modal } from '../Modal';
+import { Box, Typography } from '@mui/material';
+import CreateGroupName from '../Forms/CreateGroupName.RFH';
+import AddToGroup from '../Forms/AddToGroup.RFH';
 
 const CreateGroup = () => {
-  const [show, setShow] = useState(false);
-
+  const [isDisabled, setIsDisabled] = useState(true);
+  /*
   const handleClickOpen = () => setShow(true);
   const handleClose = () => {
     // methods.reset();
     setShow(false);
   };
+  */
+
+  const handleDisableToggle = () => setIsDisabled(false);
+
+  const handleResetToggle = () => setIsDisabled(true);
 
   return (
     <div>
-      <Button
-        size="small"
-        onClick={handleClickOpen}
-        fullWidth
-        startIcon={<GroupIcon />}
-      >
-        Create group
-      </Button>
-      <Modal open={show} onClose={handleClose} title={'Create Group'}>
-        <Typography variant="subtitle1" sx={{ textAlign: 'center' }}>
-          Create a group and add members
-        </Typography>
-        <CreateGroupForm />
-      </Modal>
+      <Typography variant="subtitle1" sx={{ textAlign: 'center' }}>
+        Create a group and add members
+      </Typography>
+      <Box sx={{ width: '600px' }}>
+        <CreateGroupName
+          disableToggle={handleDisableToggle}
+          resetToggle={handleResetToggle}
+        />
+      </Box>
+      <Box sx={{ width: '600px' }}>
+        <AddToGroup isDisabled={isDisabled} />
+      </Box>
     </div>
   );
 };

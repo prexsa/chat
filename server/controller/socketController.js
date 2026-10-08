@@ -302,44 +302,46 @@ module.exports.updateGroupName = async (socket, roomId, name, cb) => {
   cb();
 };
 
-module.exports.createGroup = async (socket, data, cb) => {
-  const { groupName, members } = data;
-  const randomId = crypto.randomUUID();
-  const hostUserId = socket.user.userId;
-  const extractUserId = members.map((member) => member.userId);
-  // console.log('extractUserId: ', extractUserId);
-  const groupMembers = [hostUserId, ...extractUserId];
+module.exports.createGroupName = async (socket, data, cb) => {
+  const { groupName, roomId } = data;
+  console.log('Create group name', { data });
+  // Check if 'roomId' exists
+  if (roomId) {
+    // Update new group name
+    const room = await Room.findOneAndUpdate(
+      { roomId: roomId },
+      { groupName: groupName },
+      { new: true },
+    );
 
-  const room = new Room({
-    isGroup: true,
-    roomId: randomId,
-    mates: groupMembers,
-    name: groupName,
-  });
+    // Update frontend group name if any members are active
+  } else {
+    // Create a new group room
+    const randomId = crypto.randomUUID();
+    const hostUserId = socket.user.userId;
+    // const groupMembers = [hostUserId, ...extractUserId];
 
-  room
+    /*  
+    const room = new Room({
+      isGroup: true,
+      roomId: randomId,
+      mates: [hostUserId],
+      name: groupName,
+    });
+    
+    // Create/Save new room
+    room
     .save()
     .then(async (resp) => {
-      // update all members records
-      // console.log('resp: ', resp);
-      const addToRooms = await Promise.all(
-        groupMembers.map(async (userId) => {
-          const user = await User.findOneAndUpdate(
-            { userId: userId },
-            { $push: { rooms: randomId } },
-          );
-        }),
-      );
-
-      const mappedNameToUserId = await mapNameToUserId(groupMembers);
-      resp.mates = mappedNameToUserId;
-
-      socket.to(extractUserId).emit('new_group_created', { roomRecord: resp });
-      cb({ room });
+      // Sent roomId
+      cb({ isSuccessful: true, roomId: room.room.Id });
     })
     .catch((err) => {
       console.log('Saving new group error: ', err);
     });
+
+    */
+  }
 };
 
 module.exports.addToGroup = async (socket, roomId, userId, cb) => {
@@ -408,6 +410,56 @@ module.exports.leaveGroup = async (socket, roomId, userId, cb) => {
     socket.to(mates).emit('left_group_chat', { roomId, userId });
   }
   cb();
+};
+
+module.exports.getUserConnections = async (socket, cb) => {
+  // console.log('hello there');
+  const userId = socket.user.userId;
+  const user = await User.find({ userId: userId });
+  const { rooms } = user[0];
+  // console.log({ user });
+
+  const roomDetails = await Promise.all(
+    rooms.map(async (roomId) => {
+      const details = await Room.find({ roomId: roomId });
+      // console.log('details: ', details[0]);
+      const { mates } = details[0];
+      const mapped = await mapNameToUserId(mates);
+      details[0].mates = mapped;
+      // console.log('details: ', details[0]);
+      if ('uploadFiles' in details[0]) {
+        const mappedFiles = await mapFileIdToFileObj(details[0].uploadFiles);
+        details[0].uploadFiles = mappedFiles;
+      }
+      // console.log('details: ', mapped);
+      return details[0];
+    }),
+  );
+
+  const allConnections = [];
+
+  const connections = roomDetails.map((room) => {
+    const connections = room.mates;
+
+    // filter out user
+    const filtered = connections.filter(
+      (connection) => connection.userId !== userId,
+    );
+
+    allConnections.push(...filtered);
+  });
+
+  // filter out duplicates
+  const uniqueConnections = allConnections.filter((obj, index, self) => {
+    return (
+      index ===
+      self.findIndex((o) => {
+        return o.userId === obj.userId;
+      })
+    );
+  });
+  // console.log('uniqueConnections: ', uniqueConnections);
+  cb({ uniqueConnections });
 };
 
 module.exports.searchUsersDb = async (socket, name, cb) => {
