@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Tabs, Tab, Typography } from '@mui/material';
 import CustomTabPanel from './chat/CustomTabPanel';
-import AddByNameForm from './Forms/AddByName.RFH';
-import AddByEmailForm from './Forms/AddByEmail.RFH';
+import AddByNameForm from './forms/AddByName.RFH';
+import AddByEmailForm from './forms/AddByEmail.RFH';
 
 const AddFriendForm = () => {
   const [tabPanel, setTabPanel] = useState(0);

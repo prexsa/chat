@@ -53,7 +53,7 @@ const LoginForm = () => {
           label={'Password'}
         />
       </Box>
-      <Box sx={{ marginTop: '20px' }}>
+      <Box sx={{ marginTop: '40px' }}>
         <Button variant="contained" type="submit" fullWidth>
           Login
         </Button>

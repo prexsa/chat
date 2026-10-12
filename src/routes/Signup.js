@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SignUp from '../components/Forms/Signup.RFH';
+import SignUp from '../components/forms/Signup.RFH';
 import { Box, Typography } from '@mui/material';
 import ForumIcon from '@mui/icons-material/Forum';
 // import NoAuthLayout from '../components/layout/NoAuth.layout';

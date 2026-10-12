@@ -6,7 +6,7 @@ import { Box, Typography, Divider } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { ModalImageViewer } from '../ModalImageViewer';
 import { ModalFileViewer } from '../ModalFileViewer';
-import Chatbox from '../Forms/Chatbox';
+import Chatbox from '../forms/Chatbox';
 import Messages from './Messages';
 import EmptyChat from './EmptyChat';
 import ChatHeader from './ChatHeader';

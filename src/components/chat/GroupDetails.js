@@ -10,7 +10,7 @@ import { Modal } from '../Modal';
 import List from '../List';
 
 import SearchAutoComplete from '../Inputs/SearchAutoComplete';
-import TitleForm from '../Forms/TitleForm';
+import TitleForm from '../forms/TitleForm';
 
 // import CreateGroupForm from '../Forms/CreateGroup.RFH';
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
-import CreateGroupName from '../Forms/CreateGroupName.RFH';
-import AddToGroup from '../Forms/AddToGroup.RFH';
+import CreateGroupName from '../forms/CreateGroupName.RFH';
+import AddToGroup from '../forms/AddToGroup.RFH';
 
 const CreateGroup = () => {
   const [isDisabled, setIsDisabled] = useState(true);

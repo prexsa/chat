@@ -21,7 +21,7 @@ export const FriendContext = createContext();
 export const MessagesContext = createContext();
 export const SocketContext = createContext();
 
-import Logout from '../Forms/Logout';
+import Logout from '../forms/Logout';
 
 const Switch = ({ value, children }) => {
   const matchingChild = children.find((child) => child.props.when === value);
