@@ -1,8 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-// import Login from './routes/Login';
-import SignIn from './routes/SignIn';
-// import TestPage from './routes/TestPage';
+// import SignIn from './routes/SignIn';
+import Chat from './routes/Chat';
 import ForgotPassword from './routes/ForgotPassword';
 import Signup from './routes/Signup';
 import PWReset from './routes/PasswordReset';
@@ -19,7 +18,8 @@ function App() {
     <UserProvider>
       <div className="app">
         <Routes>
-          <Route path="/" element={<SignIn />} />
+          {/*<Route path="/" element={<SignIn />} />*/}
+          <Route path="/" element={<Chat />} />
           {/*<Route path="/loading" element={<Loading />} />*/}
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
