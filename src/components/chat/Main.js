@@ -15,7 +15,7 @@ import AddFriend from '../AddFriend';
 import PendingRequests from './PendingRequests';
 import CreateGroup from './CreateGroup';
 import './Chat.css';
-import socketConn from '../../socket';
+import { socket } from '../../socket';
 import useSocket from '../../context/useSocket';
 export const FriendContext = createContext();
 export const MessagesContext = createContext();

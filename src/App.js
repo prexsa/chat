@@ -1,11 +1,11 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-// import SignIn from './routes/SignIn';
+import SignIn from './routes/SignIn';
 import Chat from './routes/Chat';
 import ForgotPassword from './routes/ForgotPassword';
 import Signup from './routes/Signup';
 import PWReset from './routes/PasswordReset';
-import Main from './components/chat/Main';
+// import Main from './components/chat/Main';
 import PageNotFound from './components/PageNotFound';
 import PrivateRoutes from './routes/PrivateRoutes';
 import { UserProvider } from './context/userContext';
@@ -18,15 +18,15 @@ function App() {
     <UserProvider>
       <div className="app">
         <Routes>
-          {/*<Route path="/" element={<SignIn />} />*/}
-          <Route path="/" element={<Chat />} />
+          <Route path="/" element={<SignIn />} />
+          {/*<Route path="/" element={<Chat />} />*/}
           {/*<Route path="/loading" element={<Loading />} />*/}
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/pw-reset" element={<PWReset />} />
           {/*<Route path="/create-username" element={<UsernameRFH />} />*/}
           <Route element={<PrivateRoutes />}>
-            <Route path="/chat" element={<Main />} />
+            <Route path="/chat" element={<Chat />} />
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>

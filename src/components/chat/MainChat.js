@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
@@ -9,95 +10,33 @@ import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import SendIcon from '@mui/icons-material/Send';
 
-// Example message data structure
-const messages = [
-  {
-    id: '1',
-    sender: 'assistant',
-    text: 'Hello! How can I help you today?',
-    time: '10:00 AM',
-  },
-  {
-    id: '2',
-    sender: 'user',
-    text: 'I need help implementing a MUI chat component.',
-    time: '10:01 AM',
-  },
-  {
-    id: '3',
-    sender: 'assistant',
-    text: 'Hello! How can I help you today?',
-    time: '10:00 AM',
-  },
-  {
-    id: '4',
-    sender: 'user',
-    text: 'I need help implementing a MUI chat component.',
-    time: '10:01 AM',
-  },
-  {
-    id: '5',
-    sender: 'assistant',
-    text: 'Hello! How can I help you today?',
-    time: '10:00 AM',
-  },
-  {
-    id: '6',
-    sender: 'user',
-    text: 'I need help implementing a MUI chat component.',
-    time: '10:01 AM',
-  },
-  {
-    id: '7',
-    sender: 'assistant',
-    text: 'Hello! How can I help you today?',
-    time: '10:00 AM',
-  },
-  {
-    id: '8',
-    sender: 'user',
-    text: 'I need help implementing a MUI chat component.',
-    time: '10:01 AM',
-  },
-  {
-    id: '9',
-    sender: 'assistant',
-    text: 'Hello! How can I help you today?',
-    time: '10:00 AM',
-  },
-  {
-    id: '10',
-    sender: 'user',
-    text: 'I need help implementing a MUI chat component.',
-    time: '10:01 AM',
-  },
-  {
-    id: '11',
-    sender: 'assistant',
-    text: 'Hello! How can I help you today?',
-    time: '10:00 AM',
-  },
-  {
-    id: '12',
-    sender: 'user',
-    text: 'I need help implementing a MUI chat component.',
-    time: '10:01 AM',
-  },
-  {
-    id: '13',
-    sender: 'assistant',
-    text: 'Hello! How can I help you today?',
-    time: '10:00 AM',
-  },
-  {
-    id: '14',
-    sender: 'user',
-    text: 'I need help implementing a MUI chat component.',
-    time: '10:01 AM',
-  },
-];
+export default function MainChat({ activeChat, messages, onSendMessage }) {
+  const [inputValue, setInputValue] = useState('');
 
-export default function MainChat() {
+  // If no chat has been selected
+  if (!activeChat) {
+    return (
+      <Box sx={{ p: 3, textAlign: 'center', color: 'text.secondary' }}>
+        <Typography variant="h6">Select a chat to start messaging</Typography>
+      </Box>
+    );
+  }
+
+  // Auto-scroll to bottom of chat
+  /*
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+  */
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+
+    onSendMessage(inputValue);
+    setInputValue('');
+  };
+
   return (
     <React.Fragment>
       <Box
@@ -109,9 +48,9 @@ export default function MainChat() {
           gap: '10px',
         }}
       >
-        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+        <Avatar alt={activeChat.avatar} src="/static/images/avatar/1.jpg" />
         <List sx={{ listStyleType: 'none', p: 0, m: 0, textAlign: 'left' }}>
-          <ListItem sx={{ p: 0, m: 0 }}>Remy Sharp</ListItem>
+          <ListItem sx={{ p: 0, m: 0 }}>{activeChat.name}</ListItem>
           <ListItem sx={{ p: 0, m: 0, color: '#56a4ff', fontSize: '14px' }}>
             online
           </ListItem>
@@ -139,14 +78,13 @@ export default function MainChat() {
         >
           {/* Your scrollable content/chat messages go here */}
           <div>
-            <p>Scrollable content start...</p>
             {/* Spacer to force scroll */}
-            {messages.map((msg) => {
+            {messages.map((msg, index) => {
               const isUser = msg.sender === 'user';
 
               return (
                 <Box
-                  key={msg.id}
+                  key={index}
                   sx={{
                     display: 'flex',
                     flexDirection: isUser ? 'row-reverse' : 'row',
@@ -157,7 +95,7 @@ export default function MainChat() {
                 >
                   {/* Optional User Avatar */}
                   <Avatar sx={{ width: 32, height: 32 }}>
-                    {isUser ? 'U' : 'AI'}
+                    {isUser ? 'U' : activeChat.avatar}
                   </Avatar>
 
                   {/* Message Bubble Wrapper */}
@@ -169,26 +107,38 @@ export default function MainChat() {
                       bgcolor: isUser ? 'primary.main' : 'grey.100',
                       color: isUser ? 'primary.contrastText' : 'text.primary',
                       maxWidth: '70%',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      columnGap: '5px',
+                      alignItems: 'flex-start',
                     }}
                   >
                     {/* Content block inside the bubble */}
 
-                    <Typography variant="body2">{msg.text}</Typography>
+                    <Typography variant="body2" sx={{ p: 1 }}>
+                      {msg.text}
+                    </Typography>
 
                     {/* Status/Time Meta positioned cleanly inside */}
 
-                    <Typography variant="caption" sx={{ opacity: 0.7 }}>
-                      {msg.time}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        opacity: 0.7,
+                        alignSelf: 'flex-end',
+                      }}
+                    >
+                      {msg.time} time
                     </Typography>
                   </Box>
                 </Box>
               );
             })}
-            <p>Scrollable content end.</p>
           </div>
         </Box>
         <Paper
           component="form"
+          onSubmit={handleSendMessage}
           sx={{
             p: '2px 4px',
             boxShadow: 'none',
@@ -201,10 +151,6 @@ export default function MainChat() {
             left: 0,
             right: 0,
           }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            // handleSend();
-          }}
         >
           {/* Custom MUI Input Template */}
           <TextField
@@ -212,8 +158,8 @@ export default function MainChat() {
             placeholder="Type a message..."
             variant="standard"
             // inputProps={{ disableUnderline: true }}
-            // value={message}
-            // onChange={(e) => setMessage(e.target.value)}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             // onKeyDown={handleKeyDown}
             multiline
             maxRows={4}
@@ -222,7 +168,8 @@ export default function MainChat() {
             color="primary"
             sx={{ p: '10px' }}
             aria-label="send message"
-            onClick={() => alert('Send message!')}
+            type="submit"
+            // onClick={() => alert('Send message!')}
             // disabled={!message.trim()}
           >
             <SendIcon />
@@ -232,3 +179,9 @@ export default function MainChat() {
     </React.Fragment>
   );
 }
+
+MainChat.propTypes = {
+  activeChat: PropTypes.object.isRequired,
+  messages: PropTypes.object.isRequired,
+  onSendMessage: PropTypes.func,
+};

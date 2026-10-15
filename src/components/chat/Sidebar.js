@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
-// import PropTypes from 'prop-types';
-import { Box, Typography } from '@mui/material';
-// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-// import ChannelList from './ChannelList';
+import PropTypes from 'prop-types';
+import { Box, Typography, Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
-import ListItemText from '@mui/material/ListItemText';
+// import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Badge from '@mui/material/Badge';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import IconButton from '@mui/material/IconButton';
+import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 
-export default function Sidebar() {
+/*
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
+*/
+
+export default function Sidebar({ chatlist, selectActiveChat }) {
   const [searchTerm, setSearchTerm] = useState('');
 
   /*
@@ -23,11 +28,47 @@ export default function Sidebar() {
     // if (onSearch) onSearch('');
   };
   */
+  const handleStartChat = (e) => {
+    e.preventDefault();
+    alert('Start a new chat');
+  };
+
+  // Chat list is empty
+  if (chatlist.length == 0) {
+    return (
+      <React.Fragment>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: 4,
+            textAlign: 'center',
+          }}
+        >
+          <ChatBubbleOutlinedIcon
+            sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }}
+          />
+          <Typography variant="h6" color="text.primary" gutterBottom>
+            No conversations yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Start a new chat to connect with friends and family.
+          </Typography>
+          <Button variant="contained" onClick={handleStartChat}>
+            New Chat
+          </Button>
+        </Box>
+      </React.Fragment>
+    );
+  }
 
   const handleChange = (e) => {
     setSearchTerm(e.target.value);
     // if (onSearch) onSearch(e.target.value);
   };
+
   return (
     <React.Fragment>
       <Box sx={{ p: 2 }}>
@@ -63,86 +104,89 @@ export default function Sidebar() {
 
       <Divider />
       <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        <ListItem alignItems="flex-start">
-          <ListItemAvatar>
-            <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-          </ListItemAvatar>
-          <ListItemText
-            primary="Brunch this weekend?"
-            secondary={
-              <React.Fragment>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  sx={{ color: 'text.primary', display: 'inline' }}
-                >
-                  Ali Connors
-                </Typography>
-                {" — I'll be in your neighborhood doing errands this…"}
-              </React.Fragment>
-            }
-          />
-        </ListItem>
-        <ListItem alignItems="flex-start">
-          <ListItemAvatar>
-            <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-          </ListItemAvatar>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: '2fr 1fr',
-              gridTemplateRows: 'auto auto',
-              width: '100%',
-            }}
-          >
-            {/* Quadrant 1: Top-Left */}
-            <Box sx={{ alignSelf: 'flex-start' }}>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Name
-              </Typography>
-            </Box>
-
-            {/* Quadrant 2: Top-Right */}
-            <Box sx={{ justifySelf: 'flex-end', alignSelf: 'flex-start' }}>
-              <Typography variant="subtitle2" color="primary" fontWeight="bold">
-                11:11
-              </Typography>
-            </Box>
-
-            {/* Quadrant 3: Bottom-Left */}
-            <Box sx={{ alignSelf: 'flex-end' }}>
-              <Typography
-                variant="body2"
-                color="text.secondary"
+        {chatlist.map((chat) => {
+          return (
+            <React.Fragment key={chat.id}>
+              <ListItem
+                alignItems="flex-start"
+                onClick={() => selectActiveChat(chat)}
                 sx={{
-                  display: '-webkit-box',
-                  overflow: 'hidden',
-                  WebkitBoxOrient: 'vertical',
-                  WebkitLineClamp: 1, // Limits the text to exactly 3 lines
+                  '&:hover': {
+                    cursor: 'pointer',
+                    backgroundColor:
+                      '#e0e0e0' /* Optional: slight visual shift */,
+                  },
+                  p: 2,
                 }}
               >
-                Gonna head out for a drive, wanna join?
-                slfj;aslfjsaldfkjas;ldfkjas;flksajdf;laksj;l
-              </Typography>
-            </Box>
+                <ListItemAvatar>
+                  <Avatar alt={chat.avatar} src="/static/images/avatar/1.jpg" />
+                </ListItemAvatar>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: '2fr 1fr',
+                    gridTemplateRows: 'auto auto',
+                    width: '100%',
+                  }}
+                >
+                  {/* Quadrant 1: Top-Left */}
+                  <Box sx={{ alignSelf: 'flex-start' }}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {chat.name}
+                    </Typography>
+                  </Box>
 
-            {/* Quadrant 4: Bottom-Right */}
-            <Box
-              sx={{
-                justifySelf: 'flex-end',
-                alignSelf: 'flex-start',
-                marginRight: '10px',
-              }}
-            >
-              <Typography variant="body2" color="text.secondary">
-                <Badge badgeContent={3} color="primary"></Badge>
-              </Typography>
-            </Box>
-          </Box>
-        </ListItem>
+                  {/* Quadrant 2: Top-Right */}
+                  <Box
+                    sx={{ justifySelf: 'flex-end', alignSelf: 'flex-start' }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      color="primary"
+                      fontWeight="bold"
+                    >
+                      {chat.time}
+                    </Typography>
+                  </Box>
+
+                  {/* Quadrant 3: Bottom-Left */}
+                  <Box sx={{ alignSelf: 'flex-end' }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        display: '-webkit-box',
+                        overflow: 'hidden',
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: 1, // Limits the text to exactly 3 lines
+                      }}
+                    >
+                      {chat.lastMessage}
+                    </Typography>
+                  </Box>
+
+                  {/* Quadrant 4: Bottom-Right */}
+                  <Box
+                    sx={{
+                      justifySelf: 'flex-end',
+                      alignSelf: 'flex-start',
+                      marginRight: '10px',
+                    }}
+                  >
+                    <Typography variant="body2" color="text.secondary">
+                      <Badge badgeContent={3} color="primary"></Badge>
+                    </Typography>
+                  </Box>
+                </Box>
+              </ListItem>
+              <Divider component="li" />
+            </React.Fragment>
+          );
+        })}
       </List>
       <IconButton
-        onClick={() => alert('Create a new chat')}
+        onClick={handleStartChat}
         sx={{
           position: 'absolute',
           bottom: '30px',
@@ -155,47 +199,7 @@ export default function Sidebar() {
   );
 }
 
-/*
-
-const Sidebar = ({ user }) => {
-  return (
-    <Box
-      sx={{
-        borderRight: '1px solid #dedede',
-        height: '100%',
-        backgroundColor: '#fdfdfe',
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '20px 0px 15px 15px',
-          borderBottom: '1px solid #dedede',
-          backgroundColor: '#f0f2f6',
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            columnGap: '5px',
-            alignItems: 'center',
-          }}
-        >
-          <AccountCircleIcon sx={{ fontSize: 40 }} />
-          <Typography variant="subtitle1" sx={{ fontWeight: '600' }}>
-            {user.fname} {user.lname}
-          </Typography>
-        </Box>
-      </Box>
-      <ChannelList user={user} />
-    </Box>
-  );
-};
-
 Sidebar.propTypes = {
-  user: PropTypes.object,
+  chatlist: PropTypes.object.isRequired,
+  selectActiveChat: PropTypes.func.isRequired,
 };
-
-*/

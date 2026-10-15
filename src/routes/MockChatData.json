@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "name": "Alice Smith",
+    "avatar": "A",
+    "lastMessage": "See you there!",
+    "time": "10:45 AM",
+    "messages": [
+      { "text": "Hey, are we still meeting?", "sender": "them" },
+      { "text": "See you there!", "sender": "user" }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Bob Jones",
+    "avatar": "B",
+    "lastMessage": "Can you review the code?",
+    "time": "Yesterday",
+    "messages": [{ "text": "Can you review the code?", "sender": "them" }]
+  },
+  {
+    "id": 3,
+    "name": "Charlie Green",
+    "avatar": "C",
+    "lastMessage": "Awesome, thanks!",
+    "time": "Oct 12",
+    "messages": [{ "text": "Awesome, thanks!", "sender": "them" }]
+  }
+]
