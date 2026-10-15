@@ -75,6 +75,3 @@ export default function SignIn() {
     </Box>
   );
 }
-
-// https://mui.com/material-ui/getting-started/templates/sign-in/
-// https://github.com/mui/material-ui/blob/v9.4.0/docs/data/material/getting-started/templates/sign-in/SignIn.js

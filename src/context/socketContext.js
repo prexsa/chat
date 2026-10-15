@@ -1,4 +1,5 @@
 import React, { useContext, useContext, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { socket } from '../../socket';
 
 const SocketContext = React.createContext();
@@ -20,3 +21,7 @@ export const SocketProvider = ({ children }) => {
 };
 
 export const useSocket = () => useContext(SocketContext);
+
+SocketProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

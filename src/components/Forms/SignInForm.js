@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
 import { FormInputText } from '../Inputs/FormInputText';
 import { FormInputPassword } from '../Inputs/FormInputPassword';
-import { useUserContext } from '../../context/userContext';
+// import { useUserContext } from '../../context/userContext';
+import { useAuth } from '../../context/AuthContext';
 import Auth from '../../services/Auth';
 
 const LoginForm = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const { setUser } = useUserContext();
+  // const { setUser } = useUserContext();
   const { handleSubmit, control, reset, setError } = useForm({
     defaultValues: { email: '', password: '' },
   });
@@ -22,10 +24,11 @@ const LoginForm = () => {
     // console.log('data: ', data);
     if (data.isSuccessful) {
       reset({ email: '', password: '' });
-      localStorage.setItem('accessToken', data.accessToken);
-      setUser({ ...data });
-      navigate('/chat');
-      // navigate('/create-username', { state: { userId: data.userId } });
+
+      // Pass token to AuthContext
+      login(data.accessToken);
+      // setUser({ ...data });
+      navigate('/chat', { replace: true });
     } else {
       if (resp.data.errorType === 'email') {
         setError('email', { type: 'custom', message: resp.data.message });
