@@ -3,13 +3,13 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Sidebar from '../components/chat/Sidebar';
 import MainChat from '../components/chat/MainChat';
+import CustomDrawer from '../components/Drawer';
 
 import chats from './MockChatData.json';
 
 export default function Chat() {
   const [activeChat, setActiveChat] = useState(null);
-  // Storing messages in a dictionary keyed by chat ID
-  const [allMessages, setAllMessages] = useState({});
+  const [allMessages, setAllMessages] = useState({}); // Storing messages in a dictionary keyed by chat ID
 
   // Load mock data into state
   useEffect(() => {
@@ -39,37 +39,43 @@ export default function Chat() {
     }));
   };
   // console.log({ currentMessages, activeChat });
+
   return (
-    <Box sx={{ backgroundColor: '#f5f8fe' }}>
-      <Grid
-        container
-        sx={{
-          height: '100vh',
-          borderRadius: '10px',
-          border: '1px solid',
-          borderColor: 'divider',
-          marginLeft: '15px',
-          backgroundColor: '#fafcfe',
-        }}
-      >
+    <Box sx={{ backgroundColor: '#f5f8fe', display: 'flex' }}>
+      <Box sx={{ textAlign: 'left', p: 1 }}>
+        <CustomDrawer />
+      </Box>
+      <Box sx={{ flexGrow: 2 }}>
         <Grid
-          size={4}
+          container
           sx={{
-            borderRight: '1px solid',
-            borderColor: 'divider',
-            position: 'relative',
+            height: '100vh',
+            borderRadius: '10px',
+            border: '1px solid',
+            borderColor: 'Boxider',
+            marginLeft: '15px',
+            backgroundColor: '#fafcfe',
           }}
         >
-          <Sidebar chatlist={chats} selectActiveChat={handleSetActiveChat} />
+          <Grid
+            size={4}
+            sx={{
+              borderRight: '1px solid',
+              borderColor: 'Boxider',
+              position: 'relative',
+            }}
+          >
+            <Sidebar chatlist={chats} selectActiveChat={handleSetActiveChat} />
+          </Grid>
+          <Grid size={8}>
+            <MainChat
+              activeChat={activeChat}
+              onSendMessage={handleSendMessage}
+              messages={currentMessages}
+            />
+          </Grid>
         </Grid>
-        <Grid size={8}>
-          <MainChat
-            activeChat={activeChat}
-            onSendMessage={handleSendMessage}
-            messages={currentMessages}
-          />
-        </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 }
