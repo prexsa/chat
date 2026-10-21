@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { Box, Typography, Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
@@ -12,13 +11,16 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import IconButton from '@mui/material/IconButton';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 
+import { useChat } from '../../context/SocketContext';
+
 /*
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 */
 
-export default function Sidebar({ chatlist, selectActiveChat }) {
+export default function Sidebar() {
+  const { channels, changeRoom } = useChat();
   const [searchTerm, setSearchTerm] = useState('');
 
   /*
@@ -33,7 +35,7 @@ export default function Sidebar({ chatlist, selectActiveChat }) {
   };
 
   // Chat list is empty
-  if (chatlist.length == 0) {
+  if (channels.length == 0) {
     return (
       <React.Fragment>
         <Box
@@ -103,12 +105,12 @@ export default function Sidebar({ chatlist, selectActiveChat }) {
 
       <Divider />
       <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        {chatlist.map((chat) => {
+        {channels.map((chat, index) => {
           return (
-            <React.Fragment key={chat.id}>
+            <React.Fragment key={chat.roomId}>
               <ListItem
                 alignItems="flex-start"
-                onClick={() => selectActiveChat(chat)}
+                onClick={() => changeRoom(index)}
                 sx={{
                   '&:hover': {
                     cursor: 'pointer',
@@ -161,7 +163,9 @@ export default function Sidebar({ chatlist, selectActiveChat }) {
                         WebkitLineClamp: 1, // Limits the text to exactly 3 lines
                       }}
                     >
-                      {chat.lastMessage}
+                      {chat.messages.length > 0
+                        ? chat.messages[chat.messages.length - 1].message
+                        : ''}
                     </Typography>
                   </Box>
 
@@ -197,8 +201,3 @@ export default function Sidebar({ chatlist, selectActiveChat }) {
     </React.Fragment>
   );
 }
-
-Sidebar.propTypes = {
-  chatlist: PropTypes.object.isRequired,
-  selectActiveChat: PropTypes.func.isRequired,
-};

@@ -11,8 +11,8 @@ router.use(function (req, res, next) {
   next();
 });
 // .post(rateLimiter(60, 10), AuthControl.login);
-
-router.route('/login').get(AuthControl.verifyToken).post(AuthControl.login);
+router.route('/login').post(AuthControl.login);
+// router.route('/login').get(AuthControl.verifyToken).post(AuthControl.login);
 router.route('/signup').post(AuthControl.signup);
 router.route('/pw-reset').post(AuthControl.sendResetLink);
 router.route('/update-pw').post(AuthControl.passwordReset);

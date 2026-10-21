@@ -11,7 +11,7 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 
 const User = require('../model/user.model');
-const Room = require('../model/room.model');
+const Channel = require('../model/channel.model');
 const UploadFile = require('../model/file.model');
 // const Message = require('../model/message.model');
 
@@ -72,8 +72,8 @@ const getRoomDetails = async (socket, rooms) => {
   // console.log('rooms: ', rooms);
   const roomDetails = await Promise.all(
     rooms.map(async (roomId) => {
-      const details = await Room.find({ roomId: roomId });
-      // console.log('details: ', details[0]);
+      console.log({ roomId });
+      const details = await Channel.find({ roomId: roomId });
       const { mates } = details[0];
       const mapped = await mapNameToUserId(mates);
       details[0].mates = mapped;
@@ -86,7 +86,7 @@ const getRoomDetails = async (socket, rooms) => {
       return details[0];
     }),
   );
-  socket.emit('roomList', roomDetails);
+  socket.emit('channel_list', roomDetails);
   // console.log('room details: ', roomDetails);
 };
 
@@ -126,7 +126,7 @@ module.exports.initializeUser = async (socket) => {
 
   //addToAllUsers(socket.user.username, socket.user.userId);
   notifyRooms(socket, rooms);
-  getRoomDetails(socket, rooms);
+  // getRoomDetails(socket, rooms);
   getRequestsList(socket, pendingRequest);
   // populateRooms(socket);
   // console.log('rooms: ', rooms)
@@ -263,7 +263,7 @@ module.exports.dm = async (socket, msg) => {
     getLastMessage = roomMessages[0];
   }
 
-  const getRoom = await Room.find({ roomId: roomId });
+  const getRoom = await Channel.find({ roomId: roomId });
   const getRoommates = getRoom[0].mates;
   // console.log('getRoommates: ', getRoommates);
   const matesToReceiveMsg = getRoommates.filter((mate) => mate !== msg.from);
@@ -349,7 +349,7 @@ module.exports.addToGroup = async (socket, roomId, userId, cb) => {
   // get host userId
   const hostUserId = socket.user.userId;
   // get room record
-  const updatedRoomRecordWithNewMember = await Room.findOneAndUpdate(
+  const updatedRoomRecordWithNewMember = await Channel.findOneAndUpdate(
     { roomId: roomId },
     { $push: { mates: userId }, $set: { isGroup: true } },
     { new: true },
@@ -401,7 +401,7 @@ module.exports.leaveGroup = async (socket, roomId, userId, cb) => {
       { $pull: { rooms: roomId } },
     );
     // remove userId from room records
-    const removedUserIdFromRoom = await Room.findOneAndUpdate(
+    const removedUserIdFromRoom = await Channel.findOneAndUpdate(
       { roomId: roomId },
       { $pull: { mates: userId } },
       { new: true },
@@ -421,7 +421,7 @@ module.exports.getUserConnections = async (socket, cb) => {
 
   const roomDetails = await Promise.all(
     rooms.map(async (roomId) => {
-      const details = await Room.find({ roomId: roomId });
+      const details = await Channel.find({ roomId: roomId });
       // console.log('details: ', details[0]);
       const { mates } = details[0];
       const mapped = await mapNameToUserId(mates);
@@ -491,8 +491,8 @@ module.exports.searchUsersDb = async (socket, name, cb) => {
 
 module.exports.deleteGroup = async (socket, roomId, cb) => {
   const hostUserId = socket.user.userId;
-  const room = await Room.find({ roomId: roomId });
-  const deleteRoomRecord = await Room.deleteOne({ roomId: roomId });
+  const room = await Channel.find({ roomId: roomId });
+  const deleteRoomRecord = await Channel.deleteOne({ roomId: roomId });
   const { mates } = room[0];
   const removeRoomId = await Promise.all(
     mates.map(async (userId) => {
@@ -530,7 +530,7 @@ module.exports.leaveChatRoom = async (
   );
 
   // delete room's records
-  const roomRecordRemoved = await Room.deleteOne({ roomId: roomId });
+  const roomRecordRemoved = await Channel.deleteOne({ roomId: roomId });
 
   // notify user to remove connection
   socket.to(userIdToRemove).emit('remove_room', { roomId });
@@ -607,7 +607,7 @@ module.exports.uploadFile = async (socket, fileObj, cb) => {
               new Date(createdAt).getTime() / 1000,
             ).toFixed(0);
 
-            const updateRoomMessages = await Room.findOneAndUpdate(
+            const updateRoomMessages = await Channel.findOneAndUpdate(
               { roomId: roomId },
               {
                 $push: {
@@ -662,7 +662,7 @@ module.exports.deleteFile = async (socket, fileId, roomId, cb) => {
   // console.log('ID: ', _fileId);
   // remove from room record
   try {
-    await Room.findOneAndUpdate(
+    await Channel.findOneAndUpdate(
       { roomId: roomId },
       { $pull: { uploadFiles: { fileId: _fileId } } },
     );

@@ -9,6 +9,7 @@ import PWReset from './routes/PasswordReset';
 import PageNotFound from './components/PageNotFound';
 import { ProtectedRoutes } from './routes/ProtectedRoutes';
 import { AuthProvider } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
 // import Loading from './components/Loading';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -16,20 +17,22 @@ import './App.css';
 function App() {
   return (
     <AuthProvider>
-      <div className="app">
-        <Routes>
-          <Route path="/" element={<SignIn />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/pw-reset" element={<PWReset />} />
+      <SocketProvider>
+        <div className="app">
+          <Routes>
+            <Route path="/" element={<SignIn />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/pw-reset" element={<PWReset />} />
 
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoutes />}>
-            <Route path="/chat" element={<Chat />} />
-          </Route>
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </div>
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/chat" element={<Chat />} />
+            </Route>
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+        </div>
+      </SocketProvider>
     </AuthProvider>
   );
 }

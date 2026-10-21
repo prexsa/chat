@@ -5,14 +5,26 @@ const MessageSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  message: {
+  channelId: {
     type: String,
     required: true,
   },
-  roomId: {
+  senderId: {
     type: String,
     required: true,
   },
+  text: {
+    type: String,
+    required: true,
+  },
+  attachments: [
+    {
+      type: String,
+      url: String,
+      filename: String,
+      sizeBytes: Integer,
+    },
+  ],
 });
 
 const Message = mongoose.model('Message', MessageSchema);

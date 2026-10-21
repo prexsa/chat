@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
@@ -10,11 +9,14 @@ import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import SendIcon from '@mui/icons-material/Send';
 
-export default function MainChat({ activeChat, messages, onSendMessage }) {
-  const [inputValue, setInputValue] = useState('');
+import { useChat } from '../../context/SocketContext';
 
+export default function MainChat() {
+  const { activeRoom, messages } = useChat();
+  const [inputValue, setInputValue] = useState('');
+  console.log({ messages, activeRoom });
   // If no chat has been selected
-  if (!activeChat) {
+  if (!activeRoom) {
     return (
       <Box sx={{ p: 3, textAlign: 'center', color: 'text.secondary' }}>
         <Typography variant="h6">Select a chat to start messaging</Typography>
@@ -33,8 +35,13 @@ export default function MainChat({ activeChat, messages, onSendMessage }) {
     e.preventDefault();
     if (!inputValue.trim()) return;
 
-    onSendMessage(inputValue);
+    // onSendMessage(inputValue);
     setInputValue('');
+  };
+
+  const convertToHumanReadable = (unix) => {
+    const date = new Date(unix * 1000);
+    return date.toLocaleString([], { timeStyle: 'short' });
   };
 
   return (
@@ -48,9 +55,9 @@ export default function MainChat({ activeChat, messages, onSendMessage }) {
           gap: '10px',
         }}
       >
-        <Avatar alt={activeChat.avatar} src="/static/images/avatar/1.jpg" />
+        <Avatar alt={activeRoom.avatar} src="/static/images/avatar/1.jpg" />
         <List sx={{ listStyleType: 'none', p: 0, m: 0, textAlign: 'left' }}>
-          <ListItem sx={{ p: 0, m: 0 }}>{activeChat.name}</ListItem>
+          <ListItem sx={{ p: 0, m: 0 }}>{activeRoom.name}</ListItem>
           <ListItem sx={{ p: 0, m: 0, color: '#56a4ff', fontSize: '14px' }}>
             online
           </ListItem>
@@ -81,7 +88,7 @@ export default function MainChat({ activeChat, messages, onSendMessage }) {
             {/* Spacer to force scroll */}
             {messages.map((msg, index) => {
               const isUser = msg.sender === 'user';
-
+              // console.log({ msg });
               return (
                 <Box
                   key={index}
@@ -95,7 +102,7 @@ export default function MainChat({ activeChat, messages, onSendMessage }) {
                 >
                   {/* Optional User Avatar */}
                   <Avatar sx={{ width: 32, height: 32 }}>
-                    {isUser ? 'U' : activeChat.avatar}
+                    {isUser ? 'U' : activeRoom.avatar}
                   </Avatar>
 
                   {/* Message Bubble Wrapper */}
@@ -116,7 +123,7 @@ export default function MainChat({ activeChat, messages, onSendMessage }) {
                     {/* Content block inside the bubble */}
 
                     <Typography variant="body2" sx={{ p: 1 }}>
-                      {msg.text}
+                      {msg.message}
                     </Typography>
 
                     {/* Status/Time Meta positioned cleanly inside */}
@@ -128,7 +135,7 @@ export default function MainChat({ activeChat, messages, onSendMessage }) {
                         alignSelf: 'flex-end',
                       }}
                     >
-                      {msg.time} time
+                      {convertToHumanReadable(msg.date)}
                     </Typography>
                   </Box>
                 </Box>
@@ -179,9 +186,3 @@ export default function MainChat({ activeChat, messages, onSendMessage }) {
     </React.Fragment>
   );
 }
-
-MainChat.propTypes = {
-  activeChat: PropTypes.object.isRequired,
-  messages: PropTypes.object.isRequired,
-  onSendMessage: PropTypes.func,
-};

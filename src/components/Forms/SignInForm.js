@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
@@ -6,15 +6,24 @@ import { FormInputText } from '../Inputs/FormInputText';
 import { FormInputPassword } from '../Inputs/FormInputPassword';
 // import { useUserContext } from '../../context/userContext';
 import { useAuth } from '../../context/AuthContext';
+import { useChat } from '../../context/SocketContext';
 import Auth from '../../services/Auth';
 
 const LoginForm = () => {
-  const { login } = useAuth();
+  const { login, token } = useAuth();
+  const { connectSocket } = useChat();
   const navigate = useNavigate();
   // const { setUser } = useUserContext();
   const { handleSubmit, control, reset, setError } = useForm({
     defaultValues: { email: '', password: '' },
   });
+
+  // User is already authenticated, redirect to chat page
+  useEffect(() => {
+    if (token) {
+      navigate('/chat', { replace: true });
+    }
+  }, [token]);
 
   const onSubmit = async (values) => {
     console.log('onSubmit', values);
@@ -27,6 +36,10 @@ const LoginForm = () => {
 
       // Pass token to AuthContext
       login(data.accessToken);
+
+      // Connect to the socket
+      connectSocket(data.accessToken);
+
       // setUser({ ...data });
       navigate('/chat', { replace: true });
     } else {

@@ -1,10 +1,10 @@
 const crypto = require('crypto');
-const Room = require('../model/room.model');
+const Channel = require('../model/channel.model');
 
 module.exports.createARoomRelationship = async (userId, requesterId) => {
   // create room
   const roomId = crypto.randomUUID();
-  const room = new Room({
+  const room = new Channel({
     roomId: roomId,
     mates: [userId, requesterId],
   });

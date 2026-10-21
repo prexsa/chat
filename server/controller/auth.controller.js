@@ -1,5 +1,5 @@
 const User = require('../model/user.model');
-const Room = require('../model/room.model');
+const Channel = require('../model/channel.model');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const {
@@ -101,7 +101,7 @@ exports.login = (req, res) => {
 const addNewUserToExistingGroup = (roomId, userId) => {};
 
 exports.signup = async (req, res) => {
-  // console.log('signup ', req.body)
+  // console.log('signup ', req.body);
   const { fname, lname, email, password, userId: requesterUserId } = req.body;
   // console.log('req.body: ', req.body)
   const record = await User.findOne({ email: email });
@@ -126,8 +126,11 @@ exports.signup = async (req, res) => {
 
         const username = `${fname} ${lname}`;
         // create relationship between users
-        if (requesterUserId !== '')
+        /*
+        if (requesterUserId !== '') {
           RoomUtil.createARoomRelationship(user.userId, requesterUserId);
+        }
+        */
 
         jwtSign(payload, JWT_SECRET, { expiresIn: '7d' }).then((token) => {
           res.send({

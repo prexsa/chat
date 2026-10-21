@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Sidebar from '../components/chat/Sidebar';
 import MainChat from '../components/chat/MainChat';
 import CustomDrawer from '../components/Drawer';
 
-import chats from './MockChatData.json';
+// import chats from './MockChatData.json';
 
 export default function Chat() {
-  const [activeChat, setActiveChat] = useState(null);
-  const [allMessages, setAllMessages] = useState({}); // Storing messages in a dictionary keyed by chat ID
+  // const [activeChat, setActiveChat] = useState(null);
+  // const [allMessages, setAllMessages] = useState({}); // Storing messages in a dictionary keyed by chat ID
 
   // Load mock data into state
+  /*
   useEffect(() => {
     chats.map((chat) => {
       setAllMessages((prev) => ({
@@ -20,13 +21,17 @@ export default function Chat() {
       }));
     });
   }, []);
+  */
 
+  /*
   const handleSetActiveChat = (selectedChatIndex) =>
     setActiveChat(selectedChatIndex);
+  */
 
   // Get messages specifically for the active chat
-  const currentMessages = activeChat ? allMessages[activeChat.id] || [] : [];
+  // const currentMessages = activeChat ? allMessages[activeChat.id] || [] : [];
 
+  /*
   const handleSendMessage = (text) => {
     const newMessage = {
       text: text,
@@ -38,6 +43,7 @@ export default function Chat() {
       [activeChat.id]: [...(prev[activeChat.id] || []), newMessage],
     }));
   };
+    */
   // console.log({ currentMessages, activeChat });
 
   return (
@@ -65,14 +71,10 @@ export default function Chat() {
               position: 'relative',
             }}
           >
-            <Sidebar chatlist={chats} selectActiveChat={handleSetActiveChat} />
+            <Sidebar />
           </Grid>
           <Grid size={8}>
-            <MainChat
-              activeChat={activeChat}
-              onSendMessage={handleSendMessage}
-              messages={currentMessages}
-            />
+            <MainChat />
           </Grid>
         </Grid>
       </Box>
