@@ -15,6 +15,9 @@ export const SocketProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [activeRoom, setActiveRoom] = useState(null);
   const [channels, setChannels] = useState([]);
+  const [users, setUsers] = useState([]);
+
+  // const [feedbackText, setFeedbackText] = useState('');
 
   const requestChannelList = () => {
     if (socket) {
@@ -47,6 +50,11 @@ export const SocketProvider = ({ children }) => {
       setChannels([...data]);
     });
 
+    socket.on('search_users_results', (users) => {
+      console.log('users: ', { users });
+      setUsers(users);
+    });
+
     /*
     socket?.on('server:message', (rawPayload) => {
       if (rawPayload.roomId === activeRoom) {
@@ -61,6 +69,7 @@ export const SocketProvider = ({ children }) => {
       // Disconnect cleanly when the application unmounts
       socket.off('connect');
       socket.off('channel_list');
+      socket.off('search_users_results');
       socket.off('disconnect');
       socket.disconnect();
     };
@@ -72,7 +81,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   const mapUserIdToName = (messages, members) => {
-    console.log({ members });
+    // console.log({ members });
     return messages.map((msg) => {
       const user = members.find((m) => m.userId === msg.userId);
       // Add username to message obj
@@ -88,8 +97,30 @@ export const SocketProvider = ({ children }) => {
       channels[index].messages,
       channels[index].mates,
     );
-    console.log({ mapNameToUserId });
+    // console.log({ mapNameToUserId });
     setMessages(mapNameToUserId); // Clear chat state for new room
+  };
+
+  // Search user's database for matching input values
+  const searchForUsers = (inputValue) => {
+    // console.log('searchForUsers: ', inputValue);
+    if (inputValue.trim().length < 0) return;
+    socket.emit('search_users', inputValue);
+  };
+
+  const addMembers = (members) => {
+    console.log('SocketContext ', { members });
+    socket.on('add_member', { members }, () => {
+      console.log('add_members callback ');
+    });
+  };
+
+  const sendRequest = (members) => {
+    console.log({ members });
+    socket.emit('send_request', members, (cb) => {
+      console.log('cb send_request ', cb);
+      // setFeedbackText(cb.message);
+    });
   };
 
   /*
@@ -103,7 +134,19 @@ export const SocketProvider = ({ children }) => {
 
   return (
     <SocketContext.Provider
-      value={{ connectSocket, activeRoom, channels, messages, changeRoom }}
+      value={{
+        connectSocket,
+        activeRoom,
+        channels,
+        messages,
+        changeRoom,
+        addMembers,
+        searchForUsers,
+        sendRequest,
+        // feedbackText,
+        // setFeedbackText,
+        users,
+      }}
     >
       {children}
     </SocketContext.Provider>

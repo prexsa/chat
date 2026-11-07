@@ -5,47 +5,7 @@ import Sidebar from '../components/chat/Sidebar';
 import MainChat from '../components/chat/MainChat';
 import CustomDrawer from '../components/Drawer';
 
-// import chats from './MockChatData.json';
-
 export default function Chat() {
-  // const [activeChat, setActiveChat] = useState(null);
-  // const [allMessages, setAllMessages] = useState({}); // Storing messages in a dictionary keyed by chat ID
-
-  // Load mock data into state
-  /*
-  useEffect(() => {
-    chats.map((chat) => {
-      setAllMessages((prev) => ({
-        ...prev,
-        [chat.id]: [...chat.messages],
-      }));
-    });
-  }, []);
-  */
-
-  /*
-  const handleSetActiveChat = (selectedChatIndex) =>
-    setActiveChat(selectedChatIndex);
-  */
-
-  // Get messages specifically for the active chat
-  // const currentMessages = activeChat ? allMessages[activeChat.id] || [] : [];
-
-  /*
-  const handleSendMessage = (text) => {
-    const newMessage = {
-      text: text,
-      date: Date.now().toString(),
-      sender: 'user',
-    };
-    setAllMessages((prev) => ({
-      ...prev,
-      [activeChat.id]: [...(prev[activeChat.id] || []), newMessage],
-    }));
-  };
-    */
-  // console.log({ currentMessages, activeChat });
-
   return (
     <Box sx={{ backgroundColor: '#f5f8fe', display: 'flex' }}>
       <Box sx={{ textAlign: 'left', p: 1 }}>

@@ -11,6 +11,11 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import IconButton from '@mui/material/IconButton';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 
+// import { Snackbar } from '@mui/material';
+// import CloseIcon from '@mui/icons-material/Close';
+
+import AddMembers from '../forms/AddMembers';
+
 import { useChat } from '../../context/SocketContext';
 
 /*
@@ -20,8 +25,34 @@ import ClearIcon from '@mui/icons-material/Clear';
 */
 
 export default function Sidebar() {
+  // , feedbackText, setFeedbackText
   const { channels, changeRoom } = useChat();
   const [searchTerm, setSearchTerm] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  // snackbar state management
+  // const [snackOpen, setSnackOpen] = useState(false);
+
+  /*
+  useEffect(() => {
+    console.log({ feedbackText });
+    if (feedbackText == '') setSnackOpen(false);
+    if (feedbackText != '') setSnackOpen(true);
+  }, [feedbackText]);
+  console.log({ snackOpen });
+
+  const handleClick = () => {
+    setSnackOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    // console.log('closing');
+    if (reason === 'clickaway') {
+      return;
+    }
+    setFeedbackText('');
+    setSnackOpen(false);
+  };
+  */
 
   /*
   const handleClear = () => {
@@ -33,6 +64,31 @@ export default function Sidebar() {
     e.preventDefault();
     alert('Start a new chat');
   };
+
+  // For snackbar
+  /*
+  const action = (
+    <React.Fragment>
+      <Button color="secondary" size="small" onClick={handleClose}>
+        UNDO
+      </Button>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
+  */
+
+  if (dialogOpen) {
+    return (
+      <AddMembers open={dialogOpen} onClose={() => setDialogOpen(false)} />
+    );
+  }
 
   // Chat list is empty
   if (channels.length == 0) {
@@ -57,10 +113,22 @@ export default function Sidebar() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Start a new chat to connect with friends and family.
           </Typography>
-          <Button variant="contained" onClick={handleStartChat}>
+          <Button variant="contained" onClick={() => setDialogOpen(true)}>
             New Chat
           </Button>
         </Box>
+        {/* Snackbar */}
+        {/*
+        <Button onClick={handleClick}>Open Snackbar</Button>
+        <Snackbar
+          open={snackOpen}
+          autoHideDuration={6000}
+          message="Billionaire success"
+          // message={feedbackText}
+          onClose={handleClose}
+          action={action}
+        />
+        */}
       </React.Fragment>
     );
   }

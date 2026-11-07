@@ -14,7 +14,7 @@ import { useChat } from '../../context/SocketContext';
 export default function MainChat() {
   const { activeRoom, messages } = useChat();
   const [inputValue, setInputValue] = useState('');
-  console.log({ messages, activeRoom });
+  // console.log({ messages, activeRoom });
   // If no chat has been selected
   if (!activeRoom) {
     return (

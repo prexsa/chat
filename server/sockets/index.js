@@ -54,6 +54,66 @@ const initSockets = (io) => {
     // Register feature modules
     registerChatHandlers(io, socket);
 
+    // Search user database for matching query
+    socket.on('search_users', async (query) => {
+      if (query.trim().length < 0) return;
+      const users = await User.find(
+        {
+          $or: [
+            { firstname: { $regex: `^${query}`, $options: 'i' } },
+            { lastname: { $regex: `^${query}`, $options: 'i' } },
+            { email: { $regex: `^${query}`, $options: 'i' } },
+          ],
+        },
+        { userId: 1, email: 1, firstname: 1, lastname: 1 }, // keys returned
+      );
+
+      // filter out requester's
+      const requesterUserId = socket.user.userId;
+      const filterOutRequester = users.filter(
+        (user) => user.userId != requesterUserId,
+      );
+
+      socket.emit('search_users_results', filterOutRequester);
+    });
+
+    // Sends a request to create
+    // Update requester's user model 'pendingRequest' key
+    // Update receipents user model 'requested' key
+    socket.on('send_request', async (members, cb) => {
+      const userId = socket.user.userId;
+      // console.log('send_request');
+
+      const membersUserIds = members.map((member) => member.userId);
+
+      // Check requester's pendingRequest for existing receipents userId
+      const user = await User.find({ userId: userId }, { pendingRequest: 1 });
+      /*
+       */
+      if (user[0].pendingRequest.length > 0) {
+        return;
+      } else {
+        // Add receipent's userId to requester's 'pendingRequest'
+        const requester = await User.findOneAndUpdate(
+          { userId: userId },
+          { $push: { pendingRequest: { $each: membersUserIds } } },
+        );
+        // Map over userId and update receipents requested
+        membersUserIds.map(async (requestedUserId) => {
+          const receipent = await User.findOneAndUpdate(
+            { userId: requestedUserId },
+            { $push: { requested: userId } },
+          );
+        });
+      }
+
+      socket.emit('send_request_feedback', { message: 'request sent' });
+      cb({ message: 'request sent' });
+    });
+
+    // Creates a private channel
+    socket.on('add_member', async (members) => {});
+
     // You can easily scale by registering more handlers here:
     // registerNotificationHandlers(io, socket);
   });
