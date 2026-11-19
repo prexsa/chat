@@ -56,6 +56,7 @@ const initSockets = (io) => {
 
     // Search user database for matching query
     socket.on('search_users', async (query) => {
+      // console.log({ query})
       if (query.trim().length < 0) return;
       const users = await User.find(
         {
@@ -67,6 +68,8 @@ const initSockets = (io) => {
         },
         { userId: 1, email: 1, firstname: 1, lastname: 1 }, // keys returned
       );
+
+      console.log({ users})
 
       // filter out requester's
       const requesterUserId = socket.user.userId;
@@ -81,6 +84,7 @@ const initSockets = (io) => {
     // Update requester's user model 'pendingRequest' key
     // Update receipents user model 'requested' key
     socket.on('send_request', async (members, cb) => {
+      /*
       const userId = socket.user.userId;
       // console.log('send_request');
 
@@ -88,8 +92,6 @@ const initSockets = (io) => {
 
       // Check requester's pendingRequest for existing receipents userId
       const user = await User.find({ userId: userId }, { pendingRequest: 1 });
-      /*
-       */
       if (user[0].pendingRequest.length > 0) {
         return;
       } else {
@@ -106,6 +108,7 @@ const initSockets = (io) => {
           );
         });
       }
+       */
 
       socket.emit('send_request_feedback', { message: 'request sent' });
       cb({ message: 'request sent' });

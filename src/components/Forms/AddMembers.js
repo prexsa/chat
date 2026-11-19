@@ -124,7 +124,7 @@ export default function AddMember({ open, onClose }) {
               name="members"
               control={control}
               options={users}
-              handleOnInputChange={searchForUsers}
+              handleOnInputChange={searchForUsers} // pass inputValue to socket hook
               label="Search"
               placeholder="Search..."
               autoFocus

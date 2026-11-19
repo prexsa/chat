@@ -51,7 +51,7 @@ export const SocketProvider = ({ children }) => {
     });
 
     socket.on('search_users_results', (users) => {
-      console.log('users: ', { users });
+      // console.log('users: ', { users });
       setUsers(users);
     });
 
@@ -109,7 +109,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   const addMembers = (members) => {
-    console.log('SocketContext ', { members });
+    // console.log('SocketContext ', { members });
     socket.on('add_member', { members }, () => {
       console.log('add_members callback ');
     });

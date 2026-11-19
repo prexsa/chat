@@ -30,9 +30,11 @@ export const RHFAutoCompleteMultiple = ({
       inputValue.trim().length >= minChars
         ? filterSelectedOptions(options)
         : [];
+
     setFilteredOptions(filteredOptions);
   }, [inputValue]);
 
+  // Filters out already selected
   const filterSelectedOptions = (options) => {
     // Create set of unique identifiers
     const ids1 = new Set(values.map((obj) => obj._id));
@@ -83,7 +85,7 @@ export const RHFAutoCompleteMultiple = ({
             }
             // getOptionLabel={(option) => option.name || ''}
             isOptionEqualToValue={(option, value) => {
-              // console.log('isOptionEqualToValue: ', { option, value });
+              console.log('isOptionEqualToValue: ', { option, value });
               option._id === value?._id;
             }}
             noOptionsText={
@@ -91,8 +93,8 @@ export const RHFAutoCompleteMultiple = ({
                 ? `Please type at least ${minChars} characters to search`
                 : 'No options found'
             }
-
-            // Render custom list items with avatars
+            filterOptions={(x) => x} // : To disable filtering option when fetching new options on each keystroke
+            // Rendering a custom list
             renderOption={(props, option) => {
               /* explicity telling eslint to ignore 'key' variable that is declared but not used. */
               /* we're using the option.id instead of the key from props as the unique key */
