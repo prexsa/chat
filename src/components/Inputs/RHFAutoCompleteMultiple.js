@@ -58,17 +58,17 @@ export const RHFAutoCompleteMultiple = ({
       control={control}
       rules={{ required: `${label} can't be empty.` }}
       // render={({ field: { onChange, value, ref }, fieldState: { error } }) => {
-      render={({ field: { onChange, ref }, fieldState: { error } }) => {
+      render={({ field: { onChange, value, ref }, fieldState: { error } }) => {
         // console.log({ error });
         return (
           <Autocomplete
             {...otherProps}
             multiple
             options={filteredOptions}
-            // value={value}
-            value={values} // values selected
+            value={value}
+            // value={values} // values selected
             onChange={(_, newValue) => {
-              console.log('onChange: ', { newValue });
+              // console.log('onChange: ', { newValue });
               // Implement filter to remove already selected
               // updateFilteredOptions(newValue);
               onChange(newValue); // Pass the actual selected value to form state, for RHF
@@ -85,7 +85,7 @@ export const RHFAutoCompleteMultiple = ({
             }
             // getOptionLabel={(option) => option.name || ''}
             isOptionEqualToValue={(option, value) => {
-              console.log('isOptionEqualToValue: ', { option, value });
+              // console.log('isOptionEqualToValue: ', { option, value });
               option._id === value?._id;
             }}
             noOptionsText={
